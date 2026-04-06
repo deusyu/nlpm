@@ -172,8 +172,8 @@ jobs:
           source auditor/scripts/log-event.sh
 
           PR_COUNT=0
-          [ -f created-prs.json ] && PR_COUNT=$(jq length created-prs.json)
-          log_event "contribute" "prs_submitted" "{\"repo\": \"$TARGET_REPO\", \"pr_count\": $PR_COUNT}"
+          [ -f created-prs.json ] && PR_COUNT=$(jq length created-prs.json 2>/dev/null || echo 0)
+          log_event "contribute" "prs_submitted" "$(jq -cn --arg repo "$TARGET_REPO" --arg count "$PR_COUNT" '{repo: $repo, pr_count: ($count | tonumber)}')" || true
 
           jq --arg name "$TARGET_REPO" \
              '.repos[$name].status = "contributed"' \
