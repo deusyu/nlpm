@@ -96,6 +96,7 @@ The `auditor/` subdirectory contains a GitHub Actions pipeline that discovers, a
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | auditor-discover | Weekly cron / manual | Find repos with 500+ stars and 5+ NL artifacts |
+| auditor-batch-processor | Every 6h cron / manual | Pick next batch, promote audits to contribution |
 | auditor-audit | Issue labeled `audit-ready` | Security scan + NL score via claude-code-action |
 | auditor-contribute | Issue labeled `contribute-approved` | Fork, PR for verified bugs only (blocked by security gate) |
 | auditor-track | Daily cron | Check PR merge status |
