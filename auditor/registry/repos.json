@@ -47,10 +47,16 @@
       "security": "BLOCKED"
     },
     "tech-leads-club/agent-skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 93,
       "strategy": "progressive",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        90,
+        91,
+        92,
+        93
+      ]
     },
     "openai/codex-plugin-cc": {
       "status": "audited",
