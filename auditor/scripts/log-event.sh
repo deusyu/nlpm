@@ -13,19 +13,30 @@ log_event() {
   local run_id="${GITHUB_RUN_ID:-local}"
   local run_num="${GITHUB_RUN_NUMBER:-0}"
 
-  # Validate data is valid JSON, fall back to wrapping as string
-  local safe_data
-  safe_data=$(echo "${data:-{}}" | jq -c '.' 2>/dev/null || jq -cn --arg d "${data:-}" '{raw: $d}')
+  # Pipe data as stdin to jq — avoids all shell quoting issues with --argjson
+  # Note: ${var:-{}} is broken in bash (extra }), use a temp variable instead
+  local json_data="${data}"
+  [ -z "$json_data" ] && json_data='{}'
 
-  jq -cn \
+  printf '%s' "$json_data" | jq -c \
     --arg ts "$timestamp" \
     --arg wf "$workflow" \
     --arg ev "$event" \
     --arg rid "$run_id" \
-    --argjson rn "${run_num:-0}" \
-    --argjson d "$safe_data" \
-    '{timestamp: $ts, workflow: $wf, event: $ev, run_id: $rid, run_number: $rn, data: $d}' \
-    >> auditor/logs/events.jsonl
+    --arg rn "${run_num:-0}" \
+    '{timestamp: $ts, workflow: $wf, event: $ev, run_id: $rid, run_number: ($rn | tonumber), data: .}' \
+    >> auditor/logs/events.jsonl 2>/dev/null || {
+    # Fallback: data wasn't valid JSON, wrap as string
+    jq -cn \
+      --arg ts "$timestamp" \
+      --arg wf "$workflow" \
+      --arg ev "$event" \
+      --arg rid "$run_id" \
+      --arg rn "${run_num:-0}" \
+      --arg d "$json_data" \
+      '{timestamp: $ts, workflow: $wf, event: $ev, run_id: $rid, run_number: ($rn | tonumber), data: {raw: $d}}' \
+      >> auditor/logs/events.jsonl
+  }
 
   echo "[$workflow] $event: $data"
 }
