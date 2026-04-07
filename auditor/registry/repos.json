@@ -33,6 +33,12 @@
       "score": 95,
       "strategy": "progressive",
       "security": "BLOCKED"
+    },
+    "slavingia/skills": {
+      "status": "audited",
+      "score": 97,
+      "strategy": "single",
+      "security": "CLEAR"
     }
   },
   "metadata": {
