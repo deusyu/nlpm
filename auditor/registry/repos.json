@@ -35,10 +35,13 @@
       "security": "BLOCKED"
     },
     "slavingia/skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 97,
       "strategy": "single",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        19
+      ]
     },
     "thedotmack/claude-mem": {
       "status": "audited",
@@ -53,16 +56,24 @@
       "security": "CLEAR"
     },
     "openai/codex-plugin-cc": {
-      "status": "audited",
+      "status": "contributed",
       "score": 93,
       "strategy": "single",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        168,
+        169
+      ]
     },
     "deanpeters/Product-Manager-Skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 89,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        7,
+        8
+      ]
     }
   },
   "metadata": {
