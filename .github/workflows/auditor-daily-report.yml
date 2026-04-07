@@ -33,7 +33,7 @@ jobs:
             total: (.repos | length),
             by_status: (.repos | to_entries | group_by(.value.status) | map({(.[0].value.status): length}) | add),
             case_study_candidates: [.repos | to_entries[] | select(.value.case_study_candidate == true) | .key],
-            top_by_stars: [.repos | to_entries | sort_by(-.value.stars) | .[:5][] | {repo: .key, stars: .value.stars, status: .value.status}]
+            top_by_stars: [.repos | to_entries | sort_by(-(.value.stars // 0)) | .[:5][] | {repo: .key, stars: (.value.stars // 0), status: .value.status}]
           }' auditor/registry/repos.json > /tmp/report/registry-stats.json
 
           # Issue counts by label
@@ -224,7 +224,7 @@ jobs:
           source auditor/scripts/log-event.sh
 
           TOTAL=$(jq '.repos | length' auditor/registry/repos.json)
-          log_event "daily-report" "report_generated" "{\"total_repos\": $TOTAL}"
+          log_event "daily-report" "report_generated" "$(jq -cn --arg total "$TOTAL" '{total_repos: ($total | tonumber)}')" || true
 
           git config user.name "nlpm-auditor[bot]"
           git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
