@@ -49,23 +49,14 @@ jobs:
           echo "--- Phase 1: Promote completed audits to contribution ---"
           PROMOTED=0
 
-          gh issue list --label "audit-complete" --state open --json number,title,labels \
-            --jq '.[] | select(.labels | map(.name) | (contains(["security-blocked"]) | not) and (contains(["contribute-approved"]) | not) and (contains(["prs-submitted"]) | not)) | "\(.number)\t\(.title)"' \
-            2>/dev/null | while IFS=$'\t' read -r ISSUE_NUM TITLE; do
-
-            # Extract repo name from issue title
+          # Use process substitution to avoid subshell counter issue
+          while IFS=$'\t' read -r ISSUE_NUM TITLE; do
             REPO=$(echo "$TITLE" | sed 's/Audit candidate: //')
-            SLUG="${REPO//\//-}"
-
-            # Check registry for security status
             SECURITY=$(jq -r --arg name "$REPO" '.repos[$name].security // "UNKNOWN"' auditor/registry/repos.json)
 
             if [ "$SECURITY" = "BLOCKED" ]; then
               echo "  SKIP #$ISSUE_NUM ($REPO): security BLOCKED"
-              continue
-            fi
-
-            if [ "$SECURITY" = "CLEAR" ] || [ "$SECURITY" = "REVIEW" ]; then
+            elif [ "$SECURITY" = "CLEAR" ] || [ "$SECURITY" = "REVIEW" ]; then
               echo "  PROMOTE #$ISSUE_NUM ($REPO): security=$SECURITY → contribute-approved"
               if [ "$DRY_RUN" != "true" ]; then
                 gh issue edit "$ISSUE_NUM" --add-label "contribute-approved" 2>/dev/null || true
@@ -74,7 +65,9 @@ jobs:
             else
               echo "  SKIP #$ISSUE_NUM ($REPO): security=$SECURITY (unknown/not audited)"
             fi
-          done
+          done < <(gh issue list --label "audit-complete" --state open --json number,title,labels \
+            --jq '.[] | select(.labels | map(.name) | (contains(["security-blocked"]) | not) and (contains(["contribute-approved"]) | not) and (contains(["prs-submitted"]) | not)) | "\(.number)\t\(.title)"' \
+            2>/dev/null)
 
           echo "Promoted: $PROMOTED issues to contribute-approved"
           echo ""
@@ -98,9 +91,7 @@ jobs:
 
           # Get candidates sorted by issue number (oldest first = FIFO)
           PICKED=0
-          gh issue list --label "audit-candidate" --state open --json number,title \
-            --jq 'sort_by(.number) | .[].number' 2>/dev/null | while read -r ISSUE_NUM; do
-
+          while read -r ISSUE_NUM; do
             [ "$PICKED" -ge "$AVAILABLE" ] && break
 
             TITLE=$(gh issue view "$ISSUE_NUM" --json title --jq '.title' 2>/dev/null)
@@ -121,7 +112,8 @@ jobs:
               gh issue edit "$ISSUE_NUM" --add-label "audit-ready" --remove-label "audit-candidate" 2>/dev/null || true
             fi
             PICKED=$((PICKED + 1))
-          done
+          done < <(gh issue list --label "audit-candidate" --state open --json number,title \
+            --jq 'sort_by(.number) | .[].number' 2>/dev/null)
 
           echo "Picked: $PICKED repos for audit"
           echo ""
