@@ -35,10 +35,13 @@
       "security": "BLOCKED"
     },
     "slavingia/skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 97,
       "strategy": "single",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        19
+      ]
     },
     "thedotmack/claude-mem": {
       "status": "audited",
