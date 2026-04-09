@@ -124,7 +124,7 @@
       ]
     },
     "openai/codex-plugin-cc": {
-      "status": "contributed",
+      "status": "tracked",
       "score": 93,
       "strategy": "single",
       "security": "REVIEW",
@@ -134,20 +134,21 @@
       ],
       "prs": [
         {
-          "closedAt": null,
-          "mergedAt": null,
+          "closedAt": "2026-04-08T21:48:50Z",
+          "mergedAt": "2026-04-08T21:48:50Z",
           "number": 168,
-          "state": "OPEN",
+          "state": "MERGED",
           "title": "fix: quote $ARGUMENTS in cancel, result, and status commands"
         },
         {
-          "closedAt": null,
-          "mergedAt": null,
+          "closedAt": "2026-04-08T21:28:45Z",
+          "mergedAt": "2026-04-08T21:28:45Z",
           "number": 169,
-          "state": "OPEN",
+          "state": "MERGED",
           "title": "fix: declare model in codex-rescue agent frontmatter"
         }
-      ]
+      ],
+      "case_study_candidate": true
     },
     "deanpeters/Product-Manager-Skills": {
       "status": "contributed",
