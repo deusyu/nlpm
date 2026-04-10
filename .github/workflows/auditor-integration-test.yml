@@ -89,7 +89,8 @@ jobs:
           cp /tmp/good.json auditor/feedback/log.json
 
       - name: Unit summary
-        run: echo "## Unit Tests: ALL PASSED" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "## Unit Tests: ALL PASSED" >> "$GITHUB_STEP_SUMMARY"
 
   smoke:
     if: inputs.test_level == 'smoke' || inputs.test_level == 'full'

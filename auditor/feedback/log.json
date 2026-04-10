@@ -1,12 +1,12 @@
 {
   "events": [],
   "rule_stats": {
-    "R36": {"hits": 2, "repos": ["pbakaus/impeccable", "anthropics/claude-plugins-official"]},
-    "R01": {"hits": 6, "repos": ["slavingia/skills", "deanpeters/Product-Manager-Skills", "tech-leads-club/agent-skills"]},
-    "R33": {"hits": 1, "repos": ["pbakaus/impeccable"]},
-    "R34": {"hits": 0, "repos": []},
-    "R35": {"hits": 0, "repos": []},
-    "R38": {"hits": 1, "repos": ["pbakaus/impeccable"]}
+    "R36": {"total_hits": 2, "repos": ["pbakaus/impeccable", "anthropics/claude-plugins-official"]},
+    "R01": {"total_hits": 6, "repos": ["slavingia/skills", "deanpeters/Product-Manager-Skills", "tech-leads-club/agent-skills"]},
+    "R33": {"total_hits": 1, "repos": ["pbakaus/impeccable"]},
+    "R34": {"total_hits": 0, "repos": []},
+    "R35": {"total_hits": 0, "repos": []},
+    "R38": {"total_hits": 1, "repos": ["pbakaus/impeccable"]}
   },
   "metadata": {
     "created": "2026-04-05",
