@@ -175,12 +175,29 @@
           "title": "security: validate adapter names before dynamic source in add-a-skill.sh"
         }
       ]
+    },
+    "pbakaus/impeccable": {
+      "status": "contributed",
+      "score": 93,
+      "strategy": "single",
+      "security": "REVIEW",
+      "artifacts": 3,
+      "bugs": 0,
+      "quality_issues": 3,
+      "security_findings": 5,
+      "audit_date": "2026-04-10",
+      "report": "auditor/audits/pbakaus-impeccable.md",
+      "pipeline_prs": [
+        92,
+        93
+      ],
+      "tracking_issue": 94
     }
   },
   "metadata": {
     "last_discovery": null,
-    "total_discovered": 0,
-    "total_audited": 0,
-    "total_contributed": 0
+    "total_discovered": 10,
+    "total_audited": 10,
+    "total_contributed": 6
   }
 }

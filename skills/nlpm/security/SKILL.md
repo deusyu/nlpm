@@ -38,6 +38,7 @@ Claude Code plugins have five execution surfaces that must be scanned:
 | Subprocess with shell=True | `subprocess\.(call\|run\|Popen).*shell\s*=\s*True` | Python shell injection |
 | OS system calls | `os\.system\(` | Python shell execution |
 | Dynamic require/import | `require\(\s*\$`, `import\(\s*\$` | Dynamic code loading |
+| new Function with dynamic string | `new Function\(` with string concatenation or template literal | Arbitrary code execution from string; often used to deserialize data that could be imported directly |
 | File write outside repo | `> ~/`, `> /etc/`, `> /tmp/.*\.sh` | System modification |
 | Sudo usage | `sudo\s+` | Privilege escalation |
 | PATH modification | Appending to bashrc, zshrc, or profile | Persistent system modification |
@@ -88,7 +89,7 @@ Scan `package.json` for:
 | postinstall scripts | `scripts.postinstall` exists | High |
 | preinstall scripts | `scripts.preinstall` exists | High |
 | Git URL dependencies | Deps pointing to git URLs | Medium |
-| Unpinned versions | Wildcard or "latest" version | Medium |
+| Unpinned versions | Wildcard or "latest" version (suppress if lockfile present: package-lock.json, bun.lock, yarn.lock, pnpm-lock.yaml) | Medium |
 
 Scan `requirements.txt` / `pyproject.toml` for:
 

@@ -1,12 +1,20 @@
 {
   "events": [],
-  "rule_stats": {},
+  "rule_stats": {
+    "R36": {"hits": 2, "repos": ["pbakaus/impeccable", "anthropics/claude-plugins-official"]},
+    "R01": {"hits": 6, "repos": ["slavingia/skills", "deanpeters/Product-Manager-Skills", "tech-leads-club/agent-skills"]},
+    "R33": {"hits": 1, "repos": ["pbakaus/impeccable"]},
+    "R34": {"hits": 0, "repos": []},
+    "R35": {"hits": 0, "repos": []},
+    "R38": {"hits": 1, "repos": ["pbakaus/impeccable"]}
+  },
   "metadata": {
     "created": "2026-04-05",
-    "total_events": 0,
-    "total_audits": 0,
-    "total_prs_submitted": 0,
-    "total_prs_merged": 0,
-    "total_prs_rejected": 0
+    "last_updated": "2026-04-10",
+    "total_events": 16,
+    "total_audits": 10,
+    "total_prs_submitted": 14,
+    "total_prs_merged": 2,
+    "total_prs_rejected": 3
   }
 }

@@ -37,9 +37,11 @@ Use Glob to find all executable surfaces in the target directory:
 
 1. `hooks/hooks.json` and `hooks/**/*.{sh,py,js}`
 2. `scripts/**/*.{sh,py,js,ts}`
-3. `.mcp.json`
-4. `package.json`, `requirements.txt`, `pyproject.toml`
-5. `commands/*.md` (check for Bash tool usage)
+3. `bin/**/*.{js,mjs,ts}` and `src/**/*.{js,mjs,ts}`
+4. `server/**/*.{js,ts}` and `extension/**/*.{js,ts}`
+5. `.mcp.json`
+6. `package.json`, `requirements.txt`, `pyproject.toml`
+7. `commands/*.md` (check for Bash tool usage)
 
 Report what you found:
 
@@ -76,7 +78,7 @@ For each file found, read it and check against the patterns in your security ski
 ### For package.json:
 - Check scripts.postinstall and scripts.preinstall
 - Check for git URL dependencies
-- Check for unpinned versions (wildcard or "latest")
+- Check for unpinned versions (wildcard or "latest"), BUT first check if a lockfile exists (package-lock.json, bun.lock, yarn.lock, pnpm-lock.yaml) in the same directory. If a lockfile is present, suppress the unpinned-versions finding entirely — lockfiles pin resolved versions regardless of range specifiers in package.json
 
 ### For commands with Bash:
 - Check if command passes user arguments directly to Bash
