@@ -269,6 +269,12 @@
       "score": 89,
       "strategy": "progressive",
       "security": "REVIEW"
+    },
+    "ChrisWiles/claude-code-showcase": {
+      "status": "audited",
+      "score": 81,
+      "strategy": "single",
+      "security": "CLEAR"
     }
   },
   "metadata": {
