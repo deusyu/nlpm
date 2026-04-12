@@ -299,6 +299,12 @@
       "score": 82,
       "strategy": "progressive",
       "security": "CLEAR"
+    },
+    "xiaolai/codex-toolkit-for-claude": {
+      "status": "audited",
+      "score": 96,
+      "strategy": "batched",
+      "security": "CLEAR"
     }
   },
   "metadata": {
