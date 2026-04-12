@@ -209,6 +209,12 @@
           "title": "security: use JSON.stringify for selector escaping in devtools panel"
         }
       ]
+    },
+    "affaan-m/everything-claude-code": {
+      "status": "audited",
+      "score": 84,
+      "strategy": "progressive",
+      "security": "BLOCKED"
     }
   },
   "metadata": {
