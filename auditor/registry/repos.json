@@ -209,6 +209,12 @@
           "title": "security: use JSON.stringify for selector escaping in devtools panel"
         }
       ]
+    },
+    "agenticnotetaking/arscontexta": {
+      "status": "audited",
+      "score": 96,
+      "strategy": "batched",
+      "security": "CLEAR"
     }
   },
   "metadata": {
