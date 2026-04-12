@@ -209,6 +209,12 @@
           "title": "security: use JSON.stringify for selector escaping in devtools panel"
         }
       ]
+    },
+    "alirezarezvani/claude-skills": {
+      "status": "audited",
+      "score": 92,
+      "strategy": "progressive",
+      "security": "BLOCKED"
     }
   },
   "metadata": {
