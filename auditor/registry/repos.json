@@ -329,6 +329,12 @@
       "score": 78,
       "strategy": "progressive",
       "security": "CLEAR"
+    },
+    "diet103/claude-code-infrastructure-showcase": {
+      "status": "audited",
+      "score": 81,
+      "strategy": "batched",
+      "security": "BLOCKED"
     }
   },
   "metadata": {
