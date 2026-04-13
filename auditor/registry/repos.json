@@ -330,6 +330,24 @@
       "strategy": "progressive",
       "security": "CLEAR"
     },
+    "czlonkowski/n8n-skills": {
+      "status": "audited",
+      "score": 93,
+      "strategy": "single",
+      "security": "CLEAR"
+    },
+    "coreyhaines31/marketingskills": {
+      "status": "audited",
+      "score": 96,
+      "strategy": "batched",
+      "security": "CLEAR"
+    },
+    "dontbesilent2025/dbskill": {
+      "status": "audited",
+      "score": 90,
+      "strategy": "single",
+      "security": "REVIEW"
+    },
     "diet103/claude-code-infrastructure-showcase": {
       "status": "audited",
       "score": 81,
