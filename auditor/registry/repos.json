@@ -330,6 +330,18 @@
       "strategy": "progressive",
       "security": "CLEAR"
     },
+    "czlonkowski/n8n-skills": {
+      "status": "audited",
+      "score": 93,
+      "strategy": "single",
+      "security": "CLEAR"
+    },
+    "coreyhaines31/marketingskills": {
+      "status": "audited",
+      "score": 96,
+      "strategy": "batched",
+      "security": "CLEAR"
+    },
     "dontbesilent2025/dbskill": {
       "status": "audited",
       "score": 90,
