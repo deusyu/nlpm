@@ -330,23 +330,41 @@
       "strategy": "progressive",
       "security": "CLEAR"
     },
+    "czlonkowski/n8n-skills": {
+      "status": "audited",
+      "score": 93,
+      "strategy": "single",
+      "security": "CLEAR"
+    },
+    "coreyhaines31/marketingskills": {
+      "status": "audited",
+      "score": 96,
+      "strategy": "batched",
+      "security": "CLEAR"
+    },
+    "dontbesilent2025/dbskill": {
+      "status": "audited",
+      "score": 90,
+      "strategy": "single",
+      "security": "REVIEW"
+    },
+    "diet103/claude-code-infrastructure-showcase": {
+      "status": "audited",
+      "score": 81,
+      "strategy": "batched",
+      "security": "BLOCKED"
+    },
     "davepoon/buildwithclaude": {
       "status": "audited",
       "score": 77,
       "strategy": "progressive",
-      "security": "BLOCKED",
-      "artifacts": 881,
-      "bugs": 8,
-      "quality_issues": 163,
-      "security_findings": 3,
-      "audit_date": "2026-04-13",
-      "report": "auditor/audits/davepoon-buildwithclaude.md"
+      "security": "BLOCKED"
     }
   },
   "metadata": {
     "last_discovery": null,
-    "total_discovered": 11,
-    "total_audited": 11,
+    "total_discovered": 10,
+    "total_audited": 10,
     "total_contributed": 6
   }
 }
