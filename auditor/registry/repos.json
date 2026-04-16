@@ -465,10 +465,12 @@
       "stars": 2575,
       "artifacts": 212,
       "description": "Put up to 8 AI models on every coding task — blind spots surface before you ship. Claude Code plugin.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 79,
       "audit_issue": 69,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "REVIEW"
     },
     "rohitg00/awesome-claude-code-toolkit": {
       "discovered": "2026-04-13T06:41:48Z",
