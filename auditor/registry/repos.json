@@ -405,10 +405,12 @@
       "stars": 568,
       "artifacts": 83,
       "description": "Plan-first AI workflow plugin for Claude Code, OpenAI Codex, and Factory Droid. Zero-dep task tracking, worker subagents, Ralph autonomous mode, cross-model reviews.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 93,
       "audit_issue": 63,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "BLOCKED"
     },
     "hesreallyhim/awesome-claude-code": {
       "discovered": "2026-04-13T06:41:48Z",
