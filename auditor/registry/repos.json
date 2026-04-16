@@ -405,20 +405,24 @@
       "stars": 568,
       "artifacts": 83,
       "description": "Plan-first AI workflow plugin for Claude Code, OpenAI Codex, and Factory Droid. Zero-dep task tracking, worker subagents, Ralph autonomous mode, cross-model reviews.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 93,
       "audit_issue": 63,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "BLOCKED"
     },
     "hesreallyhim/awesome-claude-code": {
       "discovered": "2026-04-13T06:41:48Z",
       "stars": 38367,
       "artifacts": 24,
       "description": "A curated list of awesome skills, hooks, slash-commands, agent orchestrators, applications, and plugins for Claude Code by Anthropic",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 89,
       "audit_issue": 64,
-      "prs": []
+      "prs": [],
+      "strategy": "batched",
+      "security": "CLEAR"
     },
     "jeremylongshore/claude-code-plugins-plus-skills": {
       "discovered": "2026-04-13T06:41:48Z",
