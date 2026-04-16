@@ -525,10 +525,12 @@
       "stars": 1680,
       "artifacts": 8,
       "description": "MCP server and Claude plugin for Postgres skills and documentation. Helps AI coding tools generate better PostgreSQL code.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 94,
       "audit_issue": 75,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "REVIEW"
     },
     "uditgoenka/autoresearch": {
       "discovered": "2026-04-13T06:41:48Z",

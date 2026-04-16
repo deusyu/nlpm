@@ -32,4 +32,4 @@
 {"timestamp":"2026-04-14T22:15:39Z","workflow":"daily-report","event":"report_generated","run_id":"24425612410","run_number":10,"data":{"total_repos":58}}
 {"timestamp":"2026-04-15T08:31:08Z","workflow":"track","event":"status_check","run_id":"24444516414","run_number":10,"data":{"contributed":3,"tracked":3,"case_study_ready":2}}
 {"timestamp":"2026-04-15T22:14:59Z","workflow":"daily-report","event":"report_generated","run_id":"24481169895","run_number":11,"data":{"total_repos":58}}
-{"timestamp":"2026-04-16T05:08:01Z","workflow":"audit","event":"audit_complete","run_id":"24493018841","run_number":86,"data":{"repo":"zubair-trabzada/geo-seo-claude","score":88,"artifacts":20,"strategy":"single"}}
+{"timestamp":"2026-04-16T05:06:36Z","workflow":"audit","event":"audit_complete","run_id":"24493024649","run_number":89,"data":{"repo":"timescale/pg-aiguide","score":94,"artifacts":9,"strategy":"single"}}
