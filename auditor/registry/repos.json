@@ -575,10 +575,12 @@
       "stars": 5411,
       "artifacts": 19,
       "description": "GEO-first SEO skill for Claude Code. Comprehensive AI search optimization for any website — citability scoring, AI crawler analysis, brand authority, schema markup, platform-specific optimization, and PDF reports.  If you want learn how to sell this to real businesses, check out the skool community",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 88,
       "audit_issue": 80,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR"
     },
     "gadievron/raptor": {
       "status": "audited",
