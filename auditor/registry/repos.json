@@ -515,10 +515,12 @@
       "stars": 729,
       "artifacts": 40,
       "description": "Claude Code plugins for power users",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 92,
       "audit_issue": 74,
-      "prs": []
+      "prs": [],
+      "strategy": "batched",
+      "security": "CLEAR"
     },
     "timescale/pg-aiguide": {
       "discovered": "2026-04-13T06:41:48Z",
