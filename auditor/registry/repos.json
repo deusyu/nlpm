@@ -387,10 +387,12 @@
       "stars": 22505,
       "artifacts": 10,
       "description": "🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 92,
       "audit_issue": 61,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR"
     },
     "fcakyon/claude-codex-settings": {
       "discovered": "2026-04-13T06:41:48Z",
