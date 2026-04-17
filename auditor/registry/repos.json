@@ -429,10 +429,12 @@
       "stars": 1917,
       "artifacts": 7868,
       "description": "340 plugins + 1367 agent skills for Claude Code. Open-source marketplace with CCPI package manager, interactive tutorials, and production orchestration patterns.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 73,
       "audit_issue": 65,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "REVIEW"
     },
     "mukul975/Anthropic-Cybersecurity-Skills": {
       "discovered": "2026-04-13T06:41:48Z",
