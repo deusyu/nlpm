@@ -565,10 +565,12 @@
       "stars": 6387,
       "artifacts": 123,
       "description": "ARIS ⚔️ (Auto-Research-In-Sleep) — Lightweight Markdown-only skills for autonomous ML research: cross-model review loops, idea discovery, and experiment automation. No framework, no lock-in — works with Claude Code, Codex, OpenClaw, or any LLM agent.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 81,
       "audit_issue": 77,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "BLOCKED"
     },
     "ykdojo/claude-code-tips": {
       "discovered": "2026-04-13T06:41:48Z",
