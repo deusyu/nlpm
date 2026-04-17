@@ -365,10 +365,12 @@
       "stars": 528,
       "artifacts": 7,
       "description": "🔔 Cross-platform smart notifications plugin for Claude Code. 6 types. Click-to-focus. 1 line installation. Instant. Analyze context. Zero dependencies. webhooks (ntfy, slack, telegram...). Linux, MacOS, Windows.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 63,
       "audit_issue": 59,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "BLOCKED"
     },
     "AgriciDaniel/claude-ads": {
       "discovered": "2026-04-13T06:41:48Z",
