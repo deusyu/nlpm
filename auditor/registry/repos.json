@@ -628,7 +628,7 @@
       "artifacts": 509,
       "description": "Intelligent automation and multi-agent orchestration for Claude Code",
       "status": "contributed",
-      "score": 20,
+      "score": 76,
       "audit_issue": 82,
       "prs": [],
       "strategy": "progressive",
