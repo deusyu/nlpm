@@ -673,7 +673,15 @@ jobs:
           bash auditor/scripts/guard-protected-paths.sh || exit 1
           git diff --cached --quiet || {
             git commit -m "case-study: $TARGET_REPO ($LINES lines)"
-            git push
+
+            for ATTEMPT in 1 2 3 4 5; do
+              if git push 2>/dev/null; then break; fi
+              echo "Push attempt $ATTEMPT failed, pulling..."
+              git pull --no-rebase origin main --no-edit 2>/dev/null || true
+              bash auditor/scripts/resolve-merge-conflicts.sh || true
+              git diff --cached --quiet 2>/dev/null || git commit --no-edit 2>/dev/null || true
+              [ "$ATTEMPT" -eq 5 ] && { echo "ERROR: push failed after 5 attempts"; exit 1; }
+            done
           }
 
           # Update registry
@@ -685,7 +693,15 @@ jobs:
           bash auditor/scripts/guard-protected-paths.sh || exit 1
           git diff --cached --quiet || {
             git commit -m "chore: mark $TARGET_REPO complete"
-            git push
+
+            for ATTEMPT in 1 2 3 4 5; do
+              if git push 2>/dev/null; then break; fi
+              echo "Push attempt $ATTEMPT failed, pulling..."
+              git pull --no-rebase origin main --no-edit 2>/dev/null || true
+              bash auditor/scripts/resolve-merge-conflicts.sh || true
+              git diff --cached --quiet 2>/dev/null || git commit --no-edit 2>/dev/null || true
+              [ "$ATTEMPT" -eq 5 ] && { echo "ERROR: push failed after 5 attempts"; exit 1; }
+            done
           }
 
           # Comment and close issue
