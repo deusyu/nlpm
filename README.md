@@ -187,7 +187,7 @@ scripts/
 
 ## Case Studies
 
-- [When the Linter Met Its Match](case-studies/how-we-helped-gsd.md) -- Auditing the 48k-star `gsd-build/get-shit-done` project: 80 files scored, 5 PRs accepted, and the false-positive that improved NLPM itself.
+- [When the Linter Met Its Match](case-studies/2026-04-06-how-we-helped-gsd.md) -- Auditing the 48k-star `gsd-build/get-shit-done` project: 80 files scored, 5 PRs accepted, and the false-positive that improved NLPM itself.
 
 ## Auditor — Self-Evolution Pipeline
 
