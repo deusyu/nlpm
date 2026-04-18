@@ -188,6 +188,8 @@ scripts/
 ## Case Studies
 
 - [When the Linter Met Its Match](case-studies/2026-04-06-how-we-helped-gsd.md) -- Auditing the 48k-star `gsd-build/get-shit-done` project: 80 files scored, 5 PRs accepted, and the false-positive that improved NLPM itself.
+- [Four bytes of quoting, approved by two OpenAI engineers](case-studies/2026-04-19-openai-codex-plugin-cc.md) -- Auditing `openai/codex-plugin-cc`: 13 artifacts, 93/100 Gold tier, two shell-injection fixes reviewed and merged by OpenAI contributors in 39 hours.
+- [The frontmatter tax: 19 silent registration failures in a 33,000-star plugin collection](case-studies/2026-04-18-wshobson-agents.md) -- Auditing `wshobson/agents`: 100 artifacts sampled of 509, 5 PRs batched and agentically merged in 13 seconds. (Companion [learnings debrief](case-studies/2026-04-18-wshobson-agents-learnings.md) covers the sampling blind spot and pipeline race bugs surfaced by this run.)
 
 ## Auditor — Self-Evolution Pipeline
 
