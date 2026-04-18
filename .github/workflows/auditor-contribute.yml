@@ -192,13 +192,7 @@ jobs:
               if git push 2>/dev/null; then break; fi
               echo "Push attempt $ATTEMPT failed, resolving..."
               git pull --no-rebase origin main --no-edit 2>/dev/null || true
-              if git diff --name-only --diff-filter=U 2>/dev/null | grep -q "repos.json"; then
-                git checkout --theirs auditor/registry/repos.json
-                jq --arg name "$TARGET_REPO" '.repos[$name].status = "contributed"' \
-                   auditor/registry/repos.json > /tmp/reg-resolved.json && mv /tmp/reg-resolved.json auditor/registry/repos.json
-                git add auditor/registry/repos.json
-              fi
-              git diff --name-only --diff-filter=U 2>/dev/null | while read -r f; do git checkout --theirs "$f" && git add "$f"; done 2>/dev/null || true
+              bash auditor/scripts/resolve-merge-conflicts.sh || true
               git diff --cached --quiet 2>/dev/null || git commit --no-edit 2>/dev/null || true
               [ "$ATTEMPT" -eq 5 ] && { echo "ERROR: push failed after 5 attempts"; exit 1; }
             done

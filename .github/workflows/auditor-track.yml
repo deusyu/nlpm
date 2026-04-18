@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write  # needed to dispatch auditor-case-study.yml (GITHUB_TOKEN label events don't trigger other workflows)
 
 concurrency:
   group: nlpm-track
@@ -69,6 +70,11 @@ jobs:
                     --body "All PRs resolved. $MERGED merged, $CLOSED closed. Ready for case study." \
                     2>/dev/null || true
                   gh issue edit "$ISSUE_NUM" --add-label "case-study-ready" 2>/dev/null || true
+                  # GITHUB_TOKEN label events don't trigger other workflows (anti-recursion).
+                  # Dispatch the case study workflow explicitly, same pattern as batch-processor.
+                  gh workflow run auditor-case-study.yml \
+                    -f repo="$REPO" \
+                    -f issue_number="$ISSUE_NUM" 2>/dev/null || echo "WARNING: failed to dispatch case study for $REPO"
                 fi
               fi
             fi
