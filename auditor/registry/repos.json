@@ -704,15 +704,22 @@
     "yonatangross/orchestkit": {
       "discovered": "2026-04-18T22:52:00Z",
       "stars": 149,
-      "artifacts": 312,
+      "artifacts": 103,
       "description": "The Complete AI Development Toolkit for Claude Code — 103 skills, 36 agents, 172 hooks. Production-ready patterns for full-stack development.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 84,
       "audit_issue": 84,
       "prs": [],
       "source": "claudepot",
       "star_velocity": 2.0,
-      "star_anomaly": 2.67
+      "star_anomaly": 2.67,
+      "security": "UNKNOWN",
+      "bugs": 3,
+      "quality_issues": 22,
+      "security_findings": 8,
+      "audit_date": "2026-04-19",
+      "report": "auditor/audits/yonatangross-orchestkit.md",
+      "strategy": "progressive"
     },
     "LerianStudio/ring": {
       "discovered": "2026-04-18T22:52:00Z",
