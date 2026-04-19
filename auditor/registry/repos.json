@@ -823,13 +823,15 @@
       "stars": 9749,
       "artifacts": 10,
       "description": "Code Editor for the AI Agents Era - Run an army of Claude Code, Codex, etc. on your machine",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 64,
       "audit_issue": 100,
       "prs": [],
       "source": "claudepot",
       "star_velocity": 49.67,
-      "star_anomaly": 0.74
+      "star_anomaly": 0.74,
+      "strategy": "single",
+      "security": "BLOCKED"
     },
     "FlorianBruniaux/claude-code-ultimate-guide": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -857,7 +859,9 @@
       "prs": [],
       "source": "claudepot",
       "star_velocity": 55.0,
-      "star_anomaly": 0.28
+      "star_anomaly": 0.28,
+      "strategy": "single",
+      "security": "BLOCKED"
     },
     "gotalab/cc-sdd": {
       "discovered": "2026-04-18T22:52:00Z",
