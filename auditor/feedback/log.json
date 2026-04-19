@@ -27,7 +27,7 @@
       "repos": []
     },
     "R35": {
-      "total_hits": 0,
+      "total_hits": 1,
       "repos": []
     },
     "R38": {
@@ -37,6 +37,51 @@
       ]
     },
     "R32": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R07": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R08": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R12": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R14": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R15": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R20": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R31": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R42": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0
+    },
+    "R44": {
       "total_hits": 1,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0
