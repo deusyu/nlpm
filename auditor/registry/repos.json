@@ -1052,13 +1052,15 @@
       "stars": 1128,
       "artifacts": 5,
       "description": "🪐 The ultimate starter kit for AI IDEs, Claude code，codex, and other agentic coding environments.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 62,
       "audit_issue": 126,
       "prs": [],
       "source": "claudepot",
       "star_velocity": 1.0,
-      "star_anomaly": 0.47
+      "star_anomaly": 0.47,
+      "strategy": "single",
+      "security": "CLEAR"
     },
     "aaron-he-zhu/seo-geo-claude-skills": {
       "discovered": "2026-04-18T22:52:00Z",
