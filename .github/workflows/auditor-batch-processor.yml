@@ -61,6 +61,12 @@ jobs:
               echo "  PROMOTE #$ISSUE_NUM ($REPO): security=$SECURITY → contribute-approved"
               if [ "$DRY_RUN" != "true" ]; then
                 gh issue edit "$ISSUE_NUM" --add-label "contribute-approved" 2>/dev/null || true
+                # GITHUB_TOKEN label events don't trigger other workflows (anti-recursion).
+                # Dispatch the contribute workflow explicitly, same pattern as audit + case-study.
+                gh workflow run auditor-contribute.yml \
+                  -f repo="$REPO" \
+                  -f issue_number="$ISSUE_NUM" 2>/dev/null || echo "    WARNING: failed to dispatch contribute for $REPO"
+                sleep 2
               fi
               PROMOTED=$((PROMOTED + 1))
             else
