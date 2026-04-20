@@ -1201,15 +1201,22 @@
     "guanyang/antigravity-skills": {
       "discovered": "2026-04-18T22:52:00Z",
       "stars": 653,
-      "artifacts": 70,
+      "artifacts": 63,
       "description": "Empower agents with professional capabilities in specific fields (such as full-stack development, complex logic planning, multimedia processing, etc.) through modular Skills definitions, allowing agents to solve complex problems systematically like human experts.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 86,
+      "security": "REVIEW",
       "audit_issue": 147,
+      "audit_date": "2026-04-20",
+      "audit_report": "auditor/audits/guanyang-antigravity-skills.md",
+      "bugs": 3,
+      "quality_issues": 8,
+      "security_findings": 3,
       "prs": [],
       "source": "claudepot",
       "star_velocity": 4.33,
-      "star_anomaly": 0.62
+      "star_anomaly": 0.62,
+      "strategy": "progressive"
     },
     "alinaqi/claude-bootstrap": {
       "discovered": "2026-04-18T22:52:00Z",
