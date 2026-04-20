@@ -1243,7 +1243,7 @@
       "stars": 653,
       "artifacts": 63,
       "description": "Empower agents with professional capabilities in specific fields (such as full-stack development, complex logic planning, multimedia processing, etc.) through modular Skills definitions, allowing agents to solve complex problems systematically like human experts.",
-      "status": "audited",
+      "status": "contributed",
       "score": 86,
       "security": "REVIEW",
       "audit_issue": 147,
@@ -1256,7 +1256,10 @@
       "source": "claudepot",
       "star_velocity": 4.33,
       "star_anomaly": 0.62,
-      "strategy": "progressive"
+      "strategy": "progressive",
+      "pipeline_prs": [
+        6
+      ]
     },
     "alinaqi/claude-bootstrap": {
       "discovered": "2026-04-18T22:52:00Z",
