@@ -569,12 +569,19 @@
       "stars": 3612,
       "artifacts": 48,
       "description": "Claude Autoresearch Skill — Autonomous goal-directed iteration for Claude Code. Inspired by Karpathy's autoresearch. Modify → Verify → Keep/Discard → Repeat forever.",
-      "status": "audited",
+      "status": "contributed",
       "score": 88,
       "audit_issue": 76,
       "prs": [],
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        74,
+        75,
+        76,
+        77,
+        78
+      ]
     },
     "wanshuiyin/Auto-claude-code-research-in-sleep": {
       "discovered": "2026-04-13T06:41:48Z",
