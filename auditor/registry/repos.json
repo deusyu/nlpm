@@ -1247,7 +1247,7 @@
       "stars": 653,
       "artifacts": 63,
       "description": "Empower agents with professional capabilities in specific fields (such as full-stack development, complex logic planning, multimedia processing, etc.) through modular Skills definitions, allowing agents to solve complex problems systematically like human experts.",
-      "status": "audited",
+      "status": "contributed",
       "score": 86,
       "security": "REVIEW",
       "audit_issue": 147,
@@ -1260,7 +1260,10 @@
       "source": "claudepot",
       "star_velocity": 4.33,
       "star_anomaly": 0.62,
-      "strategy": "progressive"
+      "strategy": "progressive",
+      "pipeline_prs": [
+        6
+      ]
     },
     "alinaqi/claude-bootstrap": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -1280,13 +1283,15 @@
       "stars": 564,
       "artifacts": 50,
       "description": "A Claude Code plugin that turns natural language into blueprints, blueprints into parallel build plans, and build plans into working software with automated iteration, validation, and cross-model peer review.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 97,
       "audit_issue": 152,
       "prs": [],
       "source": "claudepot",
       "star_velocity": 40.6,
-      "star_anomaly": 0.75
+      "star_anomaly": 0.75,
+      "strategy": "single",
+      "security": "CLEAR"
     },
     "a5c-ai/babysitter": {
       "discovered": "2026-04-18T22:52:00Z",
