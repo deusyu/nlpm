@@ -1302,13 +1302,15 @@
       "stars": 521,
       "artifacts": 11,
       "description": "An open-source AI-native operating system to define, organize, and run intelligent agent teams",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 81,
       "audit_issue": 154,
       "prs": [],
       "source": "claudepot",
       "star_velocity": 0.0,
-      "star_anomaly": 0.0
+      "star_anomaly": 0.0,
+      "strategy": "single",
+      "security": "BLOCKED"
     }
   },
   "metadata": {
