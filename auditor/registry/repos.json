@@ -303,10 +303,17 @@
       "security": "CLEAR"
     },
     "Jeffallan/claude-skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 92,
       "strategy": "progressive",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        182,
+        183,
+        184,
+        185,
+        186
+      ]
     },
     "Orchestra-Research/AI-Research-SKILLs": {
       "status": "audited",
