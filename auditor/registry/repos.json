@@ -229,10 +229,17 @@
       "security": "BLOCKED"
     },
     "agenticnotetaking/arscontexta": {
-      "status": "audited",
+      "status": "contributed",
       "score": 96,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        37,
+        38,
+        39,
+        40,
+        41
+      ]
     },
     "affaan-m/everything-claude-code": {
       "status": "audited",
