@@ -211,10 +211,15 @@
       ]
     },
     "agent-sh/agentsys": {
-      "status": "audited",
+      "status": "contributed",
       "score": 91,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        333,
+        334,
+        335
+      ]
     },
     "OthmanAdi/planning-with-files": {
       "status": "audited",
@@ -314,10 +319,14 @@
       "security": "CLEAR"
     },
     "Orchestra-Research/AI-Research-SKILLs": {
-      "status": "audited",
+      "status": "contributed",
       "score": 89,
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        52,
+        53
+      ]
     },
     "ChrisWiles/claude-code-showcase": {
       "status": "audited",
