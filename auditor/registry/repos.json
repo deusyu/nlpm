@@ -338,16 +338,20 @@
       ]
     },
     "czlonkowski/n8n-skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 93,
       "strategy": "single",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": []
     },
     "coreyhaines31/marketingskills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 96,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        247
+      ]
     },
     "dontbesilent2025/dbskill": {
       "status": "audited",
