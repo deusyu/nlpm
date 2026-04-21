@@ -359,10 +359,16 @@
       "security": "CLEAR"
     },
     "EveryInc/compound-engineering-plugin": {
-      "status": "audited",
+      "status": "contributed",
       "score": 84,
       "strategy": "progressive",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        624,
+        625,
+        626,
+        627
+      ]
     },
     "Donchitos/Claude-Code-Game-Studios": {
       "status": "audited",
