@@ -1330,7 +1330,7 @@
       "stars": 562,
       "artifacts": 4184,
       "description": "Babysitter enforces obedience on agentic workforces and enables them to manage extremely complex tasks and workflows through deterministic, hallucination-free self-orchestration",
-      "status": "audited",
+      "status": "contributed",
       "score": 70,
       "audit_issue": 153,
       "prs": [],
@@ -1338,7 +1338,11 @@
       "star_velocity": 0.0,
       "star_anomaly": 0.0,
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        141,
+        142
+      ]
     },
     "wecode-ai/Wegent": {
       "discovered": "2026-04-18T22:52:00Z",
