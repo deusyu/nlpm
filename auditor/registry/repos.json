@@ -325,10 +325,17 @@
       "security": "CLEAR"
     },
     "ccplugins/awesome-claude-code-plugins": {
-      "status": "audited",
+      "status": "contributed",
       "score": 78,
       "strategy": "progressive",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        193,
+        194,
+        195,
+        196,
+        197
+      ]
     },
     "czlonkowski/n8n-skills": {
       "status": "audited",
