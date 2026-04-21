@@ -331,10 +331,11 @@
       "security": "CLEAR"
     },
     "czlonkowski/n8n-skills": {
-      "status": "audited",
+      "status": "contributed",
       "score": 93,
       "strategy": "single",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": []
     },
     "coreyhaines31/marketingskills": {
       "status": "contributed",
