@@ -211,10 +211,15 @@
       ]
     },
     "agent-sh/agentsys": {
-      "status": "audited",
+      "status": "contributed",
       "score": 91,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        333,
+        334,
+        335
+      ]
     },
     "OthmanAdi/planning-with-files": {
       "status": "audited",
