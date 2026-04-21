@@ -309,10 +309,14 @@
       "security": "CLEAR"
     },
     "Orchestra-Research/AI-Research-SKILLs": {
-      "status": "audited",
+      "status": "contributed",
       "score": 89,
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        52,
+        53
+      ]
     },
     "ChrisWiles/claude-code-showcase": {
       "status": "audited",
