@@ -312,10 +312,15 @@
       "security": "CLEAR"
     },
     "IvanMurzak/Unity-MCP": {
-      "status": "audited",
+      "status": "contributed",
       "score": 82,
       "strategy": "progressive",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        671,
+        672,
+        673
+      ]
     },
     "Jeffallan/claude-skills": {
       "status": "contributed",
