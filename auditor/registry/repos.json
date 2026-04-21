@@ -217,10 +217,15 @@
       "security": "CLEAR"
     },
     "OthmanAdi/planning-with-files": {
-      "status": "audited",
+      "status": "contributed",
       "score": 91,
       "strategy": "batched",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        137,
+        138,
+        139
+      ]
     },
     "alirezarezvani/claude-skills": {
       "status": "audited",
