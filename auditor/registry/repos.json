@@ -1056,12 +1056,19 @@
       "stars": 590,
       "artifacts": 97,
       "description": "My personal Claude Code and OpenAI Codex setup with battle-tested skills, plugins, hooks and agents that I use daily.",
-      "status": "audited",
+      "status": "contributed",
       "score": 79,
       "audit_issue": 62,
       "prs": [],
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        166,
+        167,
+        168,
+        169,
+        170
+      ]
     },
     "gmickel/flow-next": {
       "discovered": "2026-04-13T06:41:48Z",
