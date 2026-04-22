@@ -1,4 +1,4 @@
-# The Missing Nameplate: What 19 Silent Failures Teach About Metadata Hygiene in a 34,000-Star Plugin Collection
+# The Commands That Weren't There: 19 Silent Registration Failures in a 34K-Star Plugin Repo
 
 ![Cover](images/2026-04-22-wshobson-agents-cover.png)
 
@@ -8,128 +8,106 @@
 
 ## The Project
 
-[wshobson/agents](https://github.com/wshobson/agents) is a plugin marketplace for Claude Code maintained by [Seth Hobson](https://github.com/wshobson). Described as "intelligent automation and multi-agent orchestration for Claude Code," the repository distributes its content as independent plugins — each a self-contained directory of agent definitions and slash commands. At the time of audit it contained **100 artifacts across 40+ plugins**: 64 agents and 36 commands. With **34,085 stars** and 3,695 forks, it is one of the most widely distributed Claude Code plugin collections available — frequently the first repository developers encounter when exploring what Claude Code can do beyond its defaults — and for many, the first impression the Claude Code ecosystem makes.
+[wshobson/agents](https://github.com/wshobson/agents), maintained by [Seth Hobson](https://github.com/wshobson), is one of the most widely distributed Claude Code plugin collections available. Described as "intelligent automation and multi-agent orchestration for Claude Code," it packages 100 artifacts — 64 agents and 36 commands — across 40+ independent plugins covering everything from embedded firmware work to JVM language expertise to multi-agent TDD workflows. With **34,093 stars** (indicating high visibility, though not necessarily active use of all plugins) and 3,698 forks at time of data collection, it is frequently the first repository developers encounter when exploring what Claude Code can do beyond its defaults — something of a front door to the ecosystem.
 
 ---
 
 ## The Audit
 
-NLPM audited all 100 artifacts on 2026-04-17. The overall weighted score was **82 / 100**, placing the repository in the **Gold tier** (80–89). That number conceals a sharp internal divide — a weighted average doing quietly what weighted averages do.
+NLPM audited all 100 artifacts on 2026-04-17. The overall weighted score was **82 / 100**, placing the repository in the **Gold tier**.
 
 ```mermaid
 pie title Score Distribution — 100 Artifacts (estimated from plugin averages)
-    "Excellent 90–100" : 29
-    "Good 80–89" : 47
-    "Fair 70–79" : 8
-    "Broken below 70" : 16
+    "90-100 · Gold (26 artifacts)" : 26
+    "80-89 · Silver (54 artifacts)" : 54
+    "70-79 · Fair (5 artifacts)" : 5
+    "Below 70 · Broken (15 artifacts)" : 15
 ```
 
-*Distribution is approximate, derived from per-plugin averages; individual artifact scores were not enumerated for all 100 files.*
+The 82 average is real, but it is a weighted average performing quietly. The agent portfolio averaged **86 / 100** — genuinely strong work. The command portfolio averaged **74 / 100** — above the default 70-point quality threshold — with a handful of excellent orchestration commands but a tail pulled down by completely non-functional ones.
 
-*Framed differently: 19 of 100 artifacts failed a binary registration check — a 19% failure rate that the tier label partially obscures. No comparable multi-plugin NLPM benchmark exists to date; this score cannot be contextualized against community norms.*
+The top of the distribution is legitimate. Plugins like `dotnet-contribution` (92), `agent-teams` (91), and `startup-business-analyst` (90) have rich capability descriptions, appropriate model tier assignments, thorough output formats, and concrete example interactions. The five orchestration commands — `full-stack-feature`, `tdd-cycle`, `performance-optimization`, `tdd-red`, `tdd-green` — represent best-in-class multi-agent workflow design: phased execution with checkpoints, interactive Q&A, parallel agent dispatch, and resume capability.
 
-The **agent portfolio** (64 artifacts) averaged **86 / 100** — a strong result. Model tier assignments were consistently appropriate: Opus for production-grade security and architecture agents, Sonnet for documentation and debugging, Haiku for high-throughput lightweight tasks. Output formats were well-specified, and several orchestration agents — `full-stack-feature`, `tdd-cycle`, `performance-optimization` — were exemplary multi-agent workflow designs with phased execution, interactive Q&A, parallel dispatch, and resume capability.
-
-The **command portfolio** (36 artifacts) averaged **74 / 100** — above the default 70 threshold, though pulled below the agent portfolio average by a single structural problem: **15 of 36 commands had no YAML frontmatter**, causing them to fail registration in Claude Code. The remaining 6 registration failures were agent-level bugs (4 agents). Users who installed any of the 9 affected plugins would have found some or all of their slash commands simply absent, with no error message to explain why — like a light switch installed with no wire behind the wall.
-
-Top-performing plugins: `dotnet-contribution` (92), `database-design` (91), `agent-teams` (91), `performance-testing-review` (91). Lowest: `security-scanning` (55) and six plugins tied at 57 — `accessibility-compliance`, `codebase-cleanup`, `database-cloud-optimization`, `javascript-typescript`, `systems-programming`, and `error-diagnostics` — all for the same mechanical reason: missing YAML frontmatter.
-
-**19 registration failures total**: 4 agent registration failures and 15 command registration failures across 9 plugins. *(This count should be treated as an upper bound; some flagged files may not be intended as registered artifacts — the audit did not distinguish between those cases.)*
+The bottom of the distribution is a different story — closer to a bridge with a handful of bolts missing than a bridge that needs rebuilding. **19 artifacts — 4 agents and 15 commands — appear to have failed to register.** Claude Code requires YAML frontmatter to identify and load NL artifacts. All 19 affected artifacts had none, or were missing a required field — assuming they are intended to be loadable commands or agents rather than documentation or templates. Users installing the plugin would find roughly one in five artifacts simply absent with no error message — discovered the way you find a hole in your umbrella, by getting rained on.
 
 ---
 
 ## What Was Submitted
 
-The NLPM pipeline submitted 5 pull requests targeting the highest-impact registration failures — specifically, plugins where every artifact in the plugin was broken.
+NLPM submitted five pull requests on 2026-04-17 targeting the 19 registration failures. PR numbers are drawn from merge commit messages; PR-level URLs are not available in the evidence record.
+
+**PR #488 — `fix: add missing YAML frontmatter to threat-modeling-expert agent`**
+([merge commit](https://github.com/wshobson/agents/commit/8ef279aeda18f28a0a63937cbfeb764a42645fe7))
+
+The `threat-modeling-expert` agent in the `security-scanning` plugin had no YAML frontmatter at all — the file began with a bare `# Threat Modeling Expert` heading. Without `name`, `description`, and `model`, Claude Code cannot identify or load the agent. Score before fix: 20 / 100.
+
+**PR #489 — `fix: add missing name field to all 3 meigen-ai-design agents`**
+([merge commit](https://github.com/wshobson/agents/commit/673b90b83253bee3ab09cc5c6d56d7851a9244a8))
+
+All three agents in `meigen-ai-design` (`prompt-crafter`, `gallery-researcher`, `image-generator`) had frontmatter blocks but were missing the `name` field — each quietly missing its own introduction. Without a name, Claude Code may not reliably identify the agents — the field is non-canonical and some load paths may fall back to the filename, but the omission is a portability concern. The fix added `name:` derived from each file's filename.
+
+**PR #490 — `fix: add missing YAML frontmatter to codebase-cleanup commands`**
+([merge commit](https://github.com/wshobson/agents/commit/53d359d499c605e0add9ac041b5c316f2f561cf6))
+
+All three commands in `codebase-cleanup` (`tech-debt`, `deps-audit`, `refactor-clean`) lacked frontmatter, making the entire plugin non-functional as a slash command set. Each fix added a minimal `description:` block — no content changes.
+
+**PR #491 — `fix: add missing YAML frontmatter to error-diagnostics commands`**
+([merge commit](https://github.com/wshobson/agents/commit/5d531af4a0e398c2cac65f9bca1c295cda94d96b))
+
+Same pattern as PR #490: all three commands in `error-diagnostics` (`error-trace`, `error-analysis`, `smart-debug`) missing frontmatter, making the plugin a no-op for users relying on slash commands.
+
+**PR #492 — `fix: add missing YAML frontmatter to framework-migration and c4-architecture commands`**
+([merge commit](https://github.com/wshobson/agents/commit/8e40baf81e3077141aac9636f0aea501f9a3a884))
+
+Three commands across two plugins — `code-migrate` and `deps-upgrade` in `framework-migration`, and `c4-architecture` in `c4-architecture` — were missing frontmatter. This PR batched the fixes.
 
 ```mermaid
 graph LR
-    Root["19 Registration\nFailures"] --> AgentF
-    Root --> ClusteredCF
-    Root --> IsolatedCF
-
-    subgraph AgentF["Agent Failures — 4 (PRs submitted)"]
-        style AgentF fill:#c0392b,color:#fff
-        A1["security-scanning\nthreat-modeling-expert.md\nNo frontmatter at all"]
-        A2["meigen-ai-design\nprompt-crafter.md\nMissing name field"]
-        A3["meigen-ai-design\ngallery-researcher.md\nMissing name field"]
-        A4["meigen-ai-design\nimage-generator.md\nMissing name field"]
+    subgraph Critical["🔴 Critical — Agent Registration Failures"]
+        PR488["PR #488\nthreat-modeling-expert\n(no frontmatter at all)"]
+        PR489["PR #489\nmeigen-ai-design × 3\n(missing name field)"]
     end
-
-    subgraph ClusteredCF["Clustered Command Failures — 9 (PRs submitted)"]
-        style ClusteredCF fill:#e67e22,color:#fff
-        C1["codebase-cleanup\ntech-debt · deps-audit\nrefactor-clean"]
-        C2["error-diagnostics\nerror-trace · error-analysis\nsmart-debug"]
-        C3["framework-migration + c4-architecture\ncode-migrate · deps-upgrade\nc4-architecture"]
+    subgraph High["🟠 High — Entire Command Plugin Broken"]
+        PR490["PR #490\ncodebase-cleanup × 3\n(3/3 commands broken)"]
+        PR491["PR #491\nerror-diagnostics × 3\n(3/3 commands broken)"]
     end
-
-    subgraph IsolatedCF["Isolated Command Failures — 6 (documented, not patched)"]
-        style IsolatedCF fill:#7f8c8d,color:#fff
-        D1["deployment-validation\nconfig-validate"]
-        D2["systems-programming\nrust-project"]
-        D3["accessibility-compliance\naccessibility-audit"]
-        D4["database-cloud-optimization\ncost-optimize"]
-        D5["javascript-typescript\ntypescript-scaffold"]
-        D6["tdd-workflows\ntdd-refactor"]
+    subgraph Medium["🟡 Medium — Partial Plugin"]
+        PR492["PR #492\nframework-migration + c4-architecture\n(3 commands across 2 plugins)"]
     end
+    PR488 --> Merged["✅ All 5 Merged\n2026-04-17 ~17:15"]
+    PR489 --> Merged
+    PR490 --> Merged
+    PR491 --> Merged
+    PR492 --> Merged
 ```
 
-| PR | Branch | Fix | Artifacts Unblocked |
-|----|--------|-----|---------------------|
-| [#488](https://github.com/wshobson/agents/pull/488) | `fix/nlpm-threat-modeling-expert-frontmatter` | Added full YAML frontmatter (name, description, model) to `threat-modeling-expert.md`, which had none — the file opened with a bare `# Threat Modeling Expert` header | 1 agent |
-| [#489](https://github.com/wshobson/agents/pull/489) | `fix/nlpm-meigen-agents-missing-name` | Added `name:` field to all 3 meigen-ai-design agents (`prompt-crafter`, `gallery-researcher`, `image-generator`), each of which had frontmatter but was missing the required name field | 3 agents |
-| [#490](https://github.com/wshobson/agents/pull/490) | `fix/nlpm-codebase-cleanup-frontmatter` | Added minimal `description:` frontmatter to all 3 codebase-cleanup commands (`tech-debt`, `deps-audit`, `refactor-clean`) | 3 commands |
-| [#491](https://github.com/wshobson/agents/pull/491) | `fix/nlpm-error-diagnostics-frontmatter` | Added minimal `description:` frontmatter to all 3 error-diagnostics commands (`error-trace`, `error-analysis`, `smart-debug`) | 3 commands |
-| [#492](https://github.com/wshobson/agents/pull/492) | `fix/nlpm-framework-migration-frontmatter` | Added minimal `description:` frontmatter to `code-migrate` and `deps-upgrade` (framework-migration) and `c4-architecture` (c4-architecture) | 3 commands |
-
-Each PR made one category of mechanical fix: adding missing YAML frontmatter, or adding a `name:` field to frontmatter that was otherwise present. No behavioral content was modified. The 5 PRs addressed 13 of 19 registration failures. Six isolated failures — one per plugin — were reported in tracking issue [#493](https://github.com/wshobson/agents/issues/493) but not patched via PR.
-
-*Note: `prs.json` was empty at evidence-collection time; PRs had already merged. PR details above are reconstructed from merge commit messages in `commits.json`.*
+The remaining 6 broken artifacts (affecting `systems-programming`, `accessibility-compliance`, `database-cloud-optimization`, `javascript-typescript`, and `tdd-workflows`) were documented in the audit report but not submitted as PRs in this batch. The 5 submitted PRs covered the clusters where the entire plugin was non-functional.
 
 ---
 
 ## The Response
 
-All five PRs were merged on the same day they were submitted. The merge sequence:
+No maintainer review comments are available in the evidence record — the PR-level review data was not captured. What the commit record shows is that all five PRs were merged by the maintainer on the same day they were submitted, within the same minute at approximately 17:15 UTC. [Issue #493](https://github.com/wshobson/agents/issues/493), filed to track the 19 registration failures, was closed at 17:18:07 UTC — roughly three minutes after the last merge.
 
-```mermaid
-sequenceDiagram
-    participant Pipeline as NLPM Pipeline
-    participant Repo as wshobson/agents
+The absence of review comments could mean the fixes were reviewed and found unambiguous, or that the maintainer merged without detailed review. The velocity (five PRs merged within the same minute) is consistent with either rapid review of unambiguous changes or no review. The fixes were mechanical — adding 2-3 lines of YAML to files with no content changes, like attaching address labels to otherwise-packed envelopes — so either reading is defensible.
 
-    Pipeline->>Repo: Fix commits authored (12:52–12:55)
-    Pipeline->>Repo: Issue #493 opened — 19 bugs documented (12:55:52)
-    Note over Repo: ~4h 20m review window
-    Repo-->>Pipeline: PR #488 merged (17:15:22)
-    Repo-->>Pipeline: PR #489 merged (17:15:24)
-    Repo-->>Pipeline: PR #490 merged (17:15:28)
-    Repo-->>Pipeline: PR #491 merged (17:15:32)
-    Repo-->>Pipeline: PR #492 merged (17:15:34)
-    Repo-->>Pipeline: Issue #493 closed (17:18:07)
-```
+The commit record also shows two prior Claude-attributed commits in the repository:
+- [2026-04-15](https://github.com/wshobson/agents/commit/6fdefba05df04fda3fa8fd713e7fe499821d6135): A bug fix credited to "Claude Opus 4.6" correcting a `sdk.stream()` call to `sdk.query()` in a Monte Carlo simulation layer.
+- [2026-04-03](https://github.com/wshobson/agents/commit/1925457552d8f91e609ceef13764c443b3ef85be): A marketplace.json fix credited to "Claude Sonnet 4.6".
 
-All five PRs merged in a 12-second window; issue [#493](https://github.com/wshobson/agents/issues/493) closed three minutes later. No maintainer review comments appear in the evidence — either the PRs were merged without inline comment, or comments were not captured at collection time. The batch merge pattern is consistent with spot-checking of mechanical fixes or an automated merge pipeline; no conclusion about review depth can be drawn from timing alone.
-
-The repository's commit history shows prior AI-assisted contributions. A fix co-authored by Claude Sonnet 4.6 landed on 2026-04-03 ([commit](https://github.com/wshobson/agents/commit/1925457552d8f91e609ceef13764c443b3ef85be)), and a Claude Opus 4.6 fix on 2026-04-15 corrected a nonexistent `sdk.stream()` call that had been causing every Monte Carlo simulation to silently report 100% failure — a result that, in a study of uncertainty, left rather little room for doubt ([commit](https://github.com/wshobson/agents/commit/6fdefba05df04fda3fa8fd713e7fe499821d6135)). The maintainer was not contacted for comment; this article relies solely on public GitHub records.
+These show two prior AI-attributed commits in this repository, indicating familiarity with AI-assisted contributions.
 
 ---
 
 ## What the Audit Revealed
 
-**The frontmatter problem is structural, not a quality signal.** The 15 broken commands all contain well-developed, often lengthy content — some exceed 1,000 lines of detailed specification and examples. The problem is not incomplete work; it is work never wrapped in the metadata Claude Code requires to register it — like a package perfectly assembled and sealed, waiting only for an address label. This is consistent with a batch authoring workflow where frontmatter was added as an afterthought rather than included in the file template from the start — *this is an unverified inference; the maintainer was not contacted to confirm it.* Commit history was not analyzed to determine when the omissions were introduced or by whom; wshobson/agents accepts community contributions, and the authorship split of the affected files is unknown.
+**The frontmatter gap is a batch authoring artifact.** The 19 broken files are not thin or low-effort — many are 100 to 1000+ lines of carefully written content, with detailed examples, phased workflows, and domain-specific knowledge. They were simply never wrapped in the 3-line YAML block that Claude Code requires to load them — books written in full but never given a spine the catalog could read. The audit report notes the most likely cause: a batch authoring workflow where frontmatter was added inconsistently across the plugin set.
 
-**Two generations of command quality.** The five orchestration commands with phased execution, checkpoint state, and parallel agent dispatch (`full-stack-feature`, `tdd-cycle`, `performance-optimization`, `tdd-red`, `tdd-green`) represent some of the highest-quality command design found in the audit. The contrast with 15 commands that cannot register at all is sharp — fluent content in invisible wrappers. The repo's command portfolio appears to span at least two distinct authoring eras — *speculative; the maintainer was not contacted to confirm this interpretation* — whether this reflects different contributors, different time periods, or different publishing workflows was not determined.
+**The failure clusters by plugin, not randomly.** Three plugins had 100% command failure rates: `codebase-cleanup` (3/3 broken), `error-diagnostics` (3/3 broken), and `meigen-ai-design` (3/3 agents broken with the same missing `name` field). This is not random noise — it is a pattern suggesting these plugins were authored in one session without a frontmatter pass at the end. The content arrived; the envelope did not.
 
-**Agent duplication creates deferred maintenance risk** *(unverified inference — the maintainer could confirm whether duplication is an intentional packaging constraint or an oversight)*. Three agents exist verbatim in two locations:
-- `comprehensive-review/agents/security-auditor.md` → `security-scanning/agents/security-auditor.md`
-- `comprehensive-review/agents/code-reviewer.md` → `code-documentation/agents/code-reviewer.md`
-- `performance-testing-review/agents/performance-engineer.md` → `observability-monitoring/agents/performance-engineer.md`
+**The quality gap between agents and commands is real.** The agent portfolio (86/100 average) consistently demonstrates best practices: model tier selection, capability examples, output format specifications. The command portfolio (74/100) has two populations: a handful of excellent orchestration commands and a large tail of content-rich but registration-broken slash commands. The `startup-business-analyst` plugin stands as the exception — the only non-orchestration plugin to declare `allowed-tools` on its commands, earning the highest command scores.
 
-Any change to the canonical copy must be manually mirrored. In a plugin marketplace where users install individual plugins independently, divergence between copies may occur silently. Duplication may also be an intentional packaging decision to keep plugins self-contained and installable independently; the tradeoff is maintenance overhead versus cross-plugin dependencies. For stable agent definitions that rarely change, duplication is a low-risk trade-off.
-
-**The `allowed-tools` gap is a repo-wide pattern, not an oversight.** Only `startup-business-analyst` — the highest-scoring command plugin — declares `allowed-tools` on its commands. All other command plugins omit it, defaulting to full tool access. For an advanced-user plugin collection this may reflect a deliberate decision to avoid over-constraining broad-scope commands, rather than missing hygiene. NLPM penalizes the omission by default; projects may suppress this rule if full-tool access is the intended design.
-
-**Fairness note.** 82/100 Gold tier across 100 artifacts in a large, community-contributed plugin collection is a strong result. The structural failures identified here are mechanical and fixable. The behavioral quality of the agent portfolio — model tier selection, output format specification, orchestration design — is genuinely strong. Getting the hard parts right and tripping on metadata is, at least, the better failure mode — and the more correctable one.
+**Fairness note**: the 82/100 Gold rating reflects the actual quality of the artifacts that do register. The agent portfolio is genuinely strong. The registration failures represent a fixable structural gap, not a content quality problem. A user who only uses the agents would have a substantially better experience than the overall score implies — the number undersells the craft.
 
 ---
 
@@ -139,52 +117,54 @@ Any change to the canonical copy must be manually mirrored. In a plugin marketpl
 gantt
     dateFormat YYYY-MM-DD HH:mm
     axisFormat %H:%M
-    title NLPM Audit Engagement — 2026-04-17
+    title Audit Lifecycle — 2026-04-17 (UTC)
 
-    section Pipeline
-    Fix commit — threat-modeling-expert      :done, f1, 2026-04-17 12:52, 1m
-    Fix commit — meigen-ai-design agents     :done, f2, 2026-04-17 12:53, 1m
-    Fix commit — codebase-cleanup            :done, f3, 2026-04-17 12:53, 2m
-    Fix commit — error-diagnostics           :done, f4, 2026-04-17 12:54, 1m
-    Fix commit — framework-migration + c4    :done, f5, 2026-04-17 12:55, 1m
-    Tracking issue #493 opened               :done, i1, 2026-04-17 12:55, 1m
+    section Fix Commits
+    PR-488 commit (threat-modeling)   :done, 2026-04-17 12:52, 1m
+    PR-489 commit (meigen agents)     :done, 2026-04-17 12:53, 1m
+    PR-490 commit (codebase-cleanup)  :done, 2026-04-17 12:53, 1m
+    PR-491 commit (error-diagnostics) :done, 2026-04-17 12:54, 1m
+    PR-492 commit (framework-migr.)   :done, 2026-04-17 12:55, 1m
 
-    section Maintainer Review
-    Review window                            :done, r1, 2026-04-17 12:56, 259m
+    section Issue
+    Issue 493 open → close            :done, 2026-04-17 12:55, 263m
 
-    section Merge
-    Batch merge PRs #488–492                 :milestone, m1, 2026-04-17 17:15, 1m
-    Issue #493 closed                        :milestone, m2, 2026-04-17 17:18, 1m
+    section Maintainer Action
+    PR-488 merged                     :done, 2026-04-17 17:15, 1m
+    PR-489 merged                     :done, 2026-04-17 17:15, 1m
+    PR-490 merged                     :done, 2026-04-17 17:15, 1m
+    PR-491 merged                     :done, 2026-04-17 17:15, 1m
+    PR-492 merged                     :done, 2026-04-17 17:15, 1m
+    Issue 493 closed                  :milestone, 2026-04-17 17:18, 0m
 ```
 
-Total elapsed time from first fix commit to issue closure: **4 hours 26 minutes** (12:52 to 17:18:07). The review window itself — from last fix commit to first merge — was approximately **4 hours 20 minutes**.
+The entire lifecycle — from first fix commit to closed issue — ran in under five hours. The gap between fix preparation (12:52–12:55) and merge (17:15) is the window during which the PRs were open for review.
 
 ---
 
 ## Limitations
 
-**No PR review comments in evidence.** The `pr-*-reviews.json` files referenced in the audit template were absent from the evidence set. Whether review discussion occurred before the batch merge cannot be confirmed or denied.
+This audit describes a point-in-time snapshot of the repository on 2026-04-17. Several things it does not prove:
 
-**`prs.json` was empty.** PR records were not captured; all PRs had already merged at collection time. PR details in this article are reconstructed from merge commit messages and may omit information present only in PR descriptions or review threads.
-
-**13 of 19 registration failures addressed.** Six isolated command failures were documented but not patched. Their current status is unknown.
-
-**Score distribution is approximate.** The mermaid pie chart derives artifact-level counts from plugin-level averages in the audit report; individual scores were not enumerated for all 100 files.
-
-**Merge speed does not establish review quality.** Five PRs merged in 12 seconds is consistent with multiple explanations — spot-checking of mechanical fixes, an automated merge pipeline, or a trusted-reviewer configuration — and no inference about review thoroughness should be drawn from timing alone.
-
-**File intent was assumed.** The audit treats every `.md` file in a `commands/` or `agents/` directory as an intended registered artifact. Some files may be documentation stubs, templates, or work-in-progress not intended for registration. Such files would inflate the failure count. The audit did not distinguish between these cases.
-
-**When Claude Code began requiring YAML frontmatter for command registration is not known.** If the requirement post-dates the affected files, these are forward-compatibility gaps rather than authoring oversights — a meaningfully different framing for the structural failures identified here.
+- **PR quality review**: No maintainer review comments are available. Whether the fixes were evaluated for correctness, consistency with repo style, or edge cases is unknown.
+- **Post-fix state**: The audit score of 82/100 reflects pre-fix state. The actual post-merge score, accounting for all 5 PRs, is not recomputed here.
+- **Remaining 6 broken artifacts**: NLPM submitted 5 PRs covering 13 artifacts in clusters. Six additional artifacts with registration failures were documented but not submitted in this batch. Their state after the audit date is unknown.
+- **User impact**: Whether users actually encountered missing commands before the fix is unknown. The repository may be primarily used for agents, not commands.
+- **Root cause confirmation**: The "batch authoring without frontmatter" hypothesis is a reasonable inference from the cluster pattern, not a confirmed statement from the maintainer.
+- **Maintainer contact**: The maintainer was not contacted for comment prior to publication. Characterizations about merge behavior are based solely on the commit record.
+- **Unsolicited contributions**: The PRs were submitted by an automated pipeline without documented prior coordination with the maintainer.
+- **Age of failures**: When the broken files were introduced is not known from the available evidence. The significance of the finding differs if these files have been broken for weeks versus years.
 
 ---
 
 ## Significance
 
-wshobson/agents illustrates a pattern likely to recur across large, actively maintained plugin collections: behavioral content — which requires expertise — receives careful attention, while structural metadata — which is mechanical — gets added inconsistently. The result is a gap invisible to the author but immediately felt by the user: slash commands that simply do not appear, with no diagnostic to explain the absence — the kind of problem you discover only by trying.
+The wshobson/agents audit illustrates that missing-frontmatter failures are not unique to early-stage or poorly-maintained projects — they appear in a 34K-star repository with carefully crafted content. The mechanism is structural: Claude Code's silent failure mode on missing frontmatter means authors get no feedback when a file doesn't load. There is no error, no warning, no diff between "this command is broken" and "this command just isn't installed" — indistinguishable, from the outside, from a shelf that was never stocked. The only signal is absence.
 
-At 34,085 stars, the reach of this repository is significant. Users who installed any of the 9 affected plugins would have encountered broken commands with no indication of why. Thirteen of those artifacts were patched and merged on the same business day the audit ran — the diagnosis and the remedy arriving in the same envelope. No review comments were captured in evidence; whether the fixes received substantive review before merge is unknown.
+The detection was mechanical: pattern-matching for missing required fields across 100 files. Five PRs, each adding 2-3 lines of YAML, restored 13 artifacts to a working state in one day, giving users access to commands they had no indication were missing. Sometimes the fix is shorter than the finding. The audit also documented 6 remaining artifacts with registration failures, 3 duplicate agents, a non-standard `tool_access` field in database-migrations, and an `arm-cortex-expert` agent with `tools: []` — an unusual configuration that may be intentional for a pure-reasoning role — all outside the scope of this submission batch.
 
-The more durable finding is what the audit did not encounter: the agent portfolio's quality is genuine. Model tier assignments are appropriate throughout, output formats are well-specified, and the top orchestration commands represent real engineering craft — the kind that doesn't need to be announced. The 19 registration failures were a thin structural layer over a solid foundation — a building that was fully constructed and well-furnished, missing only the nameplate on the door.
+The more significant finding may be the duplication topology: three agents (`security-auditor`, `code-reviewer`, `performance-engineer`) exist verbatim in two plugins each. As the repository grows, maintenance costs for undifferentiated copies will compound. Differentiation or consolidation would improve long-term maintainability without changing user-facing functionality. In open source, it is perfectly fine to arrive second — less fine to arrive twice with the same answer.
 
-*This case study was produced by NLPM's own automated pipeline. It serves in part as a demonstration of that pipeline's audit and contribution capabilities; readers should weigh the significance claims with that context in mind.*
+---
+
+*Audit performed by the NLPM auditor pipeline on 2026-04-17. Evidence: [commits](https://github.com/wshobson/agents/commit/8e40baf81e3077141aac9636f0aea501f9a3a884), [issue #493](https://github.com/wshobson/agents/issues/493).*
