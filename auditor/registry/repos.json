@@ -33,23 +33,27 @@
           "mergedAt": null,
           "number": 1255,
           "state": "CLOSED",
-          "title": "fix: add missing YAML frontmatter to skill-creator agents (grader, analyzer, comparator)"
+          "title": "fix: add missing YAML frontmatter to skill-creator agents (grader, analyzer, comparator)",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-06T13:07:18Z",
           "mergedAt": null,
           "number": 1256,
           "state": "CLOSED",
-          "title": "fix: replace invalid color 'pink' with 'cyan' in type-design-analyzer agent"
+          "title": "fix: replace invalid color 'pink' with 'cyan' in type-design-analyzer agent",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-06T13:08:16Z",
           "mergedAt": null,
           "number": 1257,
           "state": "CLOSED",
-          "title": "fix: use --frozen-lockfile in MCP server start scripts to prevent silent dependency upgrades"
+          "title": "fix: use --frozen-lockfile in MCP server start scripts to prevent silent dependency upgrades",
+          "outcome": "rejected"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "trailofbits/skills": {
       "status": "audited",
@@ -71,10 +75,12 @@
           "mergedAt": "2026-04-11T01:23:12Z",
           "number": 19,
           "state": "MERGED",
-          "title": "fix: add skills array to plugin.json for explicit skill registration"
+          "title": "fix: add skills array to plugin.json for explicit skill registration",
+          "outcome": "merged"
         }
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "rule_adopted": false
     },
     "thedotmack/claude-mem": {
       "status": "audited",
@@ -99,30 +105,35 @@
           "mergedAt": null,
           "number": 90,
           "state": "CLOSED",
-          "title": "fix: add missing version field to MCP plugin.json"
+          "title": "fix: add missing version field to MCP plugin.json",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-20T12:09:44Z",
           "mergedAt": null,
           "number": 91,
           "state": "CLOSED",
-          "title": "fix(security): make Chromium --no-sandbox conditional on env var"
+          "title": "fix(security): make Chromium --no-sandbox conditional on env var",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-20T12:09:32Z",
           "mergedAt": null,
           "number": 92,
           "state": "CLOSED",
-          "title": "docs(security): warn against building inline exec strings from untrusted input"
+          "title": "docs(security): warn against building inline exec strings from untrusted input",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-20T12:09:40Z",
           "mergedAt": null,
           "number": 93,
           "state": "CLOSED",
-          "title": "fix(security): allow VERCEL_DEPLOY_ENDPOINT to override hard-coded deploy server URL"
+          "title": "fix(security): allow VERCEL_DEPLOY_ENDPOINT to override hard-coded deploy server URL",
+          "outcome": "rejected"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "openai/codex-plugin-cc": {
       "status": "tracked",
@@ -139,17 +150,20 @@
           "mergedAt": "2026-04-08T21:48:50Z",
           "number": 168,
           "state": "MERGED",
-          "title": "fix: quote $ARGUMENTS in cancel, result, and status commands"
+          "title": "fix: quote $ARGUMENTS in cancel, result, and status commands",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-08T21:28:45Z",
           "mergedAt": "2026-04-08T21:28:45Z",
           "number": 169,
           "state": "MERGED",
-          "title": "fix: declare model in codex-rescue agent frontmatter"
+          "title": "fix: declare model in codex-rescue agent frontmatter",
+          "outcome": "merged"
         }
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "rule_adopted": false
     },
     "deanpeters/Product-Manager-Skills": {
       "status": "contributed",
@@ -166,16 +180,19 @@
           "mergedAt": null,
           "number": 7,
           "state": "OPEN",
-          "title": "security: add input length guard to run-pm.sh"
+          "title": "security: add input length guard to run-pm.sh",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 8,
           "state": "OPEN",
-          "title": "security: validate adapter names before dynamic source in add-a-skill.sh"
+          "title": "security: validate adapter names before dynamic source in add-a-skill.sh",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "pbakaus/impeccable": {
       "status": "contributed",
@@ -199,16 +216,19 @@
           "mergedAt": null,
           "number": 92,
           "state": "OPEN",
-          "title": "security: replace new Function() eval with direct ESM import"
+          "title": "security: replace new Function() eval with direct ESM import",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 93,
           "state": "OPEN",
-          "title": "security: use JSON.stringify for selector escaping in devtools panel"
+          "title": "security: use JSON.stringify for selector escaping in devtools panel",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "agent-sh/agentsys": {
       "status": "contributed",
@@ -226,23 +246,27 @@
           "mergedAt": null,
           "number": 333,
           "state": "OPEN",
-          "title": "fix: replace hardcoded /Users/avifen path with ~/.agentsys in web-ctl skills"
+          "title": "fix: replace hardcoded /Users/avifen path with ~/.agentsys in web-ctl skills",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 334,
           "state": "OPEN",
-          "title": "fix: move prepare lifecycle hook to explicit setup-hooks script"
+          "title": "fix: move prepare lifecycle hook to explicit setup-hooks script",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 335,
           "state": "OPEN",
-          "title": "fix: pin js-yaml to exact version 4.1.1"
+          "title": "fix: pin js-yaml to exact version 4.1.1",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "OthmanAdi/planning-with-files": {
       "status": "tracked",
@@ -260,24 +284,28 @@
           "mergedAt": "2026-04-21T13:47:17Z",
           "number": 137,
           "state": "MERGED",
-          "title": "fix: correct PowerShell syntax in Pi session-catchup invocation"
+          "title": "fix: correct PowerShell syntax in Pi session-catchup invocation",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-21T13:47:31Z",
           "mergedAt": "2026-04-21T13:47:31Z",
           "number": 138,
           "state": "MERGED",
-          "title": "fix: cap session-catchup output before injecting into model context"
+          "title": "fix: cap session-catchup output before injecting into model context",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-21T13:47:35Z",
           "mergedAt": "2026-04-21T13:47:35Z",
           "number": 139,
           "state": "MERGED",
-          "title": "fix: prefer known system Python paths over PATH resolution in hook scripts"
+          "title": "fix: prefer known system Python paths over PATH resolution in hook scripts",
+          "outcome": "merged"
         }
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "rule_adopted": false
     },
     "alirezarezvani/claude-skills": {
       "status": "audited",
@@ -303,37 +331,43 @@
           "mergedAt": null,
           "number": 37,
           "state": "OPEN",
-          "title": "fix: add missing model declarations to 9 skill-source frontmatter files"
+          "title": "fix: add missing model declarations to 9 skill-source frontmatter files",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 38,
           "state": "OPEN",
-          "title": "fix: add missing allowed-tools declaration to knowledge-guide agent"
+          "title": "fix: add missing allowed-tools declaration to knowledge-guide agent",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 39,
           "state": "OPEN",
-          "title": "fix: validate KEY against allowlist in read_config.sh"
+          "title": "fix: validate KEY against allowlist in read_config.sh",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 40,
           "state": "OPEN",
-          "title": "fix: scope git add to vault directories in auto-commit.sh"
+          "title": "fix: scope git add to vault directories in auto-commit.sh",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 41,
           "state": "OPEN",
-          "title": "fix: require execute permission before running reconcile.sh"
+          "title": "fix: require execute permission before running reconcile.sh",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "affaan-m/everything-claude-code": {
       "status": "audited",
@@ -357,23 +391,27 @@
           "mergedAt": null,
           "number": 96,
           "state": "OPEN",
-          "title": "fix: expand ${PLUGIN_DIR} with double quotes in hook echo commands"
+          "title": "fix: expand ${PLUGIN_DIR} with double quotes in hook echo commands",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 97,
           "state": "OPEN",
-          "title": "fix: use printf instead of echo to pipe TOOL_INPUT into grep"
+          "title": "fix: use printf instead of echo to pipe TOOL_INPUT into grep",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 98,
           "state": "OPEN",
-          "title": "fix: log skipped invalid gitignore patterns to stderr"
+          "title": "fix: log skipped invalid gitignore patterns to stderr",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "Imbad0202/academic-research-skills": {
       "status": "tracked",
@@ -389,10 +427,12 @@
           "mergedAt": "2026-03-22T02:40:45Z",
           "number": 1,
           "state": "MERGED",
-          "title": "feat: SCR Loop Phase 1 — State-Challenge-Reflect mechanism"
+          "title": "feat: SCR Loop Phase 1 — State-Challenge-Reflect mechanism",
+          "outcome": "merged"
         }
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "rule_adopted": false
     },
     "IvanMurzak/Unity-MCP": {
       "status": "contributed",
@@ -410,23 +450,27 @@
           "mergedAt": null,
           "number": 671,
           "state": "OPEN",
-          "title": "fix(commands): add missing name frontmatter to all speckit commands"
+          "title": "fix(commands): add missing name frontmatter to all speckit commands",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 672,
           "state": "OPEN",
-          "title": "fix(security): replace Invoke-Expression with argument array in run-act-test.ps1"
+          "title": "fix(security): replace Invoke-Expression with argument array in run-act-test.ps1",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 673,
           "state": "OPEN",
-          "title": "fix(security): validate remote URL and escape commit messages in generate-release.ps1"
+          "title": "fix(security): validate remote URL and escape commit messages in generate-release.ps1",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "Jeffallan/claude-skills": {
       "status": "tracked",
@@ -446,38 +490,44 @@
           "mergedAt": "2026-04-21T14:24:22Z",
           "number": 182,
           "state": "MERGED",
-          "title": "Fix: add missing name field to retrospectives command frontmatter"
+          "title": "Fix: add missing name field to retrospectives command frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-21T14:24:33Z",
           "mergedAt": "2026-04-21T14:24:33Z",
           "number": 183,
           "state": "MERGED",
-          "title": "Fix: add missing name field to discovery command frontmatter"
+          "title": "Fix: add missing name field to discovery command frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-21T14:24:44Z",
           "mergedAt": "2026-04-21T14:24:44Z",
           "number": 184,
           "state": "MERGED",
-          "title": "Fix: add missing name field to planning command frontmatter"
+          "title": "Fix: add missing name field to planning command frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-21T14:24:57Z",
           "mergedAt": "2026-04-21T14:24:57Z",
           "number": 185,
           "state": "MERGED",
-          "title": "Fix: add missing name field to execution command frontmatter"
+          "title": "Fix: add missing name field to execution command frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-21T14:24:07Z",
           "mergedAt": "2026-04-21T14:24:07Z",
           "number": 186,
           "state": "MERGED",
-          "title": "Fix: add missing name field to common-ground command frontmatter"
+          "title": "Fix: add missing name field to common-ground command frontmatter",
+          "outcome": "merged"
         }
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "rule_adopted": false
     },
     "Orchestra-Research/AI-Research-SKILLs": {
       "status": "contributed",
@@ -494,16 +544,19 @@
           "mergedAt": null,
           "number": 52,
           "state": "OPEN",
-          "title": "fix: correct category skill counts and listings in CLAUDE.md"
+          "title": "fix: correct category skill counts and listings in CLAUDE.md",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 53,
           "state": "OPEN",
-          "title": "fix(security): pin npm dependency versions to exact ranges"
+          "title": "fix(security): pin npm dependency versions to exact ranges",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "ChrisWiles/claude-code-showcase": {
       "status": "contributed",
@@ -521,23 +574,27 @@
           "mergedAt": null,
           "number": 17,
           "state": "OPEN",
-          "title": "fix: add missing name frontmatter to 5 slash commands"
+          "title": "fix: add missing name frontmatter to 5 slash commands",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 18,
           "state": "OPEN",
-          "title": "fix: add complete frontmatter to onboard.md"
+          "title": "fix: add complete frontmatter to onboard.md",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 19,
           "state": "OPEN",
-          "title": "fix: quote $ARGUMENTS in shell invocations"
+          "title": "fix: quote $ARGUMENTS in shell invocations",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "CloudAI-X/claude-workflow-v2": {
       "status": "contributed",
@@ -554,16 +611,19 @@
           "mergedAt": null,
           "number": 15,
           "state": "OPEN",
-          "title": "fix: add allowed-tools declaration to parallel command files"
+          "title": "fix: add allowed-tools declaration to parallel command files",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 16,
           "state": "OPEN",
-          "title": "fix: remove broken AGENTS.md cross-references from skill files"
+          "title": "fix: remove broken AGENTS.md cross-references from skill files",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "ComposioHQ/awesome-claude-plugins": {
       "status": "contributed",
@@ -583,37 +643,43 @@
           "mergedAt": null,
           "number": 182,
           "state": "OPEN",
-          "title": "fix: add missing YAML frontmatter to ship reference docs"
+          "title": "fix: add missing YAML frontmatter to ship reference docs",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 183,
           "state": "OPEN",
-          "title": "fix: add missing YAML frontmatter to audit-project reference docs"
+          "title": "fix: add missing YAML frontmatter to audit-project reference docs",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 184,
           "state": "OPEN",
-          "title": "fix: add missing tools field to test-writer-fixer agent"
+          "title": "fix: add missing tools field to test-writer-fixer agent",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 185,
           "state": "OPEN",
-          "title": "fix: add missing allowed-tools to 5 commands that need tool access"
+          "title": "fix: add missing allowed-tools to 5 commands that need tool access",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 186,
           "state": "OPEN",
-          "title": "fix: move security hook debug log from /tmp to ~/.claude/ and gate behind env var"
+          "title": "fix: move security hook debug log from /tmp to ~/.claude/ and gate behind env var",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "EveryInc/compound-engineering-plugin": {
       "status": "tracked",
@@ -632,30 +698,35 @@
           "mergedAt": null,
           "number": 624,
           "state": "CLOSED",
-          "title": "fix: add missing YAML frontmatter to coding-tutor commands"
+          "title": "fix: add missing YAML frontmatter to coding-tutor commands",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-21T20:54:58Z",
           "mergedAt": null,
           "number": 625,
           "state": "CLOSED",
-          "title": "fix: replace broken relative path in learnings-researcher agent"
+          "title": "fix: replace broken relative path in learnings-researcher agent",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-21T21:03:55Z",
           "mergedAt": null,
           "number": 626,
           "state": "CLOSED",
-          "title": "fix: add platform requirement guard for CLAUDE_PLUGIN_ROOT in git-worktree skill"
+          "title": "fix: add platform requirement guard for CLAUDE_PLUGIN_ROOT in git-worktree skill",
+          "outcome": "rejected"
         },
         {
           "closedAt": "2026-04-21T21:02:40Z",
           "mergedAt": null,
           "number": 627,
           "state": "CLOSED",
-          "title": "fix: add platform requirement guard for CLAUDE_PLUGIN_ROOT in coding-tutor skill"
+          "title": "fix: add platform requirement guard for CLAUDE_PLUGIN_ROOT in coding-tutor skill",
+          "outcome": "rejected"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "Donchitos/Claude-Code-Game-Studios": {
       "status": "contributed",
@@ -663,7 +734,8 @@
       "strategy": "progressive",
       "security": "CLEAR",
       "pipeline_prs": [],
-      "prs": []
+      "prs": [],
+      "rule_adopted": false
     },
     "xiaolai/grill-for-claude": {
       "status": "contributed",
@@ -679,9 +751,11 @@
           "mergedAt": null,
           "number": 2,
           "state": "OPEN",
-          "title": "fix: pass paths as argv instead of interpolating into python inline strings"
+          "title": "fix: pass paths as argv instead of interpolating into python inline strings",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "xiaolai/codex-toolkit-for-claude": {
       "status": "contributed",
@@ -699,23 +773,27 @@
           "mergedAt": null,
           "number": 4,
           "state": "OPEN",
-          "title": "fix: pass MODELS_DETAIL via stdin to avoid Python triple-quote injection"
+          "title": "fix: pass MODELS_DETAIL via stdin to avoid Python triple-quote injection",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 5,
           "state": "OPEN",
-          "title": "fix: quote $ARGUMENTS in status.md bash subshell"
+          "title": "fix: quote $ARGUMENTS in status.md bash subshell",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 6,
           "state": "OPEN",
-          "title": "fix: store preflight cache in user-owned XDG_CACHE_HOME directory"
+          "title": "fix: store preflight cache in user-owned XDG_CACHE_HOME directory",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "AgriciDaniel/claude-seo": {
       "status": "contributed",
@@ -733,23 +811,27 @@
           "mergedAt": null,
           "number": 62,
           "state": "OPEN",
-          "title": "fix: sync extensions/dataforseo skill with core v1.9.0"
+          "title": "fix: sync extensions/dataforseo skill with core v1.9.0",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 63,
           "state": "OPEN",
-          "title": "fix: sync extensions/banana seo-image-gen skill with core v1.9.0"
+          "title": "fix: sync extensions/banana seo-image-gen skill with core v1.9.0",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 64,
           "state": "OPEN",
-          "title": "fix: pin MCP server package versions in extension install scripts"
+          "title": "fix: pin MCP server package versions in extension install scripts",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "ananddtyagi/cc-marketplace": {
       "status": "contributed",
@@ -769,37 +851,43 @@
           "mergedAt": null,
           "number": 44,
           "state": "OPEN",
-          "title": "fix(b2b-project-shipper): correct agent name to match plugin directory"
+          "title": "fix(b2b-project-shipper): correct agent name to match plugin directory",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 45,
           "state": "OPEN",
-          "title": "fix(accessibility-expert): replace placeholder description in plugin.json"
+          "title": "fix(accessibility-expert): replace placeholder description in plugin.json",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 46,
           "state": "OPEN",
-          "title": "fix(desktop-app-dev): reformat malformed single-line frontmatter to valid YAML"
+          "title": "fix(desktop-app-dev): reformat malformed single-line frontmatter to valid YAML",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 47,
           "state": "OPEN",
-          "title": "fix(growth-hacker): add missing YAML frontmatter"
+          "title": "fix(growth-hacker): add missing YAML frontmatter",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 48,
           "state": "OPEN",
-          "title": "fix(changelog-generator): add missing YAML frontmatter"
+          "title": "fix(changelog-generator): add missing YAML frontmatter",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "ccplugins/awesome-claude-code-plugins": {
       "status": "contributed",
@@ -819,37 +907,43 @@
           "mergedAt": null,
           "number": 193,
           "state": "OPEN",
-          "title": "fix: correct agent name mismatch in enterprise-integrator-architect"
+          "title": "fix: correct agent name mismatch in enterprise-integrator-architect",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 194,
           "state": "OPEN",
-          "title": "fix: correct agent name mismatch in ceo-quality-controller-agent"
+          "title": "fix: correct agent name mismatch in ceo-quality-controller-agent",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 195,
           "state": "OPEN",
-          "title": "fix: remove erroneous numeric prefix from problem-solver-specialist name"
+          "title": "fix: remove erroneous numeric prefix from problem-solver-specialist name",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 196,
           "state": "OPEN",
-          "title": "fix: add missing tools declarations to agent-sdk-verifier agents"
+          "title": "fix: add missing tools declarations to agent-sdk-verifier agents",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 197,
           "state": "OPEN",
-          "title": "fix: validate $ARGUMENTS path before shell interpolation in optimize command"
+          "title": "fix: validate $ARGUMENTS path before shell interpolation in optimize command",
+          "outcome": "open"
         }
-      ]
+      ],
+      "rule_adopted": false
     },
     "czlonkowski/n8n-skills": {
       "status": "contributed",
@@ -857,7 +951,8 @@
       "strategy": "single",
       "security": "CLEAR",
       "pipeline_prs": [],
-      "prs": []
+      "prs": [],
+      "rule_adopted": false
     },
     "coreyhaines31/marketingskills": {
       "status": "tracked",
@@ -873,10 +968,12 @@
           "mergedAt": "2026-04-21T19:01:13Z",
           "number": 247,
           "state": "MERGED",
-          "title": "fix: validate https:// scheme for hooks send webhook URL in zapier.js"
+          "title": "fix: validate https:// scheme for hooks send webhook URL in zapier.js",
+          "outcome": "merged"
         }
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "rule_adopted": false
     },
     "dontbesilent2025/dbskill": {
       "status": "audited",
@@ -922,14 +1019,16 @@
           "mergedAt": null,
           "number": 19,
           "state": "OPEN",
-          "title": "fix: remove --break-system-packages silent fallback in install.sh"
+          "title": "fix: remove --break-system-packages silent fallback in install.sh",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 20,
           "state": "OPEN",
-          "title": "fix: replace curl-pipe-sh guidance with plugin install command in install.sh"
+          "title": "fix: replace curl-pipe-sh guidance with plugin install command in install.sh",
+          "outcome": "open"
         }
       ],
       "strategy": "batched",
@@ -937,7 +1036,8 @@
       "pipeline_prs": [
         19,
         20
-      ]
+      ],
+      "rule_adopted": false
     },
     "JuliusBrussee/caveman": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -980,7 +1080,7 @@
       "stars": 38367,
       "artifacts": 24,
       "description": "A curated list of awesome skills, hooks, slash-commands, agent orchestrators, applications, and plugins for Claude Code by Anthropic",
-      "status": "complete",
+      "status": "tracked",
       "score": 89,
       "audit_issue": 64,
       "prs": [
@@ -989,35 +1089,40 @@
           "mergedAt": "2025-06-09T01:15:59Z",
           "number": 3,
           "state": "MERGED",
-          "title": "Add CC Usage tool to Additional Tooling"
+          "title": "Add CC Usage tool to Additional Tooling",
+          "outcome": "merged"
         },
         {
           "closedAt": "2025-06-10T13:18:25Z",
           "mergedAt": "2025-06-10T13:18:25Z",
           "number": 4,
           "state": "MERGED",
-          "title": "feat: Add ASCII-art logo"
+          "title": "feat: Add ASCII-art logo",
+          "outcome": "merged"
         },
         {
           "closedAt": "2025-06-15T19:02:59Z",
           "mergedAt": "2025-06-15T19:02:59Z",
           "number": 5,
           "state": "MERGED",
-          "title": "Adding wrapper tools that i found to be useful."
+          "title": "Adding wrapper tools that i found to be useful.",
+          "outcome": "merged"
         },
         {
           "closedAt": "2025-06-13T18:33:50Z",
           "mergedAt": "2025-06-13T18:33:50Z",
           "number": 6,
           "state": "MERGED",
-          "title": "Improve README formatting and organization"
+          "title": "Improve README formatting and organization",
+          "outcome": "merged"
         },
         {
           "closedAt": "2025-06-14T01:26:50Z",
           "mergedAt": "2025-06-14T01:26:50Z",
           "number": 7,
           "state": "MERGED",
-          "title": "slash-command: wcygan megalist"
+          "title": "slash-command: wcygan megalist",
+          "outcome": "merged"
         }
       ],
       "strategy": "batched",
@@ -1030,14 +1135,15 @@
         7
       ],
       "case_study_candidate": true,
-      "case_study": "case-studies/2026-04-21-hesreallyhim-awesome-claude-code.md"
+      "case_study": "case-studies/2026-04-21-hesreallyhim-awesome-claude-code.md",
+      "rule_adopted": false
     },
     "jeremylongshore/claude-code-plugins-plus-skills": {
       "discovered": "2026-04-13T06:41:48Z",
       "stars": 1917,
       "artifacts": 7868,
       "description": "340 plugins + 1367 agent skills for Claude Code. Open-source marketplace with CCPI package manager, interactive tutorials, and production orchestration patterns.",
-      "status": "complete",
+      "status": "tracked",
       "score": 73,
       "audit_issue": 65,
       "prs": [
@@ -1046,35 +1152,40 @@
           "mergedAt": "2026-04-22T04:35:18Z",
           "number": 535,
           "state": "MERGED",
-          "title": "fix: add missing YAML frontmatter to .claude/agents/skill-auditor.md"
+          "title": "fix: add missing YAML frontmatter to .claude/agents/skill-auditor.md",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-22T04:39:17Z",
           "mergedAt": "2026-04-22T04:39:17Z",
           "number": 536,
           "state": "MERGED",
-          "title": "fix: add missing YAML frontmatter to schema-optimization pipeline agents"
+          "title": "fix: add missing YAML frontmatter to schema-optimization pipeline agents",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-22T04:35:41Z",
           "mergedAt": "2026-04-22T04:35:41Z",
           "number": 537,
           "state": "MERGED",
-          "title": "fix: replace unevaluated shell substitution in backup-strategy.md frontmatter"
+          "title": "fix: replace unevaluated shell substitution in backup-strategy.md frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-22T04:39:21Z",
           "mergedAt": "2026-04-22T04:39:21Z",
           "number": 538,
           "state": "MERGED",
-          "title": "fix: replace silent global pnpm install in quick-test.sh with prerequisite check"
+          "title": "fix: replace silent global pnpm install in quick-test.sh with prerequisite check",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-22T04:35:52Z",
           "mergedAt": "2026-04-22T04:35:52Z",
           "number": 539,
           "state": "MERGED",
-          "title": "fix: guard webhook curl call with env var presence check in fairdb-setup-backup"
+          "title": "fix: guard webhook curl call with env var presence check in fairdb-setup-backup",
+          "outcome": "merged"
         }
       ],
       "strategy": "progressive",
@@ -1087,7 +1198,8 @@
         539
       ],
       "case_study_candidate": true,
-      "case_study": "case-studies/2026-04-22-jeremylongshore-claude-code-plugins-plus-skills.md"
+      "case_study": "case-studies/2026-04-22-jeremylongshore-claude-code-plugins-plus-skills.md",
+      "rule_adopted": true
     },
     "mukul975/Anthropic-Cybersecurity-Skills": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1103,35 +1215,40 @@
           "mergedAt": null,
           "number": 44,
           "state": "OPEN",
-          "title": "fix: replace word-split tags with domain-specific cybersecurity tags"
+          "title": "fix: replace word-split tags with domain-specific cybersecurity tags",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 45,
           "state": "OPEN",
-          "title": "fix: fill stub workflow in performing-ssl-tls-security-assessment"
+          "title": "fix: fill stub workflow in performing-ssl-tls-security-assessment",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 46,
           "state": "OPEN",
-          "title": "fix: fill stub workflow in detecting-aws-cloudtrail-anomalies"
+          "title": "fix: fill stub workflow in detecting-aws-cloudtrail-anomalies",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 47,
           "state": "OPEN",
-          "title": "fix: fill stub workflow in analyzing-office365-audit-logs-for-compromise"
+          "title": "fix: fill stub workflow in analyzing-office365-audit-logs-for-compromise",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 48,
           "state": "OPEN",
-          "title": "fix: fill stub workflow in performing-red-team-with-covenant"
+          "title": "fix: fill stub workflow in performing-red-team-with-covenant",
+          "outcome": "open"
         }
       ],
       "strategy": "progressive",
@@ -1142,7 +1259,8 @@
         46,
         47,
         48
-      ]
+      ],
+      "rule_adopted": false
     },
     "muratcankoylan/ralph-wiggum-marketer": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1170,14 +1288,16 @@
           "mergedAt": null,
           "number": 22,
           "state": "OPEN",
-          "title": "fix(security): replace execSync with execFileSync to prevent shell injection"
+          "title": "fix(security): replace execSync with execFileSync to prevent shell injection",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 23,
           "state": "OPEN",
-          "title": "fix(security): pin yaml devDependency to exact version 2.8.3"
+          "title": "fix(security): pin yaml devDependency to exact version 2.8.3",
+          "outcome": "open"
         }
       ],
       "strategy": "single",
@@ -1185,7 +1305,8 @@
       "pipeline_prs": [
         22,
         23
-      ]
+      ],
+      "rule_adopted": false
     },
     "nyldn/claude-octopus": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1201,35 +1322,40 @@
           "mergedAt": null,
           "number": 293,
           "state": "CLOSED",
-          "title": "fix: add missing tools declarations to all agents/droids subagents"
+          "title": "fix: add missing tools declarations to all agents/droids subagents",
+          "outcome": "applied_separately"
         },
         {
           "closedAt": "2026-04-21T03:40:39Z",
           "mergedAt": null,
           "number": 294,
           "state": "CLOSED",
-          "title": "fix: add missing tools declaration to agents/personas/python-pro.md"
+          "title": "fix: add missing tools declaration to agents/personas/python-pro.md",
+          "outcome": "applied_separately"
         },
         {
           "closedAt": "2026-04-21T03:40:40Z",
           "mergedAt": null,
           "number": 295,
           "state": "CLOSED",
-          "title": "fix: add implementation-status caveat to skill-extract description"
+          "title": "fix: add implementation-status caveat to skill-extract description",
+          "outcome": "applied_separately"
         },
         {
           "closedAt": "2026-04-21T03:40:42Z",
           "mergedAt": null,
           "number": 296,
           "state": "CLOSED",
-          "title": "fix: add jq fallback for JSON parsing in user-prompt-submit.sh"
+          "title": "fix: add jq fallback for JSON parsing in user-prompt-submit.sh",
+          "outcome": "applied_separately"
         },
         {
           "closedAt": "2026-04-21T03:40:44Z",
           "mergedAt": null,
           "number": 297,
           "state": "CLOSED",
-          "title": "fix: reject non-HTTPS webhook URLs in telemetry-webhook.sh"
+          "title": "fix: reject non-HTTPS webhook URLs in telemetry-webhook.sh",
+          "outcome": "applied_separately"
         }
       ],
       "strategy": "progressive",
@@ -1240,7 +1366,9 @@
         295,
         296,
         297
-      ]
+      ],
+      "rule_adopted": false,
+      "case_study_candidate": true
     },
     "rohitg00/awesome-claude-code-toolkit": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1256,21 +1384,24 @@
           "mergedAt": null,
           "number": 318,
           "state": "OPEN",
-          "title": "fix: add missing YAML frontmatter to all 82 command files"
+          "title": "fix: add missing YAML frontmatter to all 82 command files",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 319,
           "state": "OPEN",
-          "title": "fix(hooks): add path traversal guard to file_path hook scripts"
+          "title": "fix(hooks): add path traversal guard to file_path hook scripts",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 320,
           "state": "OPEN",
-          "title": "fix(hooks): verify tmux socket existence in block-dev-server.js"
+          "title": "fix(hooks): verify tmux socket existence in block-dev-server.js",
+          "outcome": "open"
         }
       ],
       "strategy": "progressive",
@@ -1279,7 +1410,8 @@
         318,
         319,
         320
-      ]
+      ],
+      "rule_adopted": false
     },
     "sangrokjung/claude-forge": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1295,35 +1427,40 @@
           "mergedAt": null,
           "number": 32,
           "state": "OPEN",
-          "title": "fix(agents): add Task to verify-agent tools array"
+          "title": "fix(agents): add Task to verify-agent tools array",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 33,
           "state": "OPEN",
-          "title": "fix(commands): add missing YAML frontmatter to three commands"
+          "title": "fix(commands): add missing YAML frontmatter to three commands",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 34,
           "state": "OPEN",
-          "title": "fix(agents): add tools array to observer agent frontmatter"
+          "title": "fix(agents): add tools array to observer agent frontmatter",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 35,
           "state": "OPEN",
-          "title": "fix(scripts): pin md-to-docx Python dependencies to exact versions"
+          "title": "fix(scripts): pin md-to-docx Python dependencies to exact versions",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 36,
           "state": "OPEN",
-          "title": "fix(scripts): pin PyMuPDF to exact version in pdf-enhance"
+          "title": "fix(scripts): pin PyMuPDF to exact version in pdf-enhance",
+          "outcome": "open"
         }
       ],
       "strategy": "progressive",
@@ -1334,7 +1471,8 @@
         34,
         35,
         36
-      ]
+      ],
+      "rule_adopted": false
     },
     "santifer/career-ops": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1353,7 +1491,7 @@
       "stars": 32502,
       "artifacts": 4427,
       "description": "Installable GitHub library of 1,400+ agentic skills for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and more. Includes installer CLI, bundles, workflows, and official/community skill collections.",
-      "status": "complete",
+      "status": "tracked",
       "score": 82,
       "audit_issue": 73,
       "prs": [
@@ -1362,35 +1500,40 @@
           "mergedAt": "2026-04-20T17:49:09Z",
           "number": 534,
           "state": "MERGED",
-          "title": "fix(prompt-engineer): add missing Step 2 to workflow sequence"
+          "title": "fix(prompt-engineer): add missing Step 2 to workflow sequence",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-20T17:51:15Z",
           "mergedAt": "2026-04-20T17:51:15Z",
           "number": 535,
           "state": "MERGED",
-          "title": "fix(youtube-summarizer): close unclosed code fence in Step 5 output section"
+          "title": "fix(youtube-summarizer): close unclosed code fence in Step 5 output section",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-20T17:53:21Z",
           "mergedAt": "2026-04-20T17:53:21Z",
           "number": 536,
           "state": "MERGED",
-          "title": "fix(seo-bundle): remove duplicate --- separator after frontmatter"
+          "title": "fix(seo-bundle): remove duplicate --- separator after frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-20T17:55:31Z",
           "mergedAt": "2026-04-20T17:55:30Z",
           "number": 537,
           "state": "MERGED",
-          "title": "fix(blog-writing-guide): add missing date_added to frontmatter"
+          "title": "fix(blog-writing-guide): add missing date_added to frontmatter",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-20T17:57:42Z",
           "mergedAt": "2026-04-20T17:57:42Z",
           "number": 538,
           "state": "MERGED",
-          "title": "fix(security-engineer): correct risk label in ethical-hacking-methodology"
+          "title": "fix(security-engineer): correct risk label in ethical-hacking-methodology",
+          "outcome": "merged"
         }
       ],
       "strategy": "progressive",
@@ -1403,7 +1546,8 @@
         538
       ],
       "case_study_candidate": true,
-      "case_study": "case-studies/2026-04-21-sickn33-antigravity-awesome-skills.md"
+      "case_study": "case-studies/2026-04-21-sickn33-antigravity-awesome-skills.md",
+      "rule_adopted": true
     },
     "team-attention/plugins-for-claude-natives": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1419,35 +1563,40 @@
           "mergedAt": null,
           "number": 22,
           "state": "OPEN",
-          "title": "fix(interactive-review): correct skill path in directory structure diagram"
+          "title": "fix(interactive-review): correct skill path in directory structure diagram",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 23,
           "state": "OPEN",
-          "title": "fix(agent-council): remove orphaned root-level SKILL.md duplicate"
+          "title": "fix(agent-council): remove orphaned root-level SKILL.md duplicate",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 24,
           "state": "OPEN",
-          "title": "fix(say-summary): add missing matcher field to Stop hook"
+          "title": "fix(say-summary): add missing matcher field to Stop hook",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 25,
           "state": "OPEN",
-          "title": "fix(doubt): sanitize session_id before using it in file paths"
+          "title": "fix(doubt): sanitize session_id before using it in file paths",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 26,
           "state": "OPEN",
-          "title": "fix(session-wrap): pass SESSION_FILE to jq via --arg to prevent injection"
+          "title": "fix(session-wrap): pass SESSION_FILE to jq via --arg to prevent injection",
+          "outcome": "open"
         }
       ],
       "strategy": "batched",
@@ -1458,7 +1607,8 @@
         24,
         25,
         26
-      ]
+      ],
+      "rule_adopted": false
     },
     "timescale/pg-aiguide": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1474,14 +1624,16 @@
           "mergedAt": null,
           "number": 104,
           "state": "OPEN",
-          "title": "fix(security): escape SQL identifiers in migrate.ts and searchDocs.ts"
+          "title": "fix(security): escape SQL identifiers in migrate.ts and searchDocs.ts",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 105,
           "state": "OPEN",
-          "title": "fix(security): pin production dependency versions to lock-file values"
+          "title": "fix(security): pin production dependency versions to lock-file values",
+          "outcome": "open"
         }
       ],
       "strategy": "single",
@@ -1489,7 +1641,8 @@
       "pipeline_prs": [
         104,
         105
-      ]
+      ],
+      "rule_adopted": false
     },
     "uditgoenka/autoresearch": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1505,35 +1658,40 @@
           "mergedAt": null,
           "number": 74,
           "state": "OPEN",
-          "title": "fix: add missing name field to docs-manager OpenCode agent"
+          "title": "fix: add missing name field to docs-manager OpenCode agent",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 75,
           "state": "OPEN",
-          "title": "fix: add missing name field to all 10 OpenCode commands"
+          "title": "fix: add missing name field to all 10 OpenCode commands",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 76,
           "state": "OPEN",
-          "title": "fix: add allowed-tools declaration to all 20 Claude commands"
+          "title": "fix: add allowed-tools declaration to all 20 Claude commands",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 77,
           "state": "OPEN",
-          "title": "fix: eliminate shell variable interpolation in python3 sync scripts"
+          "title": "fix: eliminate shell variable interpolation in python3 sync scripts",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 78,
           "state": "OPEN",
-          "title": "fix: add path safety guard to sync_dir before rm -rf"
+          "title": "fix: add path safety guard to sync_dir before rm -rf",
+          "outcome": "open"
         }
       ],
       "strategy": "batched",
@@ -1544,7 +1702,8 @@
         76,
         77,
         78
-      ]
+      ],
+      "rule_adopted": false
     },
     "wanshuiyin/Auto-claude-code-research-in-sleep": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1572,21 +1731,24 @@
           "mergedAt": null,
           "number": 17,
           "state": "OPEN",
-          "title": "fix(command): add allowed-tools and parameterize hardcoded path in upgrade-patches"
+          "title": "fix(command): add allowed-tools and parameterize hardcoded path in upgrade-patches",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 18,
           "state": "OPEN",
-          "title": "fix(security): pin cc-safe to version 0.1.13 in setup.sh"
+          "title": "fix(security): pin cc-safe to version 0.1.13 in setup.sh",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 19,
           "state": "OPEN",
-          "title": "fix(security): add SHA-256 checksum verification for curl-downloaded context-bar.sh"
+          "title": "fix(security): add SHA-256 checksum verification for curl-downloaded context-bar.sh",
+          "outcome": "open"
         }
       ],
       "strategy": "single",
@@ -1595,7 +1757,8 @@
         17,
         18,
         19
-      ]
+      ],
+      "rule_adopted": false
     },
     "zebbern/claude-code-guide": {
       "discovered": "2026-04-13T06:41:48Z",
@@ -1632,7 +1795,7 @@
       "stars": 33764,
       "artifacts": 509,
       "description": "Intelligent automation and multi-agent orchestration for Claude Code",
-      "status": "complete",
+      "status": "tracked",
       "score": 76,
       "audit_issue": 82,
       "prs": [
@@ -1641,35 +1804,40 @@
           "mergedAt": "2026-04-17T17:15:22Z",
           "number": 488,
           "state": "MERGED",
-          "title": "fix: add missing YAML frontmatter to threat-modeling-expert agent"
+          "title": "fix: add missing YAML frontmatter to threat-modeling-expert agent",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-17T17:15:25Z",
           "mergedAt": "2026-04-17T17:15:25Z",
           "number": 489,
           "state": "MERGED",
-          "title": "fix: add missing name field to all 3 meigen-ai-design agents"
+          "title": "fix: add missing name field to all 3 meigen-ai-design agents",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-17T17:15:29Z",
           "mergedAt": "2026-04-17T17:15:29Z",
           "number": 490,
           "state": "MERGED",
-          "title": "fix: add missing YAML frontmatter to codebase-cleanup commands"
+          "title": "fix: add missing YAML frontmatter to codebase-cleanup commands",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-17T17:15:32Z",
           "mergedAt": "2026-04-17T17:15:32Z",
           "number": 491,
           "state": "MERGED",
-          "title": "fix: add missing YAML frontmatter to error-diagnostics commands"
+          "title": "fix: add missing YAML frontmatter to error-diagnostics commands",
+          "outcome": "merged"
         },
         {
           "closedAt": "2026-04-17T17:15:35Z",
           "mergedAt": "2026-04-17T17:15:35Z",
           "number": 492,
           "state": "MERGED",
-          "title": "fix: add missing YAML frontmatter to framework-migration and c4-architecture commands"
+          "title": "fix: add missing YAML frontmatter to framework-migration and c4-architecture commands",
+          "outcome": "merged"
         }
       ],
       "strategy": "progressive",
@@ -1683,7 +1851,8 @@
         492
       ],
       "case_study_candidate": true,
-      "case_study": "case-studies/2026-04-18-wshobson-agents.md"
+      "case_study": "case-studies/2026-04-18-wshobson-agents.md",
+      "rule_adopted": false
     },
     "kangraemin/claude-inspector": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2049,21 +2218,24 @@
           "mergedAt": null,
           "number": 66,
           "state": "OPEN",
-          "title": "fix(security): validate FEATURE arg in check-status.sh to prevent path traversal"
+          "title": "fix(security): validate FEATURE arg in check-status.sh to prevent path traversal",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 67,
           "state": "OPEN",
-          "title": "fix(security): pin root devDependencies to exact versions"
+          "title": "fix(security): pin root devDependencies to exact versions",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 68,
           "state": "OPEN",
-          "title": "fix(security): pin packages/cli runtime dependencies to exact versions"
+          "title": "fix(security): pin packages/cli runtime dependencies to exact versions",
+          "outcome": "open"
         }
       ],
       "source": "claudepot",
@@ -2075,7 +2247,8 @@
         66,
         67,
         68
-      ]
+      ],
+      "rule_adopted": false
     },
     "study8677/antigravity-workspace-template": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2186,35 +2359,40 @@
           "mergedAt": null,
           "number": 178,
           "state": "OPEN",
-          "title": "fix(skills): align llm-provider stream() signature across platforms"
+          "title": "fix(skills): align llm-provider stream() signature across platforms",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 179,
           "state": "OPEN",
-          "title": "fix(skills): correct adding-a-command export pattern in .cursor/ skill"
+          "title": "fix(skills): correct adding-a-command export pattern in .cursor/ skill",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 180,
           "state": "OPEN",
-          "title": "fix(skills): correct writers-pattern sync/export signature across platforms"
+          "title": "fix(skills): correct writers-pattern sync/export signature across platforms",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 181,
           "state": "OPEN",
-          "title": "fix(skills): correct scoring-checks function signature across platforms"
+          "title": "fix(skills): correct scoring-checks function signature across platforms",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 182,
           "state": "OPEN",
-          "title": "docs(telemetry): document PostHog analytics and opt-out mechanisms in README"
+          "title": "docs(telemetry): document PostHog analytics and opt-out mechanisms in README",
+          "outcome": "open"
         }
       ],
       "source": "claudepot",
@@ -2228,7 +2406,8 @@
         180,
         181,
         182
-      ]
+      ],
+      "rule_adopted": false
     },
     "OpenRaiser/NanoResearch": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2295,7 +2474,8 @@
           "mergedAt": null,
           "number": 6,
           "state": "OPEN",
-          "title": "fix: add missing YAML frontmatter to skill-creator agent files"
+          "title": "fix: add missing YAML frontmatter to skill-creator agent files",
+          "outcome": "open"
         }
       ],
       "source": "claudepot",
@@ -2304,7 +2484,8 @@
       "strategy": "progressive",
       "pipeline_prs": [
         6
-      ]
+      ],
+      "rule_adopted": false
     },
     "alinaqi/claude-bootstrap": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2335,7 +2516,8 @@
       "star_anomaly": 0.75,
       "strategy": "single",
       "security": "CLEAR",
-      "pipeline_prs": []
+      "pipeline_prs": [],
+      "rule_adopted": false
     },
     "a5c-ai/babysitter": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2351,14 +2533,16 @@
           "mergedAt": null,
           "number": 141,
           "state": "OPEN",
-          "title": "fix(scripts): validate TAG format before git push in rollback-release.sh"
+          "title": "fix(scripts): validate TAG format before git push in rollback-release.sh",
+          "outcome": "open"
         },
         {
           "closedAt": null,
           "mergedAt": null,
           "number": 142,
           "state": "OPEN",
-          "title": "fix(hooks): replace npx -y auto-install fallback with graceful no-op"
+          "title": "fix(hooks): replace npx -y auto-install fallback with graceful no-op",
+          "outcome": "open"
         }
       ],
       "source": "claudepot",
@@ -2369,7 +2553,8 @@
       "pipeline_prs": [
         141,
         142
-      ]
+      ],
+      "rule_adopted": false
     },
     "wecode-ai/Wegent": {
       "discovered": "2026-04-18T22:52:00Z",

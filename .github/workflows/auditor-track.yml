@@ -30,10 +30,14 @@ jobs:
           # Outcome detection patterns. Case-insensitive grep.
           # "applied_separately" = PR closed unmerged, but maintainer comment indicates fix was applied
           APPLIED_PATTERNS='applied in|applied directly|applied to|applied as|merged into|fixed in release|fixed in v|fixed on main|included in|will be in|already in|already fixed'
-          # "rule_adopted" = maintainer opened a hardening/backfill PR that goes beyond our scope
-          ADOPTION_PATTERNS='(hardening|backfill|backfilling|sibling).*#[0-9]+|CHANGELOG.*NLPM|CHANGELOG.*audit'
+          # "rule_adopted" = maintainer opened a hardening/backfill PR that goes beyond our scope.
+          # "sibling" intentionally excluded: too generic (e.g. "sibling PRs #123-#125" in
+          # a comment about naming conventions is not rule-adoption).
+          ADOPTION_PATTERNS='hardening PR|backfill|backfilling|hardening.*#[0-9]+|CHANGELOG.*NLPM|CHANGELOG.*audit'
 
-          jq -c '.repos | to_entries[] | select(.value.status == "contributed" or .value.status == "tracked")' auditor/registry/repos.json | while read -r entry; do
+          # Re-check contributed + tracked + complete. Maintainers can backfill / adopt rules
+          # weeks after the case study publishes; we want those signals captured retroactively.
+          jq -c '.repos | to_entries[] | select(.value.status == "contributed" or .value.status == "tracked" or .value.status == "complete")' auditor/registry/repos.json | while read -r entry; do
             REPO=$(echo "$entry" | jq -r '.key')
             ISSUE_NUM=$(echo "$entry" | jq -r '.value.audit_issue')
             echo "Checking PRs for $REPO..."
@@ -65,22 +69,22 @@ jobs:
                   # Closed and not merged — check maintainer comments for "applied separately" signal
                   COMMENTS=$(gh api "repos/$REPO/issues/$pr_num/comments" \
                     --jq '[.[] | select(.user.type != "Bot") | .body] | join("\n")' 2>/dev/null || echo "")
-                  if [ -n "$COMMENTS" ] && echo "$COMMENTS" | grep -qiE "$APPLIED_PATTERNS"; then
+                  if [ -n "$COMMENTS" ] && printf '%s' "$COMMENTS" | grep -qziE "$APPLIED_PATTERNS"; then
                     OUTCOME="applied_separately"
                   else
                     OUTCOME="rejected"
                   fi
-                  # Check for rule-adoption signal while we have the comments
-                  if [ -n "$COMMENTS" ] && echo "$COMMENTS" | grep -qiE "$ADOPTION_PATTERNS"; then
+                  # Check for rule-adoption signal while we have the comments (multiline via -z)
+                  if [ -n "$COMMENTS" ] && printf '%s' "$COMMENTS" | grep -qziE "$ADOPTION_PATTERNS"; then
                     RULE_ADOPTED="true"
                   fi
                 fi
 
-                # Also check merged PRs for rule-adoption comments
+                # Also check merged PRs for rule-adoption comments (multiline via -z)
                 if [ "$OUTCOME" = "merged" ] && [ "$RULE_ADOPTED" = "false" ]; then
                   COMMENTS=$(gh api "repos/$REPO/issues/$pr_num/comments" \
                     --jq '[.[] | select(.user.type != "Bot") | .body] | join("\n")' 2>/dev/null || echo "")
-                  if [ -n "$COMMENTS" ] && echo "$COMMENTS" | grep -qiE "$ADOPTION_PATTERNS"; then
+                  if [ -n "$COMMENTS" ] && printf '%s' "$COMMENTS" | grep -qziE "$ADOPTION_PATTERNS"; then
                     RULE_ADOPTED="true"
                   fi
                 fi
@@ -90,6 +94,23 @@ jobs:
                 sleep 0.5
               done
               PRS="$ITEMS"
+            fi
+
+            # Also scan any upstream tracking issues we filed (titled "NLPM audit..." per
+            # auditor-contribute.yml's convention). Jeremy's hardening-PR announcement was
+            # on his repo's issue #540, not on the PR comments, so PR-only scanning missed it.
+            if [ "$RULE_ADOPTED" = "false" ]; then
+              UPSTREAM_ISSUES=$(gh api "search/issues?q=repo:$REPO+in:title+NLPM" \
+                --jq '.items[] | .number' 2>/dev/null | head -5)
+              for up_issue in $UPSTREAM_ISSUES; do
+                UP_COMMENTS=$(gh api "repos/$REPO/issues/$up_issue/comments" \
+                  --jq '[.[] | select(.user.type != "Bot") | .body] | join("\n")' 2>/dev/null || echo "")
+                if [ -n "$UP_COMMENTS" ] && printf '%s' "$UP_COMMENTS" | grep -qziE "$ADOPTION_PATTERNS"; then
+                  RULE_ADOPTED="true"
+                  break
+                fi
+                sleep 0.5
+              done
             fi
 
             MERGED=$(echo "$PRS" | jq '[.[] | select(.outcome == "merged")] | length')
