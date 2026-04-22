@@ -2152,7 +2152,7 @@
       "stars": 51912,
       "artifacts": 11,
       "description": "omo; the best agent harness - previously oh-my-opencode",
-      "status": "audited",
+      "status": "contributed",
       "score": 74,
       "audit_issue": 88,
       "prs": [],
@@ -2160,7 +2160,10 @@
       "star_velocity": 0.0,
       "star_anomaly": 0.0,
       "strategy": "single",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        3578
+      ]
     },
     "shanraisshan/claude-code-best-practice": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2189,7 +2192,7 @@
       "stars": 29671,
       "artifacts": 60,
       "description": "Teams-first Multi-agent orchestration for Claude Code",
-      "status": "audited",
+      "status": "contributed",
       "score": 80,
       "audit_issue": 92,
       "prs": [],
@@ -2197,7 +2200,14 @@
       "star_velocity": 272.0,
       "star_anomaly": 0.82,
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        2767,
+        2768,
+        2769,
+        2770,
+        2771
+      ]
     },
     "rtk-ai/rtk": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -2219,7 +2229,7 @@
       "stars": 27150,
       "artifacts": 186,
       "description": "A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value.",
-      "status": "audited",
+      "status": "contributed",
       "score": 77,
       "audit_issue": 95,
       "prs": [],
@@ -2227,14 +2237,19 @@
       "star_velocity": 381.6,
       "star_anomaly": 0.0,
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        89,
+        90,
+        91
+      ]
     },
     "davila7/claude-code-templates": {
       "discovered": "2026-04-18T22:52:00Z",
       "stars": 24685,
       "artifacts": 1663,
       "description": "CLI tool for configuring and monitoring Claude Code",
-      "status": "audited",
+      "status": "contributed",
       "score": 84,
       "audit_issue": 96,
       "prs": [],
@@ -2242,7 +2257,11 @@
       "star_velocity": 30.0,
       "star_anomaly": 0.81,
       "strategy": "progressive",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        533,
+        534
+      ]
     },
     "superset-sh/superset": {
       "discovered": "2026-04-18T22:52:00Z",
