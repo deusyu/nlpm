@@ -135,7 +135,7 @@ Emitted by `auditor-track.yml` on the transition into `closed_unmerged` state. C
 
 ### Event: `maintainer_rejected`
 
-Emitted by a future classifier workflow (not yet shipped) when it consumes a `pr_comments_snapshot` and determines the comments indicate genuine dissent. Classification is done by a Haiku call over the comment thread; results are cached by `comments_hash` so unchanged threads don't re-classify.
+Emitted by `auditor-classify.yml` when it consumes a `pr_comments_snapshot` and determines the comments indicate genuine dissent. Classification is done by a Haiku call over the comment thread; results are cached by `comments_hash` so unchanged threads don't re-classify.
 
 ```json
 {

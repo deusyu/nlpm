@@ -97,25 +97,47 @@ The `auditor/` subdirectory contains a GitHub Actions pipeline that discovers, a
 |----------|---------|---------|
 | auditor-discover | Weekly cron / manual | Find repos with 500+ stars and 5+ NL artifacts |
 | auditor-batch-processor | Every 6h cron / manual | Pick next batch, promote audits to contribution |
-| auditor-audit | Issue labeled `audit-ready` | Security scan + NL score via claude-code-action |
-| auditor-contribute | Issue labeled `contribute-approved` | Fork, PR for verified bugs only (blocked by security gate) |
-| auditor-track | Daily cron | Check PR merge status |
+| auditor-audit | Issue labeled `audit-ready` | Security scan + NL score; emits findings.jsonl + disagreements.jsonl |
+| auditor-contribute | Issue labeled `contribute-approved` | Fork, PR for verified bugs; stamps PR body with `nlpm-metadata` block |
+| auditor-track | Every 4h cron | PR state, emits finding_outcome + pr_comments_snapshot on transitions |
 | auditor-case-study | Issue labeled `case-study-ready` | Write article, self-review, polish, cover image |
-| auditor-daily-report | Daily cron | Pipeline state, rule frequency, rejection patterns |
+| auditor-daily-report | Daily cron | Pipeline state + per-rule health (healthy/noisy/dormant/disputed) |
+| auditor-classify | Daily cron / manual | Haiku classifies `pr_comments_snapshot` → `maintainer_rejected` |
+| auditor-suppressions | Weekly cron / manual | Scan public repos for NLPM rule-override configs |
+| auditor-refine-rules | Weekly cron / manual | **Human-gated**: open PR with proposed rule edits (reviewer: xiaolai) |
 
 ### Data (auditor/)
 
-| Path | Purpose |
-|------|---------|
-| auditor/registry/repos.json | Tracking database |
-| auditor/feedback/log.json | Rule stats, PR outcomes — the self-evolution data |
-| auditor/audits/ | Per-repo scoring reports |
-| auditor/reports/ | Daily reports |
-| auditor/logs/events.jsonl | Structured event log |
+| Path | Append-only | Purpose |
+|------|-------------|---------|
+| auditor/registry/repos.json | no | Tracking database |
+| auditor/feedback/log.json | no | Rolling summary, derived from the three append-only logs |
+| auditor/audits/<slug>.md | no | Per-repo human-readable scoring report |
+| auditor/audits/<slug>.findings.jsonl | no | Per-audit findings sidecar, source for the global log |
+| auditor/findings.jsonl | yes | One record per finding, joined by fingerprint |
+| auditor/disagreements.jsonl | yes | self_false_positive, pr_comments_snapshot, maintainer_rejected, downstream_suppression |
+| auditor/logs/events.jsonl | yes | Lifecycle events + finding_outcome + findings_aggregated |
+| auditor/reports/ | no | Daily reports |
+
+See `auditor/SCHEMAS.md` for the full record contracts.
 
 ### The Loop
 
-discover → security scan → audit → contribute → track outcomes → feedback log → update NLPM rules → audit better
+```
+discover → security scan → audit → contribute → track outcomes
+                                                       │
+                          classify PR dissent ←────────┤
+                                                       │
+                    daily report / rule-health query ←─┤
+                                                       │
+                    refine rules (human-gated PR) ←────┘
+                                 │
+                                 └→ audit better
+```
+
+Everything before `refine rules` is automated observation. Only
+`auditor-refine-rules` mutates NLPM's own rulebook, and it does so by
+opening a PR for human review — never by merging.
 
 ### Security Gate
 
@@ -125,3 +147,14 @@ The audit workflow includes a security scan BEFORE the NL quality audit:
 3. If Critical patterns found: labels issue `security-blocked`, skips contribution
 4. The contribute workflow refuses to run if `security-blocked` label is present
 5. Manual review required to clear the security gate
+
+### Shared scripts (auditor/scripts/)
+
+| Script | Purpose |
+|--------|---------|
+| log-event.sh | Append lifecycle events to events.jsonl |
+| guard-protected-paths.sh | Block stray edits to skills/, agents/ from automation commits |
+| resolve-merge-conflicts.sh | Auto-resolve conflicts on append-only log pushes |
+| parse-suppressions.py | Extract rule_overrides from NLPM config frontmatter |
+| parse-pr-metadata.py | Extract `nlpm-metadata` block from a PR body on stdin |
+| rule-health.py | Run SCHEMAS §Learning query, write feedback-summary.json |
