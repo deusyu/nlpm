@@ -349,10 +349,15 @@
       ]
     },
     "ChrisWiles/claude-code-showcase": {
-      "status": "audited",
+      "status": "contributed",
       "score": 81,
       "strategy": "single",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        17,
+        18,
+        19
+      ]
     },
     "CloudAI-X/claude-workflow-v2": {
       "status": "audited",
