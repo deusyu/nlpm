@@ -360,10 +360,14 @@
       ]
     },
     "CloudAI-X/claude-workflow-v2": {
-      "status": "audited",
+      "status": "contributed",
       "score": 93,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        15,
+        16
+      ]
     },
     "ComposioHQ/awesome-claude-plugins": {
       "status": "contributed",
@@ -398,22 +402,35 @@
       "pipeline_prs": []
     },
     "xiaolai/grill-for-claude": {
-      "status": "audited",
+      "status": "contributed",
       "score": 97,
       "strategy": "single",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        2
+      ]
     },
     "xiaolai/codex-toolkit-for-claude": {
-      "status": "audited",
+      "status": "contributed",
       "score": 96,
       "strategy": "batched",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "pipeline_prs": [
+        4,
+        5,
+        6
+      ]
     },
     "AgriciDaniel/claude-seo": {
-      "status": "audited",
+      "status": "contributed",
       "score": 94,
       "strategy": "batched",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        62,
+        63,
+        64
+      ]
     },
     "ananddtyagi/cc-marketplace": {
       "status": "contributed",
