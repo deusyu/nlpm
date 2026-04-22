@@ -1994,7 +1994,7 @@
       "stars": 115,
       "artifacts": 6,
       "description": "Claude Code Prompt Mechanism Visualizer — Electron desktop app",
-      "status": "audited",
+      "status": "contributed",
       "score": 76,
       "audit_issue": 83,
       "prs": [],
@@ -2002,7 +2002,12 @@
       "star_velocity": 1.0,
       "star_anomaly": 3.0,
       "strategy": "single",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        2,
+        3,
+        4
+      ]
     },
     "yonatangross/orchestkit": {
       "discovered": "2026-04-18T22:52:00Z",
