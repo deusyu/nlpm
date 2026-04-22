@@ -1,0 +1,159 @@
+name: Downstream Suppressions Scan
+
+# Weekly scan of public GitHub repos for committed NLPM configs that suppress
+# or override rules. Each override becomes a `downstream_suppression` event
+# in auditor/disagreements.jsonl, so rule-refinement tooling can see where the
+# community disagrees with NLPM rules.
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly, Sunday 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nlpm-suppressions
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install yaml parser
+        run: |
+          python3 -m pip install --quiet pyyaml
+
+      - name: Search GitHub for committed NLPM configs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          touch auditor/disagreements.jsonl
+
+          # Two queries: .claude/nlpm.local.md and .claude/nlpm.md with rule_overrides.
+          # The search API returns 30 results per page; paginate to get full coverage.
+          gh api --paginate '/search/code?q=filename:nlpm.local.md+rule_overrides' --jq '.items[]?' > /tmp/search.jsonl 2>/dev/null || true
+          gh api --paginate '/search/code?q=filename:nlpm.md+rule_overrides' --jq '.items[]?' >> /tmp/search.jsonl 2>/dev/null || true
+
+          TOTAL=$(wc -l < /tmp/search.jsonl | tr -d ' ')
+          echo "Candidate files: $TOTAL"
+
+          COUNT=0
+          SKIPPED_SELF=0
+          SKIPPED_DUP=0
+          SKIPPED_NO_OVERRIDES=0
+
+          SELF_REPO="${GITHUB_REPOSITORY}"
+
+          while IFS= read -r item; do
+            [ -z "$item" ] && continue
+
+            REPO=$(printf '%s' "$item" | jq -r '.repository.full_name // empty')
+            FILE_PATH=$(printf '%s' "$item" | jq -r '.path // empty')
+            SHA=$(printf '%s' "$item" | jq -r '.sha // empty')
+
+            [ -z "$REPO" ] || [ -z "$FILE_PATH" ] || [ -z "$SHA" ] && continue
+
+            # Skip our own repos to avoid self-referencing events
+            if [ "$REPO" = "$SELF_REPO" ]; then
+              SKIPPED_SELF=$((SKIPPED_SELF + 1))
+              continue
+            fi
+
+            # Dedup: if any event for this exact (repo, sha, path) already exists, skip
+            FILE_FP=$(printf '%s|%s|%s' "$REPO" "$SHA" "$FILE_PATH" | sha256sum | cut -d' ' -f1)
+            if grep -Fq "\"file_fingerprint\":\"sha256:$FILE_FP\"" auditor/disagreements.jsonl 2>/dev/null; then
+              SKIPPED_DUP=$((SKIPPED_DUP + 1))
+              continue
+            fi
+
+            # Fetch file content (base64-encoded by the API)
+            CONTENT=$(gh api "/repos/$REPO/contents/$FILE_PATH" --jq '.content' 2>/dev/null | base64 -d 2>/dev/null || echo "")
+            if [ -z "$CONTENT" ]; then
+              continue
+            fi
+
+            # Parse YAML frontmatter and extract rule_overrides. One line per override.
+            printf '%s' "$CONTENT" > /tmp/nlpm-config.md
+            OVERRIDES=$(python3 auditor/scripts/parse-suppressions.py /tmp/nlpm-config.md 2>/dev/null)
+
+            if [ -z "$OVERRIDES" ]; then
+              SKIPPED_NO_OVERRIDES=$((SKIPPED_NO_OVERRIDES + 1))
+              continue
+            fi
+
+            TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+            while IFS= read -r override; do
+              [ -z "$override" ] && continue
+              RULE_ID=$(printf '%s' "$override" | jq -r '.rule_id // empty')
+              VAL=$(printf '%s' "$override" | jq -c '.override')
+              [ -z "$RULE_ID" ] && continue
+
+              # Derive suppression_type from override shape
+              STYPE="rule_override"
+              if printf '%s' "$VAL" | jq -e 'type == "boolean" and . == false' >/dev/null 2>&1; then
+                STYPE="suppress"
+              elif printf '%s' "$VAL" | jq -e 'type == "object" and has("max_penalty")' >/dev/null 2>&1; then
+                STYPE="max_penalty"
+              elif printf '%s' "$VAL" | jq -e 'type == "object" and has("threshold")' >/dev/null 2>&1; then
+                STYPE="threshold_adjustment"
+              fi
+
+              RULE_FP="sha256:$(printf '%s|%s|%s' "$REPO" "$SHA" "$RULE_ID" | sha256sum | cut -d' ' -f1)"
+
+              jq -cn \
+                --arg event "downstream_suppression" \
+                --arg ts "$TS" \
+                --arg repo "$REPO" \
+                --arg sha "$SHA" \
+                --arg rule "$RULE_ID" \
+                --arg stype "$STYPE" \
+                --arg fingerprint "$RULE_FP" \
+                --arg file_fp "sha256:$FILE_FP" \
+                --arg path "$FILE_PATH" \
+                --argjson val "$VAL" \
+                '{event: $event, timestamp: $ts, repo: $repo, commit_sha: $sha, rule_id: $rule, suppression_type: $stype, fingerprint: $fingerprint, file_fingerprint: $file_fp, path: $path, override_value: $val, reason_given: ""}' \
+                >> auditor/disagreements.jsonl
+
+              COUNT=$((COUNT + 1))
+            done <<< "$OVERRIDES"
+
+            sleep 0.5
+          done < /tmp/search.jsonl
+
+          echo ""
+          echo "Suppressions scan:"
+          echo "  Emitted: $COUNT"
+          echo "  Skipped (self-repo): $SKIPPED_SELF"
+          echo "  Skipped (already seen): $SKIPPED_DUP"
+          echo "  Skipped (no overrides in frontmatter): $SKIPPED_NO_OVERRIDES"
+
+          source auditor/scripts/log-event.sh
+          log_event "suppressions" "scan_complete" "$(jq -cn \
+            --arg total "$TOTAL" \
+            --arg emitted "$COUNT" \
+            --arg self "$SKIPPED_SELF" \
+            --arg dup "$SKIPPED_DUP" \
+            --arg no_ov "$SKIPPED_NO_OVERRIDES" \
+            '{candidates: ($total | tonumber), emitted: ($emitted | tonumber), skipped_self: ($self | tonumber), skipped_dup: ($dup | tonumber), skipped_no_overrides: ($no_ov | tonumber)}')" || true
+
+      - name: Commit and push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "nlpm-auditor[bot]"
+          git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add auditor/disagreements.jsonl auditor/logs/events.jsonl
+          bash auditor/scripts/guard-protected-paths.sh || exit 1
+          git diff --cached --quiet || {
+            git commit -m "suppressions: $(date +%Y-%m-%d) scan"
+            git push
+          }
