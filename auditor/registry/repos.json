@@ -1889,9 +1889,9 @@
       "strategy": "single",
       "security": "REVIEW",
       "pipeline_prs": [
-        17,
-        18,
-        19
+        21,
+        22,
+        23
       ],
       "rule_adopted": false
     },
