@@ -2936,7 +2936,7 @@
       "stars": 46008,
       "artifacts": 44,
       "description": "from vibe coding to agentic engineering - practice makes claude perfect",
-      "status": "tracked",
+      "status": "complete",
       "score": 88,
       "audit_issue": 89,
       "prs": [
@@ -3019,7 +3019,8 @@
         67
       ],
       "rule_adopted": false,
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "case_study": "case-studies/2026-04-23-shanraisshan-claude-code-best-practice.md"
     },
     "Yeachan-Heo/oh-my-claudecode": {
       "discovered": "2026-04-18T22:52:00Z",
