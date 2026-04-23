@@ -3919,7 +3919,7 @@
       "stars": 741,
       "artifacts": 31,
       "description": "AI writes code. This automates everything else · 19 plugins, 47 agents, and 40 skills · for Claude Code, OpenCode, Codex, Cursor, Kiro.",
-      "status": "tracked",
+      "status": "complete",
       "score": 97,
       "audit_issue": 140,
       "prs": [
@@ -3988,7 +3988,8 @@
         340
       ],
       "rule_adopted": false,
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "case_study": "case-studies/2026-04-23-avifenesh-agentsys.md"
     },
     "caliber-ai-org/ai-setup": {
       "discovered": "2026-04-18T22:52:00Z",
