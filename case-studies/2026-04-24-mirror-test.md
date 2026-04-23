@@ -156,6 +156,45 @@ No single layer is sufficient. The tool catalog without the behavioral gate prod
 
 ---
 
+## The Re-Audit
+
+A rubric update is a claim, not a verification. Hours after the v0.7.6 commit, the scorer was pointed back at the six published plugins in the xiaolai marketplace — including NLPM itself — to see whether the four-layer defense held on real targets.
+
+Six parallel scoring runs. Each loaded the v0.7.6 rubric from disk and audited one plugin. For each run, the five FP patterns were named explicitly as regression checks: "did this category reappear? yes/no."
+
+| Plugin | Score | Artifacts | FP1 | FP2 | FP3 | FP4 | FP5 |
+|---|---:|---:|---|---|---|---|---|
+| nlpm (self) | 96 | 32 | clean | clean | clean | clean | clean |
+| claude-english-buddy | 99 | 10 | clean | clean | clean | clean | clean |
+| grill | 96 | 10 | clean | clean | clean | clean | clean |
+| docs-guardian | 99 | 26 | clean | clean | clean | clean | clean |
+| tdd-guardian | 95 | 19 | clean | clean | clean | clean | clean |
+| echo-sleuth | 98 | 19 | clean | clean | clean | clean | clean |
+
+Thirty regression checks — five FPs across six plugins — all clean. The exact cases that would have triggered FPs under v0.7.5 passed silently: tdd-guardian's seven skills without `namespace:`, `AskUserQuestion` declared in three plugins' `allowed-tools`, vague-scanner omitting `skills:` by design. The gate held where it mattered.
+
+But the re-audit surfaced two calibration items the first pass had not anticipated. A working rubric is one that keeps surfacing its own edges.
+
+### R01 Penalizes Its Own Definition
+
+Four artifacts in NLPM hit R01's −20 vague-quantifier cap — not because they contain vague language, but because they *enumerate the vocabulary R01 flags*. The scorer has to list the eleven words in order to check for them. The rubric row defining R01 has to list them to define itself. Documentation that teaches R01 lists them by way of explaining.
+
+R01 is mechanical by design — "each occurrence of 'appropriate', 'relevant', 'as needed'..." — and does not distinguish between a word *used* and a word *mentioned*. Backticks do not save you. Code fences do not save you. Quoting R01's vocabulary in a comma-separated sentence earns a full −20 cap hit.
+
+This is the rubric operating as specified. It is also a category error: a rubric that penalizes its own definition for quoting itself is measuring its own reflection. The fix is a mention-vs-use distinction — exempt occurrences inside inline code spans, fenced code blocks, and literal enumerations of the vocabulary.
+
+### The `Agent` / `Task` Alias Gap
+
+`commands/security-scan.md` declares `Agent` in its `allowed-tools`. The §14 tool catalog added in v0.7.6 lists the agent-dispatch tool as `Task`. The rest of the ecosystem — `grill`, `docs-guardian`, `tdd-guardian` — also uses `Task`. Either `Agent` is a deprecated alias or a local mistake; no rubric row today penalizes undocumented tools, so the four-step gate correctly drops the finding. But the artifact is inconsistent with its own plugin's catalog — a case the gate notices and cannot act on.
+
+Two follow-ups surface: fix `security-scan.md` to match §14, and consider whether an "unknown-tool-in-allowed-tools" penalty row should exist. The second is deferrable — §14 is less than a day old, and may itself be incomplete.
+
+### What the Re-Audit Confirmed
+
+The model-drift hypothesis remains unproven (the audit logs are still empty). But the re-audit produced adjacent evidence: under v0.7.6, the scorer stops inventing the five categories it was inventing earlier today. The four-layer defense works against the specific patterns it was designed to block. New structural issues — like R01 self-reference — were surfaced by the audit process itself, not by human review. That is what a working rubric is supposed to do.
+
+---
+
 ## The Mirror Test
 
 Everything written here happened inside one conversation with Claude. The case study was written by Claude. The scorer is run by Claude. The rubric was written by a prior Claude session. The PRs to external repos were drafted by Claude. The plugin under audit was built by — or at least with — Claude.
@@ -190,9 +229,15 @@ gantt
     Verify claims line-by-line          :done, 08:30, 20m
     Apply 4 updates + version bump      :done, 08:50, 20m
     Write case study                    :done, 09:10, 60m
+
+    section Verify
+    Re-audit 6 published plugins        :done, 10:30, 45m
+    Record 30/30 FP regression passes   :milestone, 11:15, 0m
+    Surface R01 self-ref + Agent/Task   :milestone, 11:20, 0m
+    Update case study                   :done, 11:20, 30m
 ```
 
-Approximate times; proposal timestamp from file mtime. Same-day from audit to applied fix to published case study.
+Approximate times; proposal timestamp from file mtime. Same-day from audit to applied fix to re-audit verification to published case study.
 
 ---
 
@@ -200,13 +245,13 @@ Approximate times; proposal timestamp from file mtime. Same-day from audit to ap
 
 **The model-upgrade hypothesis is unverified.** NLPM's audit logs (`findings.jsonl`, `disagreements.jsonl`) are empty at the time of writing; there is no historical data showing when FP1–FP5 first appeared. The correlation with model upgrades is plausible but not established.
 
-**The fix targets the five observed patterns.** Other hallucinated categories may exist that today's audit did not surface. The four-step behavioral gate catches the class (uncitable findings), but the explicit-denial table only lists what has been seen.
+**The fix targets the five observed patterns.** Other hallucinated categories may exist that today's audit did not surface. The four-step behavioral gate catches the class (uncitable findings), but the explicit-denial table only lists what has been seen. The re-audit covered six published plugins and surfaced two new calibration items (R01 self-reference, Agent/Task alias) — future audits will likely surface more.
 
-**The test suite was not re-run end-to-end.** `.nlpm-test/scorer.spec.md` describes expected behavior; `/nlpm:test` evaluates the scorer's output against the specs. It was not executed as part of this engagement. End-to-end validation is the maintainer's next step.
+**The formal test suite was not executed.** `.nlpm-test/scorer.spec.md` describes expected behavior; `/nlpm:test` evaluates the scorer's output against the specs. The re-audit across the six published plugins validated FP1–FP5 regression behavior manually, but the specs themselves were not run under the official test harness. That remains a next step.
 
-**The case study is self-authored.** Claude wrote the scorer, the fix, and this article. The conflict of interest is structural, not resolvable from inside the same model family. External review of this engagement is available only as a future artifact.
+**The case study is self-authored.** Claude wrote the scorer, the fix, this article, and the re-audit sub-agents. The conflict of interest is structural, not resolvable from inside the same model family. External review of this engagement is available only as a future artifact.
 
-**The seven plugins flagged during today's run may still carry findings generated from FP1–FP5.** The maintainer is aware; re-scoring after the rubric update is pending. The PRs opened to external repos during the preceding three weeks used the same scorer. Whether any of those PRs carried FP1–FP5 findings is a question for a separate audit of the outgoing PR record.
+**The PRs to external repos during the preceding three weeks used the v0.7.5 scorer.** Whether any of those PRs carried FP1–FP5 findings is a question for a separate audit of the outgoing PR record. The re-audit covered only internal plugins.
 
 ---
 
@@ -219,6 +264,17 @@ Seven external engagements taught NLPM how to audit. The eighth — turning the 
 The broader pattern — rule systems paired with increasingly capable evaluators — is not unique to NLPM. Any automated-review pipeline that pairs a static rulebook with an evolving model runs the same risk. The fix is not to pin the model or freeze the rulebook; both are living artifacts. The fix is to write the rulebook so that the gaps it leaves are explicit gaps, not invitations to invent.
 
 NLPM now names some of its own gaps. It will likely need to name more of them, on a schedule that tracks model upgrades rather than calendar quarters. The mirror test, as a discipline, is: run the scorer on its own work every time the underlying model moves. What comes back is either the rubric working — or the rubric's next revision, writing itself.
+
+---
+
+## Next Cycle
+
+Two follow-up items surfaced by the re-audit, targeted for NLPM v0.7.7:
+
+1. **R01 mention-vs-use distinction.** Exempt vague-word occurrences inside inline code spans, fenced code blocks, and literal enumerations of the vocabulary. Touches `skills/nlpm/scoring/SKILL.md` (R01 row), `skills/nlpm/rules/SKILL.md` (R01 definition), and `agents/vague-scanner.md` (mechanical filter). Recovers the ~20 points that four NLPM artifacts lose structurally for quoting R01.
+2. **`commands/security-scan.md`: `Agent` → `Task`.** Align the declared tool with §14 and ecosystem convention. One-character fix.
+
+Deferred: adding a penalty row for unknown tools in `allowed-tools`. The §14 catalog is less than a day old and may itself be incomplete; letting it stabilize for a release cycle before making the gate bite on tool declarations.
 
 ---
 
