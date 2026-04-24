@@ -115,12 +115,398 @@ jobs:
           REPORT="auditor/audits/${TARGET_REPO//\//-}.md"
           [ -f "$REPORT" ] && cp "$REPORT" /tmp/evidence/audit-report.md || echo "No audit report" > /tmp/evidence/audit-report.md
 
+      # ================================================================
+      # POST-MERGE RE-AUDIT: clone target at HEAD, re-score, diff
+      #
+      # Rationale: the original audit is frozen at the commit we first
+      # audited. After the maintainer merges (or applies separately) our
+      # PRs, the repo has changed. We re-score at the current HEAD and
+      # diff against the original findings to produce measurable
+      # before/after evidence for the case study.
+      #
+      # The diff emits `finding_verified` events to events.jsonl, one per
+      # original finding, with an outcome of fixed_and_merged /
+      # fixed_applied_separately / fixed_upstream_not_merged /
+      # persists_identically / persists_line_shifted. These join to
+      # findings.jsonl by fingerprint and are higher-signal than
+      # `merged / contributed` for rule-health analysis — a PR merge
+      # proves intent, a re-audit proves effect.
+      # ================================================================
+      - name: Re-audit — refresh registry + logs from main
+        if: steps.skipcheck.outputs.skip != 'true'
+        run: |
+          # auditor-track.yml mutates registry/repos.json (prs[].outcome,
+          # rule_adopted, pipeline_prs) every 4h on a separate runner, and
+          # appends to events.jsonl / disagreements.jsonl. case-study.yml
+          # does a checkout at step 1 and then spends several minutes in
+          # GitHub evidence-gathering; by the time the diff runs, track
+          # may have committed fresher PR outcomes to main that this
+          # workspace hasn't seen. Fast-forwarding here lets the diff
+          # classify against the latest PR state — without it, a merged PR
+          # would occasionally be misattributed as fixed_upstream_not_merged.
+          #
+          # Safety: ff-only fails loud rather than silently rewinding if
+          # prior steps somehow left local commits (they shouldn't — only
+          # /tmp writes precede this). On any failure, carry on with
+          # workspace-local state and log the reason; a stale registry is
+          # a precision degradation, not a correctness break.
+          if ! git fetch origin main --quiet 2>/dev/null; then
+            echo "WARN: fetch failed — diff will use workspace-local registry state"
+            exit 0
+          fi
+          LOCAL_HEAD=$(git rev-parse HEAD)
+          REMOTE_HEAD=$(git rev-parse origin/main)
+          if [ "$LOCAL_HEAD" = "$REMOTE_HEAD" ]; then
+            echo "Registry refresh: already at origin/main ($REMOTE_HEAD)"
+            exit 0
+          fi
+          if ! git merge --ff-only origin/main --quiet 2>/dev/null; then
+            echo "WARN: ff-only merge failed (local commits or divergence) — diff will use workspace-local registry state"
+            exit 0
+          fi
+          echo "Registry refresh: fast-forwarded $LOCAL_HEAD -> $REMOTE_HEAD"
+
+      - name: Re-audit — clone target at HEAD
+        if: steps.skipcheck.outputs.skip != 'true'
+        id: reclone
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REPO: ${{ steps.target.outputs.repo }}
+        run: |
+          SLUG="${TARGET_REPO//\//-}"
+
+          # Precondition 1: original audit sidecar must exist. Without it,
+          # we have no fingerprints to diff against — the re-audit would
+          # produce a scoring snapshot but no verification signal.
+          ORIG_SIDECAR="auditor/audits/${SLUG}.findings.jsonl"
+          if [ ! -f "$ORIG_SIDECAR" ]; then
+            echo "No original sidecar at $ORIG_SIDECAR — skipping re-audit."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip_reason=no_original_sidecar" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Precondition 2: the sidecar must have at least one finding.
+          # `grep -c` returns exit 1 when zero matches — without the
+          # explicit "|| true" guard, the count is never assigned and the
+          # later numeric comparison breaks under set -e. Earlier form
+          # (`|| echo 0`) produced "0\n0" when grep printed 0 and also
+          # fired the fallback, which blew up `[ "0\n0" -eq 0 ]`.
+          SIDECAR_LINES=$(grep -c '^{' "$ORIG_SIDECAR" 2>/dev/null || true)
+          SIDECAR_LINES="${SIDECAR_LINES:-0}"
+          if [ "$SIDECAR_LINES" -eq 0 ]; then
+            echo "Original sidecar has zero findings — nothing to verify."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip_reason=no_original_findings" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Precondition 3: target repo must still be reachable and public.
+          # Private / deleted / renamed repos → skip with clear reason.
+          DEFAULT_BRANCH=$(gh api "repos/$TARGET_REPO" --jq '.default_branch' 2>/dev/null || echo "")
+          if [ -z "$DEFAULT_BRANCH" ]; then
+            echo "Cannot resolve default branch for $TARGET_REPO — skipping re-audit."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip_reason=target_unreachable" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Clean up any stale clone from the same runner — we own the
+          # workspace but can't assume previous jobs cleaned up.
+          rm -rf target-repo
+          if ! git clone --depth 1 --branch "$DEFAULT_BRANCH" \
+               "https://github.com/$TARGET_REPO.git" target-repo 2>/dev/null; then
+            echo "Clone failed for $TARGET_REPO — skipping re-audit."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip_reason=clone_failed" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          COMMIT_SHA_AFTER=$(git -C target-repo rev-parse HEAD 2>/dev/null || echo "unknown")
+
+          # commit_sha_before: prefer the registry (persisted by audit.yml);
+          # fall back to the most recent per-repo entry in findings.jsonl;
+          # last resort "unknown". Honest when we cannot tell.
+          COMMIT_SHA_BEFORE=$(jq -r --arg r "$TARGET_REPO" \
+            '.repos[$r].commit_sha_at_audit // "unknown"' \
+            auditor/registry/repos.json 2>/dev/null || echo "unknown")
+          if [ "$COMMIT_SHA_BEFORE" = "unknown" ] && [ -f auditor/findings.jsonl ]; then
+            # jq's structured filter beats `grep -F "\"repo\":\"$r\""`:
+            # the grep form substring-matches inside description fields
+            # and collisionally against similarly-named repos (foo/bar vs
+            # foo/bar-ext). A structured filter can't collide.
+            COMMIT_SHA_BEFORE=$(jq -r --arg r "$TARGET_REPO" \
+              'select(.repo == $r) | .commit_sha' \
+              auditor/findings.jsonl 2>/dev/null | tail -1 || echo "")
+            COMMIT_SHA_BEFORE="${COMMIT_SHA_BEFORE:-unknown}"
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "default_branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "commit_sha_before=$COMMIT_SHA_BEFORE" >> "$GITHUB_OUTPUT"
+          echo "commit_sha_after=$COMMIT_SHA_AFTER" >> "$GITHUB_OUTPUT"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "Re-audit prep: before=$COMMIT_SHA_BEFORE after=$COMMIT_SHA_AFTER branch=$DEFAULT_BRANCH"
+
+      - name: Re-audit — triage artifacts
+        if: steps.skipcheck.outputs.skip != 'true' && steps.reclone.outputs.skip != 'true'
+        id: retriage
+        run: |
+          cd target-repo
+
+          # Mirror of audit.yml's triage step so the file set is the same
+          # shape as the original audit. Any drift here means the re-audit
+          # scores a different population of files and the diff becomes
+          # meaningless.
+          find . -path '*/agents/*.md' -type f > /tmp/re-artifacts-agents.txt 2>/dev/null || true
+          find . -path '*/commands/*.md' -type f > /tmp/re-artifacts-commands.txt 2>/dev/null || true
+          find . -name 'SKILL.md' -type f > /tmp/re-artifacts-skills.txt 2>/dev/null || true
+          find . -path '*/hooks/*.json' -type f > /tmp/re-artifacts-hooks.txt 2>/dev/null || true
+          find . -name 'CLAUDE.md' -type f > /tmp/re-artifacts-claude-md.txt 2>/dev/null || true
+          find . -name 'plugin.json' -path '*/.claude-plugin/*' -type f > /tmp/re-artifacts-manifests.txt 2>/dev/null || true
+
+          TOTAL=$(cat /tmp/re-artifacts-*.txt 2>/dev/null | wc -l | tr -d ' ')
+          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
+
+          # Same MAX_FILES cap as audit.yml — keeps env size bounded for
+          # large repos. Strategy is reported but unused at re-audit time:
+          # the shared prompt expects a flat file list.
+          MAX_FILES=100
+          FILE_LIST=$(cat /tmp/re-artifacts-*.txt 2>/dev/null | head -n "$MAX_FILES")
+          AUDITED_COUNT=$(printf '%s\n' "$FILE_LIST" | grep -c '.' || echo 0)
+          echo "audited_count=$AUDITED_COUNT" >> "$GITHUB_OUTPUT"
+
+          if [ "$TOTAL" -le 20 ]; then STRATEGY="single";
+          elif [ "$TOTAL" -le 60 ]; then STRATEGY="batched";
+          else STRATEGY="progressive"; fi
+          echo "strategy=$STRATEGY" >> "$GITHUB_OUTPUT"
+
+          echo "RE_AUDIT_FILE_LIST<<FILELIST_DELIM" >> "$GITHUB_ENV"
+          echo "$FILE_LIST" >> "$GITHUB_ENV"
+          echo "FILELIST_DELIM" >> "$GITHUB_ENV"
+
+          echo "Re-audit triage: $AUDITED_COUNT files to re-score ($STRATEGY)"
+
+      - name: Re-audit — render shared scoring prompt
+        if: steps.skipcheck.outputs.skip != 'true' && steps.reclone.outputs.skip != 'true'
+        env:
+          TARGET_REPO: ${{ steps.target.outputs.repo }}
+          SLUG: ${{ steps.reclone.outputs.slug }}
+          STRATEGY: ${{ steps.retriage.outputs.strategy }}
+          ARTIFACT_COUNT: ${{ steps.retriage.outputs.audited_count }}
+          RE_AUDIT_FILE_LIST: ${{ env.RE_AUDIT_FILE_LIST }}
+        run: |
+          DATE_ISO=$(date -u +%Y-%m-%d)
+          REPORT_PATH="auditor/audits/${SLUG}.re-audit.md"
+          SIDECAR_PATH="auditor/audits/${SLUG}.re-audit.findings.jsonl"
+          mkdir -p auditor/audits
+
+          # Clear any stale re-audit outputs from a previous run — Claude
+          # must emit fresh files, not edit prior ones.
+          rm -f "$REPORT_PATH" "$SIDECAR_PATH"
+
+          # Render the shared prompt template by substituting tokens.
+          # The template lives at auditor/prompts/score-artifacts.md and is
+          # shared contract with audit.yml (JSONL sidecar schema). File
+          # list is multi-line so we use python for substitution — sed on
+          # multi-line input is fragile.
+          python3 <<PYEOF
+          from pathlib import Path
+          template = Path("auditor/prompts/score-artifacts.md").read_text()
+          replacements = {
+              "{{TARGET_REPO}}": "${TARGET_REPO}",
+              "{{CLONE_DIR}}": "target-repo",
+              "{{FILE_LIST}}": """${RE_AUDIT_FILE_LIST}""",
+              "{{REPORT_PATH}}": "${REPORT_PATH}",
+              "{{SIDECAR_PATH}}": "${SIDECAR_PATH}",
+              "{{REPORT_TITLE}}": "NLPM Re-Audit: ${TARGET_REPO}",
+              "{{DATE_ISO}}": "${DATE_ISO}",
+              "{{ARTIFACT_COUNT}}": "${ARTIFACT_COUNT}",
+              "{{STRATEGY}}": "${STRATEGY}",
+              "{{MODE}}": "re-audit",
+          }
+          for k, v in replacements.items():
+              template = template.replace(k, v)
+          Path("/tmp/re-audit-prompt.md").write_text(template)
+          print(f"Rendered re-audit prompt: {len(template)} bytes")
+          PYEOF
+
+      - name: Re-audit — score with Claude Code
+        id: rescore
+        if: steps.skipcheck.outputs.skip != 'true' && steps.reclone.outputs.skip != 'true'
+        uses: anthropics/claude-code-action@v1
+        continue-on-error: true
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: "github-actions[bot],nlpm-auditor[bot]"
+          show_full_output: true
+          prompt: "Read the prompt file at /tmp/re-audit-prompt.md and follow all instructions in it."
+          claude_args: "--allowedTools Read,Glob,Grep,Write"
+
+      - name: Re-audit — extract scores, diff, emit events
+        # Gated on rescore.outcome == 'success' AND rescore actually emitted a
+        # report file. Without this guard, a failed Claude run left an empty
+        # sidecar behind which the diff classified as "all findings
+        # fixed_upstream_not_merged", flooding events.jsonl with false
+        # finding_verified records and corrupting rule-health metrics.
+        # continue-on-error on rescore lets downstream housekeeping run even
+        # when the scoring call itself failed.
+        if: steps.skipcheck.outputs.skip != 'true' && steps.reclone.outputs.skip != 'true' && steps.rescore.outcome == 'success'
+        id: rediff
+        env:
+          TARGET_REPO: ${{ steps.target.outputs.repo }}
+          SLUG: ${{ steps.reclone.outputs.slug }}
+          COMMIT_SHA_BEFORE: ${{ steps.reclone.outputs.commit_sha_before }}
+          COMMIT_SHA_AFTER: ${{ steps.reclone.outputs.commit_sha_after }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          ORIG_REPORT="auditor/audits/${SLUG}.md"
+          ORIG_SIDECAR="auditor/audits/${SLUG}.findings.jsonl"
+          RE_REPORT="auditor/audits/${SLUG}.re-audit.md"
+          RE_SIDECAR="auditor/audits/${SLUG}.re-audit.findings.jsonl"
+          DIFF_REPORT="auditor/audits/${SLUG}.re-audit.diff.md"
+          SUMMARY="/tmp/re-audit-summary.json"
+
+          # Inner precondition, belt-and-suspenders beyond the step-level
+          # rescore.outcome gate: require the re-audit REPORT to exist.
+          # The shared prompt instructs Claude to write the report (Step 2)
+          # before the sidecar (Step 3). An existing report proves Claude
+          # ran the scoring logic; an absent one means the action silently
+          # produced nothing (timeout, prompt echo, auth flap).
+          if [ ! -f "$RE_REPORT" ]; then
+            echo "Re-audit report missing at $RE_REPORT — scoring did not complete."
+            echo "Skipping diff + event emission. Case study will run in skip mode."
+            echo '{"skipped": true, "reason": "rescore_produced_no_report"}' > /tmp/evidence/re-audit-summary.json
+            echo "Re-audit skipped — scoring step produced no report." > /tmp/evidence/re-audit-report.md
+            echo "Re-audit skipped — scoring step produced no report." > /tmp/evidence/re-audit-diff.md
+            exit 0
+          fi
+
+          # Sidecar may be legitimately absent if the re-scoring found no
+          # findings. Empty sidecar is the "perfectly clean" result — all
+          # original findings should surface as fixed via the diff.
+          if [ ! -f "$RE_SIDECAR" ]; then
+            echo "Re-audit sidecar missing at $RE_SIDECAR (report present); creating empty file."
+            touch "$RE_SIDECAR"
+          fi
+
+          # Anchor to the `**NL Score**:` label rather than matching any
+          # `N/100` in the report body. Without the anchor, a sentence
+          # like "78/100 lines passed" earlier in the doc would be
+          # picked up as the score. Accepts the literal label and an
+          # optional `<...>` placeholder (the shared prompt template).
+          extract_score() {
+            local report="$1"
+            [ -f "$report" ] || { echo ""; return; }
+            grep -oE '\*\*NL Score\*\*:[[:space:]]*[0-9]+/100' "$report" \
+              | head -1 \
+              | grep -oE '[0-9]+' | head -1
+          }
+
+          ORIG_SCORE_ARG=""
+          ORIG_SCORE=$(extract_score "$ORIG_REPORT")
+          [ -n "$ORIG_SCORE" ] && ORIG_SCORE_ARG="--original-score $ORIG_SCORE"
+
+          RE_SCORE_ARG=""
+          RE_SCORE=$(extract_score "$RE_REPORT")
+          [ -n "$RE_SCORE" ] && RE_SCORE_ARG="--reaudit-score $RE_SCORE"
+
+          # Run the diff. It tolerates missing files, malformed lines, and
+          # an empty registry — produces an honest summary even when the
+          # pipeline is only partly populated.
+          python3 auditor/scripts/diff-findings.py \
+            --repo "$TARGET_REPO" \
+            --original-sidecar "$ORIG_SIDECAR" \
+            --reaudit-sidecar "$RE_SIDECAR" \
+            --registry auditor/registry/repos.json \
+            --commit-sha-before "$COMMIT_SHA_BEFORE" \
+            --commit-sha-after "$COMMIT_SHA_AFTER" \
+            --events-out auditor/logs/events.jsonl \
+            --diff-report-out "$DIFF_REPORT" \
+            --summary-out "$SUMMARY" \
+            $ORIG_SCORE_ARG \
+            $RE_SCORE_ARG
+
+          # Copy re-audit evidence into /tmp/evidence/ so the writer prompt
+          # reads them alongside the original audit materials.
+          cp "$RE_REPORT" /tmp/evidence/re-audit-report.md 2>/dev/null || \
+            echo "No re-audit report" > /tmp/evidence/re-audit-report.md
+          cp "$DIFF_REPORT" /tmp/evidence/re-audit-diff.md 2>/dev/null || \
+            echo "No diff" > /tmp/evidence/re-audit-diff.md
+          cp "$SUMMARY" /tmp/evidence/re-audit-summary.json 2>/dev/null || \
+            echo "{}" > /tmp/evidence/re-audit-summary.json
+
+          # Signal to the writer prompt that re-audit evidence is present.
+          echo "available=true" >> "$GITHUB_OUTPUT"
+          echo "=== re-audit summary ==="
+          cat "$SUMMARY"
+
+      - name: Re-audit — skipped (still signal to writer prompt)
+        # Fires in two cases: (1) reclone step decided to skip (no original
+        # sidecar, no original findings, target unreachable), or (2) the
+        # scoring action failed (timeout, auth, prompt echo). In either
+        # case the writer prompt needs stub evidence files to branch on so
+        # the article omits the Re-Audit section honestly instead of
+        # fabricating one from stale or partial data.
+        if: steps.skipcheck.outputs.skip != 'true' && (steps.reclone.outputs.skip == 'true' || steps.rescore.outcome != 'success')
+        env:
+          RECLONE_SKIP: ${{ steps.reclone.outputs.skip }}
+          RECLONE_REASON: ${{ steps.reclone.outputs.skip_reason }}
+          RESCORE_OUTCOME: ${{ steps.rescore.outcome }}
+        run: |
+          if [ "$RECLONE_SKIP" = "true" ]; then
+            REASON="$RECLONE_REASON"
+          else
+            REASON="rescore_${RESCORE_OUTCOME}"
+          fi
+          echo "{\"skipped\": true, \"reason\": \"$REASON\"}" > /tmp/evidence/re-audit-summary.json
+          echo "Re-audit skipped — reason: $REASON" > /tmp/evidence/re-audit-report.md
+          echo "Re-audit skipped — reason: $REASON" > /tmp/evidence/re-audit-diff.md
+
       - name: Prepare case study prompt
         if: steps.skipcheck.outputs.skip != 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
           SLUG="${TARGET_REPO//\//-}"
+
+          # The writer prompt branches on whether the re-audit actually ran.
+          # When re-audit evidence is present, the article gets a dedicated
+          # "The Re-Audit" section with numeric before/after verification.
+          # When it's absent, the article omits the section rather than
+          # faking it — honesty beats completeness.
+          RE_AUDIT_SKIPPED=$(jq -r '.skipped // false' /tmp/evidence/re-audit-summary.json 2>/dev/null || echo "true")
+
+          if [ "$RE_AUDIT_SKIPPED" = "false" ]; then
+            RE_AUDIT_SECTION_GUIDANCE=$(cat <<'GUIDANCE_EOF'
+          7. **The Re-Audit** — Post-merge verification.
+             - Open with one sentence framing: a rubric update is a claim;
+               the re-audit verifies the claim against the target repo's
+               current HEAD.
+             - Pull before/after scores and commit SHAs from
+               /tmp/evidence/re-audit-summary.json.
+             - Render the per-finding outcome table directly from
+               /tmp/evidence/re-audit-diff.md (outcome column is load-bearing —
+               reproduce its wording verbatim, do not paraphrase).
+             - If any findings were introduced since audit (summary.json
+               introduced_count > 0), add a short subsection explaining:
+               these may be true regressions from maintainer commits, OR
+               scoring drift from the model. Name both possibilities; do
+               not assign blame.
+             - Close with one sentence measuring what the diff actually
+               proved: "X of Y original findings verified fixed; Z still
+               persist" — numbers only, no editorializing.
+          GUIDANCE_EOF
+          )
+            RE_AUDIT_TIMELINE_GUIDANCE='- Timeline gantt MUST include a Verify section with a "Re-audit at HEAD" task — mirrors the mirror-test case study'
+            RE_AUDIT_LIMITATIONS_GUIDANCE='- Add to Limitations: what the re-audit does NOT prove (e.g., "the re-audit measures file-level quality at one point in time; it does not verify that maintainer intent aligns with our rule set")'
+          else
+            RE_AUDIT_SECTION_GUIDANCE="          (Re-audit was skipped — do NOT write a 'The Re-Audit' section. Renumber subsequent sections accordingly.)"
+            RE_AUDIT_TIMELINE_GUIDANCE='- Timeline gantt — no Verify section this run (re-audit was skipped)'
+            RE_AUDIT_LIMITATIONS_GUIDANCE='- Add to Limitations: "Post-merge re-audit was skipped for this engagement; before/after quality change is not independently verified."'
+          fi
+
           cat > /tmp/case-study-prompt.md <<PROMPT_EOF
           You are writing a case study article about an NLPM audit engagement.
 
@@ -133,7 +519,16 @@ jobs:
           - issues.json: tracking issues we created
           - commits.json: commits mentioning NLPM or Claude
           - pr-*-reviews.json: maintainer review comments
-          - audit-report.md: the full NLPM scoring report
+          - audit-report.md: the full NLPM scoring report (original audit)
+          - re-audit-report.md: the post-merge re-score at target HEAD
+            (or a "skipped" stub if re-audit did not run)
+          - re-audit-diff.md: per-finding verification table (outcomes:
+            fixed_and_merged / fixed_applied_separately /
+            fixed_upstream_not_merged / persists_identically /
+            persists_line_shifted; plus introduced findings)
+          - re-audit-summary.json: structured before/after counts and
+            scores. The \`skipped\` field tells you whether the Re-Audit
+            section is warranted for this engagement.
 
           ## Article Template
 
@@ -147,10 +542,11 @@ jobs:
           4. **The Audit** — overall score, distribution (mermaid pie chart), top issues, fair assessment
           5. **What Was Submitted** — each PR with GitHub URL, title, fix description
           6. **The Response** — maintainer reaction from review comments and commits
-          7. **What the Audit Revealed** — patterns with fairness note
-          8. **Timeline** — mermaid gantt chart from PR/issue timestamps
-          9. **Limitations** — what this doesn't prove
-          10. **Significance** — measured, not inflated
+          ${RE_AUDIT_SECTION_GUIDANCE}
+          8. **What the Audit Revealed** — patterns with fairness note
+          9. **Timeline** — mermaid gantt chart from PR/issue timestamps
+          10. **Limitations** — what this doesn't prove
+          11. **Significance** — measured, not inflated
 
           ## Style Rules (first draft)
           - Write clean, factual prose first — ornate wording comes in the polish pass
@@ -161,10 +557,14 @@ jobs:
           ## Mermaid Diagram Requirements
           - Score distribution: mermaid pie chart
           - Timeline: mermaid gantt chart (dateFormat YYYY-MM-DD HH:mm, axisFormat %H:%M)
+          ${RE_AUDIT_TIMELINE_GUIDANCE}
           - PR priority grouping: mermaid graph LR with colored subgraphs if 3+ priority tiers
           - Parallel/sequential failure: mermaid sequenceDiagram if applicable
           - Find ANY data that would be clearer as a diagram than a table — use mermaid
           - Do NOT use ASCII art or text-based diagrams — always mermaid
+
+          ## Limitations guidance
+          ${RE_AUDIT_LIMITATIONS_GUIDANCE}
 
           ## Also write
           - /tmp/case-study-summary.txt: one-line summary for the issue comment
@@ -709,7 +1109,12 @@ jobs:
           git config user.name "nlpm-auditor[bot]"
           git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git add case-studies/ auditor/logs/events.jsonl
+          # Also stage re-audit artifacts written earlier in this run:
+          # .re-audit.md (scoring report), .re-audit.findings.jsonl
+          # (sidecar), .re-audit.diff.md (verification table). The diff
+          # script also appended finding_verified / finding_introduced
+          # events to logs/events.jsonl — already included above.
+          git add case-studies/ auditor/logs/events.jsonl auditor/audits/
           bash auditor/scripts/guard-protected-paths.sh || exit 1
           git diff --cached --quiet || {
             git commit -m "case-study: $TARGET_REPO ($LINES lines)"

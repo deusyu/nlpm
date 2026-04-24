@@ -11,6 +11,9 @@ The auditor pipeline emits structured, append-only logs so NLPM can learn from h
 | `auditor/logs/events.jsonl` | yes | all workflows via `log-event.sh` | Workflow lifecycle events plus aggregated outcome events |
 | `auditor/audits/<slug>.md` | no (rewritten per audit) | `auditor-audit.yml` | Human-readable audit report |
 | `auditor/audits/<slug>.findings.jsonl` | no (rewritten per audit) | `auditor-audit.yml` | Per-audit findings sidecar, source for global `findings.jsonl` |
+| `auditor/audits/<slug>.re-audit.md` | no (rewritten per re-audit) | `auditor-case-study.yml` | Post-merge re-scoring report at target HEAD |
+| `auditor/audits/<slug>.re-audit.findings.jsonl` | no (rewritten per re-audit) | `auditor-case-study.yml` | Re-audit findings sidecar, diffed against the original — NOT appended to global `findings.jsonl` |
+| `auditor/audits/<slug>.re-audit.diff.md` | no (rewritten per re-audit) | `auditor-case-study.yml` | Per-finding verification table — source material for the case-study writer's "Re-Audit" section |
 | `auditor/feedback/log.json` | no (rebuilt) | daily report | Rolling summary, derived from the three append-only logs |
 | `auditor/registry/repos.json` | no (mutated in place) | multiple workflows | Tracking database for repos and PRs |
 
@@ -79,12 +82,15 @@ New IDs may be introduced without a schema change, but should be documented in t
 ### `fingerprint` computation
 
 ```
-fingerprint = "sha256:" + sha256(repo + "|" + file + "|" + rule_id + "|" + pattern + "|" + line)
+payload     = repo + "|" + file + "|" + rule_id + "|" + pattern + "|" + line + "\n"
+fingerprint = "sha256:" + sha256(payload)
 ```
+
+The trailing `\n` is part of the contract: `auditor/scripts/compute-fingerprint.sh` pipes `jq` output through `shasum -a 256`, and `jq`'s default mode appends a newline that `shasum` folds into the digest. Python or other language reimplementations (e.g., `auditor/scripts/diff-findings.py`) MUST include the same trailing newline — omitting it silently produces a different digest. A self-test in `diff-findings.py --self-test` cross-checks Python's output against the shell helper on every run.
 
 The fingerprint is deliberately stable across re-audits of the same file (same repo, same rule, same pattern, same line). It is the join key that connects findings to PR outcomes and to disagreements.
 
-If the line shifts but the finding is otherwise identical, the fingerprint changes. This is intentional: line-shift fingerprint churn is tolerable, and false-matches across moved code is worse.
+If the line shifts but the finding is otherwise identical, the fingerprint changes. This is intentional: line-shift fingerprint churn is tolerable, and false-matches across moved code is worse. When a line-shift match matters — e.g., the post-merge re-audit — the consumer falls back to a "loose key" of `(repo, file, rule_id, pattern)` and distinguishes `persists_identically` from `persists_line_shifted` in its output. See `finding_verified` below.
 
 ### `false_positive` semantics
 
@@ -223,9 +229,125 @@ Emitted by `auditor-audit.yml` after appending per-audit findings to the global 
 
 Used for pipeline health monitoring — a sustained non-zero `invalid_lines` means Claude's JSONL emission is drifting.
 
+### Event: `finding_verified`
+
+Emitted by `auditor-case-study.yml` after a post-merge re-audit. One record per original finding — outcome classifies the finding's fate against the re-scored target at HEAD.
+
+```json
+{
+  "timestamp": "2026-04-24T10:30:00Z",
+  "workflow": "case-study",
+  "event": "finding_verified",
+  "run_id": "...",
+  "run_number": 0,
+  "data": {
+    "repo": "owner/name",
+    "fingerprint": "sha256:...",
+    "rule_id": "R09",
+    "file": "agents/counter.md",
+    "pattern": "no-examples",
+    "outcome": "fixed_and_merged",
+    "commit_sha_before": "abc123...",
+    "commit_sha_after": "def456...",
+    "pr_number": 42
+  }
+}
+```
+
+`outcome` ∈:
+
+| Value | Meaning |
+|-------|---------|
+| `fixed_and_merged` | Finding absent from re-audit AND its fingerprint appeared in a merged PR — our contribution resolved it |
+| `fixed_applied_separately` | Finding absent from re-audit AND its fingerprint appeared in a closed-unmerged PR whose maintainer comments indicated the fix was applied separately — our PR was not the vehicle but our finding drove the fix |
+| `fixed_upstream_not_merged` | Finding absent from re-audit AND no PR we opened carried this fingerprint — maintainer found and fixed the issue independently |
+| `persists_identically` | Finding present in re-audit with the same fingerprint — line + rule + pattern unchanged since audit |
+| `persists_line_shifted` | Finding present in re-audit with a different line but matching `(repo, file, rule_id, pattern)` — maintainer touched surrounding lines but left the finding in place |
+
+`pr_number` is the PR whose `nlpm-metadata` block claimed the fingerprint, or `null` for `fixed_upstream_not_merged` / `persists_*` outcomes. The emitter (`diff-findings.py`) normalizes this field to `integer | null` via `_coerce_pr_number`: registry values that leak through as strings (e.g., `"42"`), prefixed forms (`"#42"`), or malformed shapes (bool, float, non-numeric string) are coerced to int or dropped to `null`. Consumers may rely on `integer | null` without type branching.
+
+This event is higher-signal than `finding_outcome` for per-rule precision analysis: `finding_outcome` records intent (a PR merged), while `finding_verified` records effect (the rule's target is actually gone from the code). `rule-health.py` joins both.
+
+### Event: `finding_introduced`
+
+Emitted alongside `finding_verified` when the post-merge re-audit surfaces findings that were NOT in the original audit. Distinguishes regressions introduced by maintainer commits from persistent findings we already knew about.
+
+```json
+{
+  "timestamp": "2026-04-24T10:30:00Z",
+  "workflow": "case-study",
+  "event": "finding_introduced",
+  "run_id": "...",
+  "run_number": 0,
+  "data": {
+    "repo": "owner/name",
+    "fingerprint": "sha256:...",
+    "rule_id": "R14",
+    "file": "agents/new-agent.md",
+    "pattern": "missing-examples",
+    "severity": "high",
+    "commit_sha": "def456..."
+  }
+}
+```
+
+`finding_introduced` events are NOT appended to `findings.jsonl` — re-audit sidecars deliberately stay out of the global log to avoid double-counting the same rule against the same repo in per-rule reach calculations. The event carries enough fields for retrospective analysis without inflating the findings table.
+
 ### Event: `finding_amended`
 
 Reserved for future use. Emitted when a prior finding record is retroactively invalidated (e.g., the rule was later deprecated). Always references a prior `fingerprint`. No current workflow emits this; it exists in the schema so tooling can handle it when introduced.
+
+## Re-audit summary
+
+`auditor/scripts/diff-findings.py` writes a summary JSON blob consumed by the case-study writer prompt and by ad-hoc reporting. Location is caller-specified (`--summary-out`); the case-study workflow writes to `/tmp/evidence/re-audit-summary.json`.
+
+### Record schema
+
+```json
+{
+  "repo": "owner/name",
+  "date": "2026-04-24",
+  "original_score": 74,
+  "reaudit_score": 92,
+  "commit_sha_before": "abc123...",
+  "commit_sha_after": "def456...",
+  "original_findings_count": 12,
+  "reaudit_findings_count": 3,
+  "original_malformed_count": 0,
+  "reaudit_malformed_count": 0,
+  "verified": {
+    "fixed_and_merged": 8,
+    "fixed_applied_separately": 1,
+    "fixed_upstream_not_merged": 1,
+    "persists_identically": 1,
+    "persists_line_shifted": 1
+  },
+  "introduced_count": 1,
+  "fixed_total": 10,
+  "persists_total": 2
+}
+```
+
+### Field reference
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `repo` | string | Target repo `owner/name` |
+| `date` | ISO date | UTC day the re-audit ran |
+| `original_score` | int \| null | `**NL Score**:` value parsed from the original audit report; `null` if absent |
+| `reaudit_score` | int \| null | `**NL Score**:` value parsed from the re-audit report; `null` if absent |
+| `commit_sha_before` | string | Full SHA the original audit ran against; `"unknown"` if the registry and legacy findings don't carry it |
+| `commit_sha_after` | string | Full SHA of the target's default-branch HEAD at re-audit time |
+| `original_findings_count` | int | Total findings in the original sidecar |
+| `reaudit_findings_count` | int | Total findings in the re-audit sidecar |
+| `original_malformed_count` | int | Dropped-during-parse rows in the original sidecar; non-zero means the re-audit's "fixed" tally may under-count |
+| `reaudit_malformed_count` | int | Dropped-during-parse rows in the re-audit sidecar; non-zero means the "introduced" tally may under-count |
+| `verified.<outcome>` | int | Count per outcome (keys match the enum in `finding_verified`) |
+| `introduced_count` | int | Re-audit findings with no pairing partner in the original — may be regressions or scoring drift |
+| `fixed_total` | int | Sum of all three `fixed_*` outcomes |
+| `persists_total` | int | Sum of both `persists_*` outcomes |
+
+When the writer prompt detects `skipped: true` at the top level instead of these fields, it omits the "Re-Audit" section of the article rather than fabricating one. `skipped` is a set-shape variant — only the `skipped` and `reason` keys are present — emitted by the workflow's skip step (reclone failure, zero findings, or rescore failure).
 
 ## PR metadata block
 
@@ -281,8 +403,9 @@ The core query a rule-refinement agent runs:
 
 ```
 findings.jsonl
-  ⋈ events.jsonl (where event = finding_outcome)  on fingerprint
-  ⋈ disagreements.jsonl                           on fingerprint
+  ⋈ events.jsonl (where event = finding_outcome)   on fingerprint
+  ⋈ events.jsonl (where event = finding_verified)  on fingerprint
+  ⋈ disagreements.jsonl                            on fingerprint
 GROUP BY rule_id
 ```
 
@@ -291,11 +414,20 @@ Derived per-rule metrics:
 | Metric | Source | Signal |
 |--------|--------|--------|
 | `hits / repos_audited` | findings | Reach |
-| `merged / contributed` | findings ⋈ outcomes | Precision (our judgment) |
+| `merged / contributed` | findings ⋈ outcomes | Precision — our judgment (a PR was merged) |
+| `verified_fixed / verified_total` | findings ⋈ verified | Precision — effect (a re-audit confirmed the rule's target is gone) |
 | `self_fp / hits` | disagreements:self | Precision (our known errors) |
 | `maintainer_rejected / contributed` | disagreements:maintainer | Precision (external) |
 | `downstream_suppression / deployments` | disagreements:downstream | Community disagreement |
 | median `dissent_type` | disagreements:maintainer | How the rule fails, not just that it fails |
+
+**`verified_fixed` vs `merged`.** `merged` tells you the maintainer accepted a PR that claimed to address the finding. `verified_fixed` tells you a re-run of the scorer against the post-merge code no longer flags it. These can diverge when:
+
+- A PR merged that only partially addressed the finding → `merged=1`, `verified_fixed=0` (outcome `persists_identically` or `persists_line_shifted`).
+- The maintainer fixed the finding in a separate commit → `merged=0`, `verified_fixed=1` (outcome `fixed_upstream_not_merged`).
+- The maintainer re-introduced the defect in a later commit → `merged=1`, `verified_fixed=0` (outcome `persists_*`).
+
+`verified_fixed` is the stricter, more load-bearing signal for rule precision. Per-rule `state` classification (healthy/noisy/disputed/dormant) in `rule-health.py` weights verified_fixed above merged when both are present.
 
 Rules cluster into four states on these metrics:
 

@@ -6,17 +6,25 @@ classifies every rule_id as healthy, noisy, dormant, or disputed.
 
 Inputs (paths are relative to the repo root):
     auditor/findings.jsonl          — one record per finding
-    auditor/logs/events.jsonl       — finding_outcome events (filtered)
+    auditor/logs/events.jsonl       — finding_outcome + finding_verified + finding_introduced events (filtered)
     auditor/disagreements.jsonl     — self_fp, maintainer_rejected, pr_comments_snapshot, downstream_suppression
     auditor/registry/repos.json     — rule-adopted repos, total repos audited
 
 Output (argv[1] or stdout): a JSON blob with
     summary.*            — PR scorecard numbers (drop-in replacement for the old feedback-summary.json)
     rule_metrics[rid]    — hits, contributed, merged, closed_unmerged, open, self_fp,
-                           maintainer_rejected, downstream_suppressions, dissent_types, state
+                           maintainer_rejected, downstream_suppressions, dissent_types,
+                           verified_fixed, verified_persists, verify_rate, introduced, state
     dormant_rules[]      — R* rules in the catalog with zero hits
     unclassified_ids[]   — non-catalog rule_ids seen in findings (SEC-*, BUG-*, CC-*)
     metadata.*           — totals, updated_at
+
+The `verified_*` metrics come from finding_verified events emitted by the
+post-merge re-audit (auditor-case-study.yml). They give effect-level
+precision: `merged / contributed` says "maintainer accepted our PR";
+`verified_fixed / verified_total` says "re-running the scorer confirms
+the rule's target is actually gone from the code". When both are present,
+rule state classification weights the verified signal above the merged one.
 
 All reads are tolerant: missing files produce zeros, malformed JSONL
 lines are skipped with a warning to stderr.
@@ -69,6 +77,8 @@ def classify_rule(metrics: dict) -> str:
     maintainer_rejected = metrics["maintainer_rejected"]
     downstream = metrics["downstream_suppressions"]
     merged = metrics["merged"]
+    verified_total = metrics.get("verified_total", 0)
+    verified_fixed = metrics.get("verified_fixed", 0)
 
     # Disputed first — downstream suppressions and maintainer rejection outrank
     # self-precision, since those represent external dissent the auditor
@@ -81,7 +91,16 @@ def classify_rule(metrics: dict) -> str:
     # Noisy: high false-positive rate (self-known or externally inferred).
     if hits >= 3 and self_fp / hits > 0.2:
         return "noisy"
-    if contributed >= 3 and merged / contributed < 0.5:
+
+    # Verified signal — when the re-audit has run for enough findings,
+    # weight it above the merged signal. A PR that merged but left the
+    # finding in place (persists_*) counts against the rule here, where
+    # `merged / contributed` would have counted it for.
+    if verified_total >= 3:
+        if verified_fixed / verified_total < 0.5:
+            return "noisy"
+    elif contributed >= 3 and merged / contributed < 0.5:
+        # Fall back to PR-level signal when re-audit hasn't accumulated yet.
         return "noisy"
 
     return "healthy"
@@ -112,6 +131,37 @@ def main() -> int:
             continue
         for fp in data.get("fingerprints", []) or []:
             outcome_by_fp[fp] = state
+
+    # Index finding_verified events by fingerprint. Same last-write-wins rule
+    # applies — a finding can be re-audited more than once (e.g., a case
+    # study is regenerated after a new maintainer commit). The verify
+    # outcome is an enum documented in SCHEMAS.md §finding_verified.
+    FIXED_OUTCOMES = {
+        "fixed_and_merged",
+        "fixed_applied_separately",
+        "fixed_upstream_not_merged",
+    }
+    PERSISTS_OUTCOMES = {"persists_identically", "persists_line_shifted"}
+    verified_by_fp: dict[str, str] = {}
+    for e in events:
+        if e.get("event") != "finding_verified":
+            continue
+        data = e.get("data", {})
+        fp = data.get("fingerprint")
+        outcome = data.get("outcome")
+        if fp and outcome:
+            verified_by_fp[fp] = outcome
+
+    # Count finding_introduced events per rule. These are NOT in findings.jsonl
+    # (by design — re-audit findings don't inflate reach), so they need a
+    # separate aggregation path.
+    introduced_by_rule: Counter[str] = Counter()
+    for e in events:
+        if e.get("event") != "finding_introduced":
+            continue
+        rid = e.get("data", {}).get("rule_id")
+        if rid:
+            introduced_by_rule[rid] += 1
 
     self_fp_fps = {
         d.get("fingerprint")
@@ -152,6 +202,17 @@ def main() -> int:
         self_fp = len(unique_fps & self_fp_fps)
         maintainer_rejected = sum(1 for fp in unique_fps if fp in rejected_by_fp)
 
+        # Verified metrics — finding_verified events joined on fingerprint.
+        verified_outcomes = [
+            verified_by_fp[fp] for fp in unique_fps if fp in verified_by_fp
+        ]
+        verified_total = len(verified_outcomes)
+        verified_fixed = sum(1 for o in verified_outcomes if o in FIXED_OUTCOMES)
+        verified_persists = sum(1 for o in verified_outcomes if o in PERSISTS_OUTCOMES)
+        verify_rate = (
+            verified_fixed / verified_total if verified_total else None
+        )
+
         dissent_types: Counter[str] = Counter()
         for fp in unique_fps:
             for d in rejected_by_fp.get(fp, []):
@@ -170,9 +231,40 @@ def main() -> int:
             "maintainer_rejected": maintainer_rejected,
             "downstream_suppressions": len(suppressions_by_rule.get(rid, [])),
             "dissent_types": dict(dissent_types),
+            "verified_total": verified_total,
+            "verified_fixed": verified_fixed,
+            "verified_persists": verified_persists,
+            "verify_rate": verify_rate,
+            "introduced": introduced_by_rule.get(rid, 0),
         }
         metrics["state"] = classify_rule(metrics)
         rule_metrics[rid] = metrics
+
+    # A rule might fire ONLY in a post-merge re-audit (finding_introduced
+    # with no prior finding in findings.jsonl). Surface those too, with
+    # hits=0 so consumers see the introduced-only signal without conflating
+    # it with reach.
+    for rid, introduced_count in introduced_by_rule.items():
+        if rid in rule_metrics:
+            continue
+        rule_metrics[rid] = {
+            "hits": 0,
+            "unique_fingerprints": 0,
+            "contributed": 0,
+            "merged": 0,
+            "closed_unmerged": 0,
+            "open": 0,
+            "self_fp": 0,
+            "maintainer_rejected": 0,
+            "downstream_suppressions": len(suppressions_by_rule.get(rid, [])),
+            "dissent_types": {},
+            "verified_total": 0,
+            "verified_fixed": 0,
+            "verified_persists": 0,
+            "verify_rate": None,
+            "introduced": introduced_count,
+            "state": "healthy",  # nothing to judge yet — introduced-only
+        }
 
     # Dormant: catalog R* rules with zero findings. SEC/BUG/CC namespaces are
     # dynamic — no authoritative inventory — so dormant detection is catalog-only.
@@ -255,6 +347,10 @@ def main() -> int:
             "self_false_positive": m["self_fp"],
             "maintainer_rejected": m["maintainer_rejected"],
             "downstream_suppressions": m["downstream_suppressions"],
+            "verified_fixed": m["verified_fixed"],
+            "verified_persists": m["verified_persists"],
+            "verify_rate": m["verify_rate"],
+            "introduced_since_audit": m["introduced"],
             "state": m["state"],
         })
     with feedback_path.open("w") as fh:

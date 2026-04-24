@@ -100,7 +100,7 @@ The `auditor/` subdirectory contains a GitHub Actions pipeline that discovers, a
 | auditor-audit | Issue labeled `audit-ready` | Security scan + NL score; emits findings.jsonl + disagreements.jsonl |
 | auditor-contribute | Issue labeled `contribute-approved` | Fork, PR for verified bugs; stamps PR body with `nlpm-metadata` block |
 | auditor-track | Every 4h cron | PR state, emits finding_outcome + pr_comments_snapshot on transitions |
-| auditor-case-study | Issue labeled `case-study-ready` | Write article, self-review, polish, cover image |
+| auditor-case-study | Issue labeled `case-study-ready` | Re-audit target at HEAD (diff vs. original findings, emit finding_verified + finding_introduced), write article, self-review, polish, cover image |
 | auditor-daily-report | Daily cron | Pipeline state + per-rule health (healthy/noisy/dormant/disputed) |
 | auditor-classify | Daily cron / manual | Haiku classifies `pr_comments_snapshot` → `maintainer_rejected` |
 | auditor-suppressions | Weekly cron / manual | Scan public repos for NLPM rule-override configs |
@@ -114,9 +114,13 @@ The `auditor/` subdirectory contains a GitHub Actions pipeline that discovers, a
 | auditor/feedback/log.json | no | Rolling summary, derived from the three append-only logs |
 | auditor/audits/<slug>.md | no | Per-repo human-readable scoring report |
 | auditor/audits/<slug>.findings.jsonl | no | Per-audit findings sidecar, source for the global log |
+| auditor/audits/<slug>.re-audit.md | no | Post-merge re-scoring report at target HEAD |
+| auditor/audits/<slug>.re-audit.findings.jsonl | no | Re-audit findings sidecar (NOT appended to global log) |
+| auditor/audits/<slug>.re-audit.diff.md | no | Per-finding verification table feeding the case-study writer |
 | auditor/findings.jsonl | yes | One record per finding, joined by fingerprint |
 | auditor/disagreements.jsonl | yes | self_false_positive, pr_comments_snapshot, maintainer_rejected, downstream_suppression |
-| auditor/logs/events.jsonl | yes | Lifecycle events + finding_outcome + findings_aggregated |
+| auditor/logs/events.jsonl | yes | Lifecycle events + finding_outcome + finding_verified + finding_introduced + findings_aggregated |
+| auditor/prompts/score-artifacts.md | no | Shared rubric-and-sidecar scoring prompt used by audit (first pass) and case-study (re-audit) |
 | auditor/reports/ | no | Daily reports |
 
 See `auditor/SCHEMAS.md` for the full record contracts.
@@ -125,6 +129,11 @@ See `auditor/SCHEMAS.md` for the full record contracts.
 
 ```
 discover → security scan → audit → contribute → track outcomes
+                                                       │
+                              re-audit at HEAD ←───────┤
+                              (emit finding_verified,
+                               finding_introduced,
+                               feed case-study writer)
                                                        │
                           classify PR dissent ←────────┤
                                                        │
@@ -138,6 +147,14 @@ discover → security scan → audit → contribute → track outcomes
 Everything before `refine rules` is automated observation. Only
 `auditor-refine-rules` mutates NLPM's own rulebook, and it does so by
 opening a PR for human review — never by merging.
+
+The re-audit closes the loop between *intent* (a PR merged) and *effect*
+(the scorer's target is actually gone from the code). `finding_verified`
+is higher-signal than `finding_outcome` for per-rule precision — a PR
+can merge without fully removing the finding, and a maintainer can fix
+a finding in a commit outside any PR we opened. `rule-health.py` weights
+the verified signal above the merged signal whenever at least three
+findings have been verified for the rule.
 
 ### Security Gate
 
@@ -153,12 +170,13 @@ The audit workflow includes a security scan BEFORE the NL quality audit:
 | Script | Purpose |
 |--------|---------|
 | log-event.sh | Append lifecycle events to events.jsonl |
-| compute-fingerprint.sh | SCHEMAS §fingerprint formula, shared by audit + contribute |
+| compute-fingerprint.sh | SCHEMAS §fingerprint formula, shared by audit + contribute + re-audit |
+| diff-findings.py | Diff a re-audit's sidecar against the original, emit finding_verified / finding_introduced events and the case-study diff report; `--self-test` cross-checks Python fingerprint vs. the shell helper |
 | guard-protected-paths.sh | Block stray edits to skills/, agents/ from automation commits |
 | resolve-merge-conflicts.sh | Auto-resolve conflicts on append-only log pushes |
 | parse-suppressions.py | Extract rule_overrides from NLPM config frontmatter |
 | parse-pr-metadata.py | Extract `nlpm-metadata` block from a PR body on stdin |
-| rule-health.py | Run SCHEMAS §Learning query, write feedback-summary.json |
+| rule-health.py | Run SCHEMAS §Learning query, write feedback-summary.json (consumes finding_verified for precision) |
 
 ### Model pinning
 

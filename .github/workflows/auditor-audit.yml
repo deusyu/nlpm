@@ -790,7 +790,8 @@ jobs:
              --arg score "$SCORE" \
              --arg strategy "$STRATEGY" \
              --arg security "$SECURITY" \
-             '.repos[$name].status = "audited" | .repos[$name].score = ($score | tonumber) | .repos[$name].strategy = $strategy | .repos[$name].security = $security' \
+             --arg sha "${{ steps.clone.outputs.commit_sha }}" \
+             '.repos[$name].status = "audited" | .repos[$name].score = ($score | tonumber) | .repos[$name].strategy = $strategy | .repos[$name].security = $security | .repos[$name].commit_sha_at_audit = $sha' \
              auditor/registry/repos.json > /tmp/reg.json && mv /tmp/reg.json auditor/registry/repos.json || {
             echo "WARNING: registry update failed, continuing anyway"
           }
