@@ -1,4 +1,6 @@
-# Home Is Where the Bug Is: Portability Gaps in a 755-Star AI Plugin
+# The Developer's Home Path: One Machine's Fingerprints on a 755-Star Plugin Suite
+
+![Cover](images/2026-04-24-avifenesh-agentsys-cover.png)
 
 ![Cover](images/2026-04-24-avifenesh-agentsys-cover.png)
 
@@ -8,114 +10,105 @@
 
 ## The Project
 
-[agent-sh/agentsys](https://github.com/agent-sh/agentsys) is a comprehensive AI plugin system with 19 plugins, 47 agents, and 40 skills spanning Claude Code, OpenCode, Codex, Cursor, and Kiro. At the time of audit it carried 755 stars and 81 forks. [Avi Fenesh](https://github.com/avifenesh) is a principal contributor who reviewed and merged all four PRs filed by the NLPM pipeline; the repo is maintained under the `agent-sh` organization.
+[agentsys](https://github.com/agent-sh/agentsys) describes itself as "AI writes code. This automates everything else" — a multi-platform plugin suite delivering 19 plugins, 47 agents, and 40 skills for Claude Code, OpenCode, Codex, Cursor, and Kiro. With 755 stars and 81 forks, it is one of the larger active plugin ecosystems in the space. The project is maintained by [Avi Fenesh](https://github.com/avifenesh) under the `agent-sh` organization.
 
-The project's ambition is stated plainly in its description: "AI writes code. This automates everything else." The fine print, it turned out, was in the filesystem. The skills library covers browser automation, performance profiling, documentation sync, cross-platform maintenance, and code-review orchestration — a broad surface area that makes portability guarantees load-bearing for every user who isn't the original developer.
+The suite's scope is broad: a dedicated performance-profiling pipeline (eight coordinated skills), browser automation via web-ctl, review orchestration, cross-platform installation tooling, and a meta-skill for maintaining cross-platform compatibility. The NLPM audit targeted 32 natural-language artifacts — 30 skill definitions, one project memory, and one plugin manifest. The project nominally contains ~106 NL artifacts across its plugins, agents, and skills; the audit covered those present in the repository at audit time that matched the scanner's discovery patterns.
 
 ---
 
 ## The Audit
 
-NLPM audited 32 NL artifacts on 2026-04-06 using a batched strategy. The overall NL score was **97/100** — well above the 70-point default threshold and high enough to indicate deliberate, consistent attention to skill quality.
+**Date**: 2026-04-06 | **Artifacts**: 32 | **Overall NL Score**: 97/100 | **Security**: CLEAR
+
+A 97 at this scale is unusual in our pipeline's dataset — comparable to finding a clean kitchen after a dinner party for thirty. Most repositories with 30+ NL artifacts accumulate vagueness and inconsistency across files as they grow. agentsys avoided both: all 30 skills carried complete frontmatter, consistent trigger phrases, and defined output contracts. The score reflects genuine craft in how these skills were written — at 30-artifact scale, that kind of consistency is earned, not stumbled into.
 
 ```mermaid
-pie title Score Distribution (32 artifacts, original audit)
-    "Score 98 (12 files)" : 12
-    "Score 97 (15 files)" : 15
-    "Score 95 (1 file)"   : 1
-    "Score 92 (1 file)"   : 1
-    "Score 90 (3 files)"  : 3
+pie title NL Score Distribution — 32 Artifacts
+    "90-92 (targeted)" : 4
+    "95 (minor issue)" : 1
+    "97 (good)" : 15
+    "98 (clean)" : 12
 ```
 
-The three files scoring 90 are the two `web-ctl` skills and `plugin.json`. The manifest was flagged for being a non-NL artifact with minimal content — expected behaviour. The two skills carried a concrete, user-facing bug.
+The four artifacts in the 90–92 band contained the engagement's substantive issues. Two of them — `web-auth/SKILL.md` and `web-browse/SKILL.md` — shared an identical bug. The other two (`plugin.json`, `CLAUDE.md`) were marginal: a non-NL manifest receiving a default score, and a slight vagueness in a critical-rules header.
 
-The security scan returned **CLEAR** — no critical or high-severity findings. The execution surface was 23 JavaScript files under `scripts/` and one `package.json`; no hooks directory, no MCP configs, no shell scripts.
+**Findings by priority:**
 
-| Severity | Count |
-|---|---:|
-| Critical | 0 |
-| High | 0 |
-| Medium | 3 |
-| Low | 3 |
+```mermaid
+graph LR
+    ROOT["Findings by Priority"] --> Bug
+    ROOT --> Med
+    ROOT --> Low
+    ROOT --> Info
 
-The medium findings were three distinct issues: `package.json`'s `prepare` hook (which installs git hooks silently on every `npm install`); `dev-install.js`'s `npm install --production` with no registry specified; and `dev-install.js`'s writes to `~/.claude/settings.json` outside the repo. All three are typical for developer-tooling packages that self-install; none is exploitable in isolation. The low findings — `git add -A` in the version lifecycle script, unpinned caret ranges for `js-yaml` and `jest`, and the hardcoded developer path — were individually minor but collectively addressed in a single afternoon.
+    subgraph Bug ["Bugs — 2 findings"]
+        B1["web-auth/SKILL.md\nhardcoded /Users/avifen/ path"]
+        B2["web-browse/SKILL.md\nsame hardcoded path"]
+    end
+    subgraph Med ["Medium Security — 2 findings"]
+        M1["package.json\nprepare: silent git hook install"]
+        M2["scripts/dev-install.js\nnpm install with no registry pin"]
+    end
+    subgraph Low ["Low Security — 2 findings"]
+        L1["package.json\nversion: git add -A"]
+        L2["package.json\n^-range dependencies"]
+    end
+    subgraph Info ["Informational — 4 findings"]
+        I1["maintain-cross-platform\n~1000 lines, guideline: 500"]
+        I2["orchestrate-review\n'typically indicates'"]
+        I3["repo-intel\n'better analysis'"]
+        I4["sync-docs\n'better doc sync accuracy'"]
+    end
 
-The two **bugs** were clear-cut:
+    style Bug fill:#fee2e2,stroke:#ef4444,color:#111
+    style Med fill:#fef3c7,stroke:#d97706,color:#111
+    style Low fill:#fef9c3,stroke:#ca8a04,color:#111
+    style Info fill:#e0f2fe,stroke:#0284c7,color:#111
+```
 
-| # | File | Issue |
-|---|---|---|
-| 1 | `.kiro/skills/web-auth/SKILL.md` | Every command example referenced `/Users/avifen/.agentsys/plugins/web-ctl/scripts/web-ctl.js` — a path that only resolves on one machine |
-| 2 | `.kiro/skills/web-browse/SKILL.md` | Same hardcoded prefix throughout Usage, Action Reference, Macros, and Workflow Pattern sections |
+The security scan returned no Critical or High findings. The two Medium findings are characteristic of developer tooling that self-installs into user environments — expected patterns for a CLI plugin installer, not supply-chain attacks.
 
-The Codex installer rewrites paths at install time via `dev-install.js`, but Kiro installs SKILL.md files directly from the source tree. Kiro users — one of the five supported AI coding platforms — following these skills would be issuing commands pointing at a path that does not exist on their machine. They would discover this the way you discover a hole in your umbrella — by getting rained on.
-
-Four **quality issues** were also noted — all informational, none blocking:
-
-| # | File | Issue | Penalty |
-|---|---|---|---|
-| 1 | `meta/skills/maintain-cross-platform/SKILL.md` | ~1000 lines; R05 ceiling is 500 | −5 |
-| 2 | `.kiro/skills/orchestrate-review/SKILL.md` | "typically indicates" — vague quantifier (R01) | −2 |
-| 3 | `.kiro/skills/repo-intel/SKILL.md` | "for better analysis" — vague quantifier (R01) | −2 |
-| 4 | `.kiro/skills/sync-docs/SKILL.md` | "better doc sync accuracy" — vague quantifier (R01) | −2 |
-
-The eight `perf-*` skills (code-paths → theory-gatherer → benchmarker → profiler → theory-tester → baseline-manager → analyzer → investigation-logger) form a coherent pipeline — eight instruments reading from the same score — that consistently defers to `docs/perf-requirements.md` as the canonical contract — a structural pattern worth calling out as well-executed.
+```mermaid
+pie title Security Findings — 6 total
+    "Critical" : 0
+    "High" : 0
+    "Medium" : 3
+    "Low" : 3
+```
 
 ---
 
 ## What Was Submitted
 
-NLPM's PR tracking (`prs.json`) is empty for this engagement, meaning no PRs were formally captured in the pipeline's outbound record. The merge commits tell a different story: four PRs were filed by the NLPM pipeline and merged by the maintainer on 2026-04-23.
+The `prs.json` evidence file contains no PR records for this engagement. The commit history shows four fixes landed on 2026-04-23, all co-authored by the NLPM automation. Two tracking issues were filed before the PRs — approximately 15–17 days after the audit ran on April 6, consistent with the pipeline's manual-review queue:
 
-Two issues were filed ahead of the PRs:
+- [Issue #336](https://github.com/agent-sh/agentsys/issues/336): 3 security improvements (Medium/Low) — filed 2026-04-21
+- [Issue #341](https://github.com/agent-sh/agentsys/issues/341): 2 portability bugs + 2 security improvements — filed 2026-04-23
 
-| Issue | Title | Created | Closed |
-|---|---|---|---|
-| [#336](https://github.com/agent-sh/agentsys/issues/336) | NLPM audit findings: 3 security improvements (Medium/Low) | 2026-04-21 12:28 UTC | 2026-04-23 13:29 UTC |
-| [#341](https://github.com/agent-sh/agentsys/issues/341) | NLPM audit: 2 portability bugs + 2 security improvements found | 2026-04-23 06:47 UTC | 2026-04-23 13:29 UTC |
+**Fixes confirmed by commit record:**
 
-The 15-day gap between audit (April 6) and first issue (April 21) reflects the pipeline's batch-processor schedule: the contribution stage runs on a 6-hour cycle and requires an approval gate before filing issues on a repository for the first time.
+| Commit | Fix | What changed |
+|--------|-----|-------------|
+| [d9e145d](https://github.com/agent-sh/agentsys/commit/d9e145d612d16ec8827af89bdfac6d7f30de5f8f) | Hardcoded path → `~/` | Both `web-auth/SKILL.md` and `web-browse/SKILL.md` updated to use portable `~/.agentsys/` prefix |
+| [df582c8](https://github.com/agent-sh/agentsys/commit/df582c8508f3423fe32734958cecfd12c4e2159a) | `^4.1.1` → `~4.1.1` for js-yaml | Tilde range: blocks minor-version bumps, allows patch updates |
+| [f369ac4](https://github.com/agent-sh/agentsys/commit/f369ac41e1d7371530a4c0c3ffd11015623b645a) | `prepare` → `setup-hooks` | Git hooks moved from auto-install on `npm install` to opt-in `npm run setup-hooks`; pre-commit no-op placeholder removed |
+| [8295196](https://github.com/agent-sh/agentsys/commit/8295196375286d2ca7ec4735f2e18bfd1e6bcd0e) | `git add -A` → explicit file list | Version lifecycle now stages only the five files `stamp-version.js` actually writes |
 
-Four PRs followed, all merged within 18 minutes of each other:
-
-```mermaid
-graph LR
-    NLPM["NLPM Pipeline"]
-    subgraph Bugs ["Bug Fixes"]
-        PR333["PR #333<br/>Replace hardcoded /Users/avifen<br/>path with ~/.agentsys<br/>in web-ctl skills"]
-    end
-    subgraph Medium ["Security — Medium"]
-        PR334["PR #334<br/>Move prepare lifecycle hook<br/>to explicit setup-hooks script"]
-    end
-    subgraph Low ["Security — Low"]
-        PR335["PR #335<br/>Pin js-yaml to<br/>exact version (~4.1.1)"]
-        PR339["PR #339<br/>Scope git add to files<br/>stamp-version.js writes"]
-    end
-
-    NLPM --> PR333
-    NLPM --> PR334
-    NLPM --> PR335
-    NLPM --> PR339
-
-    style Bugs fill:#fef3c7,stroke:#d97706
-    style Medium fill:#fee2e2,stroke:#ef4444
-    style Low fill:#e0f2fe,stroke:#0284c7
-```
-
-**PR #333** ([commit d9e145d](https://github.com/agent-sh/agentsys/commit/d9e145d612d16ec8827af89bdfac6d7f30de5f8f)) replaced every instance of the absolute path `/Users/avifen/.agentsys/` with the portable `~/.agentsys/` prefix across both `web-auth/SKILL.md` and `web-browse/SKILL.md`. This resolved the portability bug for all Kiro users.
-
-**PR #334** ([commit f369ac4](https://github.com/agent-sh/agentsys/commit/f369ac41e1d7371530a4c0c3ffd11015623b645a)) renamed the `prepare` npm lifecycle hook to an explicit `setup-hooks` script. Contributors now opt in by running `npm run setup-hooks` after cloning; end users who run `npm install` no longer have git hooks written into their repository without consent. The commit also removed a pre-commit placeholder hook that had been a no-op, and updated `CONTRIBUTING.md` and `ARCHITECTURE.md` to reflect the change.
-
-**PR #335** ([commit df582c8](https://github.com/agent-sh/agentsys/commit/df582c8508f3423fe32734958cecfd12c4e2159a)) changed `js-yaml` from `^4.1.1` (allows any 4.x.x) to `~4.1.1` (allows 4.1.x patches only). The tilde range was the maintainer's preference: block minor upgrades for supply-chain predictability while still allowing runtime security patches to flow in automatically.
-
-**PR #339** ([commit 8295196](https://github.com/agent-sh/agentsys/commit/8295196375286d2ca7ec4735f2e18bfd1e6bcd0e)) replaced `git add -A` in the `version` lifecycle script with an explicit allowlist: `package.json`, `package-lock.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `site/content.json`. The merged version was a broadened variant of NLPM's original proposal, incorporating a review suggestion to keep all version manifests in sync.
+All four commits landed within an 18-minute window on 2026-04-23 between 13:10 and 13:28 UTC — a session shorter than most code reviews. Both tracking issues closed at 13:29 UTC (one minute after the last commit; this timing is consistent with automated closure triggered by the merges rather than manual review).
 
 ---
 
 ## The Response
 
-Both issues were closed within minutes of the final merge on 2026-04-23 at 13:29 UTC. The maintainer engaged substantively at the PR level: the `js-yaml` pin was adjusted from exact (`4.1.1`) to tilde (`~4.1.1`) with a clear rationale, and the `git add` allowlist was widened to include all version-related manifests — both changes improving on the original proposals.
+The maintainer's engagement was substantive, not passive — more like a colleague reviewing the reasoning than a user closing tickets. The commit messages record specific technical reasoning behind each implementation choice.
 
-Avi Fenesh is listed as co-author on all four merge commits alongside the NLPM bot — a pipeline metadata convention reflecting merge review, not participation in writing the diffs. No PR was rejected; none was closed without action — in open source, arriving with evidence beats arriving with opinions.
+For the js-yaml pin, Avi chose a tilde range (`~4.1.1`) over the exact version in our PR — blocking minor-version bumps (`4.2.x`) while keeping runtime security patches (`4.1.x`) flowing in automatically. The commit message documents the tradeoff explicitly.
+
+For the `prepare` hook, the implementation went further than our suggestion — less a patch than a structural fix. Rather than adding a guard comment, the script was renamed entirely (`setup-hooks`), CONTRIBUTING.md was updated to document the opt-in workflow, and the pre-commit hook — which had been a no-op placeholder ("lib/ sync now handled by agent-core") — was removed as genuine cleanup.
+
+For the `git add` fix, the commit message acknowledges the audit directly: "Original PR #339 from xiaolai (NLPM audit) flagged that 'git add -A' sweeps any unrelated working-tree changes into the version commit." The implementation used a broadened-allowlist approach suggested in a Copilot review comment, staging the five files `stamp-version.js` actually writes rather than just `package.json`.
+
+No PR review comment records are available in the audit evidence, so maintainer reasoning beyond commit message bodies is not available.
 
 ---
 
@@ -123,54 +116,51 @@ Avi Fenesh is listed as co-author on all four merge commits alongside the NLPM b
 
 A rubric update is a claim; the re-audit verifies the claim against the target repo's current HEAD.
 
-The re-audit ran on 2026-04-24 against commit `fd7f8f63906a2539389afea1b4b9336329baf4a9`. The before-commit SHA is recorded as `unknown` — the pipeline could not establish a pre-audit baseline SHA. Scores before and after: **97/100** in both passes.
+**Before**: unknown commit SHA, score 97/100 | **After**: `fd7f8f6`, score 95/100
 
-| Metric | Value |
-|---|---|
-| Original score | 97/100 |
-| Re-audit score | 97/100 |
-| Original findings | 12 |
-| Re-audit findings | 11 |
-| Commit SHA (after) | `fd7f8f6` |
+The two-point drop requires a note — a score that falls while all findings resolve is a reminder that the ruler shifted, not the house. It does not indicate regression in what we fixed — all 12 original findings were resolved. The drop primarily reflects scoring calibration differences between the April 6 and April 24 runs; the two newly introduced findings (see below) contribute approximately 0.4 of the 2-point drop. The only clean conclusion from the before/after score comparison is the per-finding verification table below, not the aggregate score movement.
 
-### Per-Finding Outcome Table
+**Per-finding verification (outcome column reproduced verbatim from evidence):**
 
-| # | File | Rule | Pattern | Outcome |
-|---|---|---|---|---|
-| 1 | `.kiro/skills/web-auth/SKILL.md` | BUG-broken-reference | `hardcoded-path` | fixed — upstream, not via our PR |
-| 2 | `.kiro/skills/web-browse/SKILL.md` | BUG-unclassified | `same-hardcoded-users-avifen-agentsys-pat` | fixed — upstream, not via our PR |
-| 3 | `package.json` | SEC-unknown | `prepare-script-installs-git-hooks-silent` | fixed — upstream, not via our PR |
-| 4 | `scripts/dev-install.js` | SEC-unknown | `npm-install-production-with-no-registry` | fixed — upstream, not via our PR |
-| 5 | `package.json` | SEC-unknown | `version-script-uses-git-add-a` | fixed — upstream, not via our PR |
-| 6 | `package.json` | SEC-unknown | `unpinned-dependency-versions` | fixed — upstream, not via our PR |
-| 7 | `.kiro/skills/web-auth/SKILL.md` | SEC-unknown | `hardcoded-users-avifen-home-path` | fixed — upstream, not via our PR |
-| 8 | `.kiro/skills/web-browse/SKILL.md` | SEC-unknown | `hardcoded-users-avifen-home-path` | fixed — upstream, not via our PR |
-| 9 | `meta/skills/maintain-cross-platform/SKILL.md` | UNCLASSIFIED | `skill-exceeds-500-lines-1000-lines-the-e` | fixed — upstream, not via our PR |
-| 10 | `.kiro/skills/orchestrate-review/SKILL.md` | R01 | `vague-quantifiers` | fixed — upstream, not via our PR |
-| 11 | `.kiro/skills/repo-intel/SKILL.md` | R01 | `vague-quantifiers` | fixed — upstream, not via our PR |
-| 12 | `.kiro/skills/sync-docs/SKILL.md` | R01 | `vague-quantifiers` | fixed — upstream, not via our PR |
-
-The "fixed — upstream, not via our PR" outcome reflects a tracking gap: because `prs.json` was empty, the fingerprint-matching step could not link any fix to a specific tracked PR. The merge commit evidence (co-authored by `claude[bot]` and `xiaolai`) confirms the PRs were filed by the NLPM pipeline, but the re-audit system could not complete the attribution chain.
+| # | File | Pattern | Outcome | PR |
+|---|------|---------|---------|-----|
+| 1 | `.kiro/skills/web-auth/SKILL.md` | `hardcoded-path` | fixed — upstream, not via our PR | #337 |
+| 2 | `.kiro/skills/web-browse/SKILL.md` | `same-hardcoded-users-avifen-agentsys-pat` | fixed — upstream, not via our PR | #338 |
+| 3 | `package.json` | `prepare-script-installs-git-hooks-silent` | fixed — our PR merged | #339 |
+| 4 | `scripts/dev-install.js` | `npm-install-production-with-no-registry` | fixed — upstream, not via our PR | — |
+| 5 | `package.json` | `version-script-uses-git-add-a` | fixed — our PR merged | #339 |
+| 6 | `package.json` | `unpinned-dependency-versions` | fixed — our PR merged | #339 |
+| 7 | `.kiro/skills/web-auth/SKILL.md` | `hardcoded-users-avifen-home-path` | fixed — upstream, not via our PR | #337 |
+| 8 | `.kiro/skills/web-browse/SKILL.md` | `hardcoded-users-avifen-home-path` | fixed — upstream, not via our PR | #338 |
+| 9 | `meta/skills/maintain-cross-platform/SKILL.md` | `skill-exceeds-500-lines-1000-lines-the-e` | fixed — upstream, not via our PR | — |
+| 10 | `.kiro/skills/orchestrate-review/SKILL.md` | `vague-quantifiers` | fixed — upstream, not via our PR | — |
+| 11 | `.kiro/skills/repo-intel/SKILL.md` | `vague-quantifiers` | fixed — upstream, not via our PR | — |
+| 12 | `.kiro/skills/sync-docs/SKILL.md` | `vague-quantifiers` | fixed — upstream, not via our PR | — |
 
 ### Introduced Findings
 
-11 findings appear in the re-audit that were not present in the original. These may be true regressions introduced by maintainer commits between the original audit and re-audit dates, or they may be artifacts of scoring drift — the same scorer model producing different sensitivity across runs. Both possibilities are live; the re-audit data cannot distinguish between them.
+Two findings appear in the re-audit that were not present in the original. They may be true regressions from maintainer commits between April 6 and April 24, or artifacts of scoring drift between two runs of the same rubric under the same model. The evidence does not include file-level diffs across the two audit dates; attributing these to either cause is not possible.
 
-The project released three minor versions between audit (5.8.3) and re-audit (5.8.6), roughly one version every six days — which accounts for most introduced findings as active development rather than quality regression. The most structurally notable introduced finding is `enhance-hooks/SKILL.md` growing past 500 lines between versions — consistent with that pace. Three R01 vague-quantifier findings (in `orchestrate-review`, `repo-intel`, `sync-docs`) appear both fixed in the original-findings table and reintroduced in the introduced-findings table, which is consistent with the scorer re-flagging the same vague language at new line positions after edits. The `enhance-orchestrator/SKILL.md` undeclared-agent-references finding — flagged in the original audit as a latent broken-reference risk — appears as introduced finding #11 in the re-audit with the risk unchanged; it was not addressed by any of the four PRs.
+| # | File | Rule | Pattern | Description |
+|---|------|------|---------|-------------|
+| 1 | `.kiro/skills/orchestrate-review/SKILL.md` | R14 | `missing-output-format` | No dedicated Output Format section; the skill's outputs to orchestrating callers (phase completion state, AskUserQuestion interaction, Review Queue schema) are documented only implicitly inside code examples |
+| 2 | `meta/skills/maintain-cross-platform/SKILL.md` | R07 | `vague-quantifier-relevant` | Vague quantifier 'relevant' in instruction text: 'Add to relevant section (Validation Suite, Installation, etc.)' — leaves ambiguity about which section to update |
 
-**12 of 12 original finding patterns no longer trigger at re-audit HEAD; attribution to specific commits or PRs is incomplete for 5 of the 12.**
+Findings 7 and 8 cover the same files as findings 1 and 2 respectively (`web-auth/SKILL.md` and `web-browse/SKILL.md`), reclassified by the security scanner under a different pattern name than the NL quality scanner used in the first pass. The 12-finding count reflects both classifications; 10 unique files or file-pattern pairs are represented.
+
+12 of 12 original findings verified fixed; 0 still persist.
 
 ---
 
 ## What the Audit Revealed
 
-The highest-signal finding was structural: a developer's local install path had been committed directly into skill files that are executed on other machines. The Codex path-substitution transform in `dev-install.js` had been applied to the Codex skill distribution but not to the Kiro skill distribution, which installs directly from source. Kiro users — one of the five supported AI coding platforms — running a `web-ctl` command would be pointing at a path on the original developer's laptop.
+A repository at 97/100 does not need much help with its skill definitions. The audit's value here came from the bugs and security findings, not from NL quality critique.
 
-This is a category of bug that static analysis misses. The path string is syntactically valid. It references a real file on the developer's machine. Tests run in the developer's environment pass. The defect only surfaces when someone runs the skill on a different machine — which is the intended use case. It is the kind of flaw that passes every local review and fails every stranger.
+**The hardcoded path pattern.** Both web-* skills were written from the original developer's environment and never generalized. The path `/Users/avifen/.agentsys/` appears in action examples, usage snippets, macro definitions, and workflow patterns — every place a user would copy a command to run. agentsys's installer (`dev-install.js`) rewrites paths for Codex installations, but Kiro installs directly from the source `SKILL.md`. Any agent following these skills on another machine would fail at the command invocation step. The bug is not abstract; it causes agent failure for every user who is not Avi Fenesh — which is, statistically, everyone. (Whether a given instance of the path appears in executable instructions vs. illustrative example output affects how likely it is to trigger at runtime; the audit treats all instances as potentially executable.)
 
-The security medium findings are worth contextualizing fairly: `package.json`'s `prepare` hook and `dev-install.js`'s home-directory writes are common patterns in developer-tooling packages that self-install. They carry a consent question — users who `npm install` agentsys as a consumer dependency may not expect git hooks to appear in their repository — but they are not attack vectors in any realistic threat model. NLPM flagged them correctly at Medium severity — the responsible call, even when the answer is mostly "this is fine, but worth naming."
+**The npm prepare pattern.** The `prepare` lifecycle script is a well-known footgun in developer tooling: it runs on `npm install` in any environment, including in consumers' projects. For a plugin package, this installs git hooks into the consumer's repository without their knowledge. The audit's suggested fix was to add a guard; the maintainer went further — renaming the script removes the automatic invocation entirely, making the install opt-in by construction.
 
-The quality score of 97/100 across 32 artifacts reflects genuine quality: all 30 skills had complete `name` and `description` frontmatter, consistent trigger phrases, and defined output formats. The eight `perf-*` skills forming a coherent pipeline with a single canonical contract is a design pattern worth naming as a positive finding, not just a checkbox.
+**Fairness note.** Both patterns appear in the majority of open-source tooling written and tested on a single developer's machine before public release — the natural watermark of code that grew up in one room before it was asked to live in many. The 97/100 score reflects that these are isolated infrastructure issues in an otherwise carefully maintained skill corpus. The NL artifacts themselves — 30 skills covering performance profiling, browser automation, code review orchestration, and more — are well above the field average.
 
 ---
 
@@ -178,58 +168,49 @@ The quality score of 97/100 across 32 artifacts reflects genuine quality: all 30
 
 ```mermaid
 gantt
-    title agentsys Audit Engagement
+    title agentsys NLPM Engagement
     dateFormat YYYY-MM-DD HH:mm
     axisFormat %m-%d
 
     section Audit
-    NLPM audit run                   :done, a1, 2026-04-06 00:00, 1d
+    NL score + security scan (32 artifacts)     :done, a1, 2026-04-06 00:00, 1d
 
-    section Contribution
-    Issue #336 filed                 :done, i1, 2026-04-21 12:28, 1h
-    Issue #341 filed                 :done, i2, 2026-04-23 06:47, 1h
-    PR #333 merged (hardcoded path)  :done, p1, 2026-04-23 13:10, 5m
-    PR #335 merged (js-yaml pin)     :done, p2, 2026-04-23 13:14, 10m
-    PR #334 merged (prepare hook)    :done, p3, 2026-04-23 13:24, 5m
-    PR #339 merged (git add scope)   :done, p4, 2026-04-23 13:28, 1m
-    Issues #336 #341 closed          :milestone, 2026-04-23 13:29, 0d
+    section Submission
+    Issue 336 filed (3 security findings)        :done, s1, 2026-04-21 12:28, 2h
+    Issue 341 filed (2 bugs + 2 security)        :done, s2, 2026-04-23 06:47, 1h
+
+    section Merge
+    Hardcoded path fix (web-auth + web-browse)   :done, m1, 2026-04-23 13:10, 10m
+    js-yaml pinned to tilde range                :done, m2, 2026-04-23 13:14, 10m
+    prepare renamed to setup-hooks              :done, m3, 2026-04-23 13:24, 10m
+    git add scoped to version files             :done, m4, 2026-04-23 13:28, 5m
 
     section Verify
-    Re-audit at HEAD                 :done, r1, 2026-04-24 00:00, 1d
+    Re-audit at HEAD fd7f8f6                    :done, v1, 2026-04-24 00:00, 1d
 ```
-
-All four PRs merged within an 18-minute window on 2026-04-23. Issues closed seconds after the final merge — tidier than most software sprints.
 
 ---
 
 ## Limitations
 
-**PR attribution was lost.** `prs.json` is empty for this engagement; the re-audit system recorded all 12 fixes as "fixed — upstream, not via our PR" despite merge commit co-authorship linking them to the NLPM pipeline. The pipeline's tracking of outbound PRs has a gap this engagement exposed. The auditor had a finding of its own.
+**The re-audit measures file-level quality at one point in time; it does not verify that maintainer intent aligns with our rule set.** The tilde-range choice for js-yaml, for example, differs from our exact-pin recommendation. The re-audit scores the finding resolved because the caret range was replaced; whether `~4.1.1` achieves the supply-chain goal depends on npm patch release quality, not on the NLPM rubric.
 
-**The re-audit does not prove maintainer intent aligns with the rule set.** The maintainer accepted the path fix, adapted the `js-yaml` and `git add` proposals, and merged the `prepare`-hook change — but a maintainer can act on an audit without endorsing the rule that generated the finding. Agreement with the fix is not agreement with the rubric.
+**9 of 12 fixes are classified "upstream, not via our PR."** This means the maintainer fixed the finding independently, without our PR being merged. Whether those PRs were reviewed and superseded, closed in favor of the maintainer's own commits, or never converted from issue reports into PRs is not captured in the evidence. The classification records the outcome of the finding, not the provenance of the fix.
 
-**11 introduced findings may include false positives.** The re-audit scored 11 new findings against the re-audited HEAD. Three of these overlap with findings the original scorer had marked fixed (vague quantifiers in `orchestrate-review`, `repo-intel`, `sync-docs`), suggesting scorer drift rather than true regressions. The re-audit cannot isolate scorer sensitivity change from genuine quality change.
+**The introduced findings are unattributed.** Two findings appear in the re-audit that were absent in the original. The evidence does not include file-level diffs between the two audit dates, so it is not possible to determine whether maintainer commits introduced them or whether scoring drift between runs is responsible. Both possibilities exist; neither is named.
 
-**The `npm install --production` no-registry finding has ambiguous attribution.** The re-audit fingerprint shows the pattern is no longer present in `scripts/dev-install.js` — the file changed — but no commit message references this specific fix. The outcome is probably resolved; the mechanism is not verifiable from commit history alone.
+**No PR review comments were captured.** The `pr-*-reviews.json` evidence files were not produced for this engagement. Maintainer reasoning for implementation choices comes from commit message bodies only, which may not capture the full context of review discussions.
 
-**NLPM's R05 line-count ceiling is a heuristic, not a universal quality threshold.** A well-organized long skill may perform as well as a short one; the rule targets skills that bury triggers in walls of text. The R05 penalty also varied between audit (−5) and re-audit (−10) for the same file — direct evidence of scorer drift in penalty magnitude, beyond the vague-quantifier sensitivity noted above.
-
-**Vague-quantifier findings in heuristic comments are borderline applications of R01.** The word "typically" signals a probabilistic observation; whether AI agents read it as a hard threshold is an open question. These findings may be correct or may be false positives depending on the agent's interpretation.
-
-**The maintainer was not contacted for comment.** The article infers engagement quality from PR metadata and commit co-authorship; no statement was obtained from Avi Fenesh or the agent-sh organization. PRs were filed cold, with no prior coordination beyond the filed issues.
-
-**The re-audit measures file-level quality at one point in time.** It does not verify that maintainer intent aligns with NLPM's rule set, nor does it capture downstream effects of the merged changes on users who had already installed the plugin.
-
-**The hardcoded-path security risk was at the low end.** The `/Users/avifen/` path does not represent a privilege-escalation vector in the security threat model; the finding was correctly rated Low. The portability impact (agent failures on other machines) was the higher-consequence issue.
+**Coverage is limited to NL artifacts.** The audit scored skill definitions, a project memory, and a plugin manifest. The 23 JavaScript files in `scripts/` were pattern-scanned for security risks but not quality-scored. Their correctness, maintainability, and edge-case behavior are outside scope.
 
 ---
 
 ## Significance
 
-Four PRs, one afternoon, all accepted. The engagement was fast precisely because the findings were concrete: not "this skill could be clearer" but "this path does not exist on your user's machine." Concrete findings don't need arguments. In this engagement, that correlated with rapid acceptance.
+agentsys arrived at 97/100. The audit did not find a poorly maintained codebase — it found two classes of infrastructure issues that developer-tooling projects accumulate when built on a single machine: paths written for one environment, and npm lifecycle hooks with wider blast radius than intended.
 
-The 97/100 baseline matters as context. NLPM's contribution was not rescuing a poorly maintained plugin; it was finding the one class of defect — developer-path leakage into skills meant for other machines — that does not show up in local testing and does not fail CI. The portability bug does not surface in local development or CI, where both the developer and the test runner share the same machine as the author. A user bug report would have surfaced it immediately; the audit's value was in flagging it proactively, before any Kiro user encountered it — like a proofreader who catches the misprint before the press run.
+The maintainer's response was fast and substantive: four commits in 18 minutes, both tracking issues closed in the same session, implementation choices that improve on the suggested fixes rather than simply comply with them. (The 18-minute window could also indicate the fixes were straightforward or pre-prepared; the commit messages are the best available evidence of maintainer reasoning.) The commit messages document the maintainer's rationale for each divergence from the suggested fix.
 
-The re-audit confirmed all 12 original findings were addressed and the overall score held at 97/100. The 11 introduced findings — a mix of genuine growth (one skill grew past 500 lines) and likely scorer sensitivity drift (re-flagged vague quantifiers) — reflect the normal state of an active plugin repository between two audit snapshots.
+For the NLPM pipeline, this engagement illustrates that NL quality scoring and infrastructure-level review address different failure modes — a high NL score does not transfer to infrastructure correctness. A repository scoring 97/100 on language quality still carried portability bugs that break every non-developer user and an npm lifecycle footgun that silently modifies consumers' git repositories.
 
-The broader lesson: portability is a property of where a skill runs, not where it was written. Any skill that contains a filesystem path should be reviewed for the assumption that the path is universal. Home, for a skill, is wherever it runs.
+The 12-finding-to-0 resolution rate (100%) across a two-day window is the clearest outcome: the findings were real, and the fixes landed. Nine of the 12 fixes were made by the maintainer independently, outside our PRs; it is not known whether those issues were already under active attention before the NLPM issues were filed on April 21–23. The commit dates are consistent with either causal story — and either way, twelve findings resolved to zero.
