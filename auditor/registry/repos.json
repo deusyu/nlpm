@@ -5028,11 +5028,14 @@
       "stars": 0,
       "artifacts": 16,
       "description": "The flight recorder for AI coding — keeps your docs in sync with your code",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 88,
       "audit_issue": 208,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "7a54141eb1ca6b0e040002d6c7215ec31a6add7d"
     },
     "anthropics/skills": {
       "discovered": "2026-04-25T01:06:48Z",
