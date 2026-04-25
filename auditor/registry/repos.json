@@ -5031,14 +5031,15 @@
       "stars": 4,
       "artifacts": 6,
       "description": "Iterative artifact refinement with investigation-first judge board - constructs problem-specific judges that read the code, understand the problem, and propose evidence-based improvements",
-      "status": "audited",
+      "status": "contributed",
       "score": 93,
       "audit_issue": 207,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "bf58540cf5d5e26f27f4f50d2bc924bfbf004f00"
+      "commit_sha_at_audit": "bf58540cf5d5e26f27f4f50d2bc924bfbf004f00",
+      "pipeline_prs": []
     },
     "888wing/codetape": {
       "discovered": "2026-04-25T01:06:48Z",
