@@ -4181,7 +4181,7 @@
       "stars": 698,
       "artifacts": 24,
       "description": "Continuously sync your AI setups with one command. Codebase tailor suited agent skills, MCPs and config files for Claude Code, Cursor, and Codex.",
-      "status": "tracked",
+      "status": "complete",
       "score": 100,
       "audit_issue": 142,
       "prs": [
@@ -4264,7 +4264,8 @@
         182
       ],
       "rule_adopted": false,
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "case_study": "case-studies/2026-04-25-caliber-ai-org-ai-setup.md"
     },
     "OpenRaiser/NanoResearch": {
       "discovered": "2026-04-18T22:52:00Z",
