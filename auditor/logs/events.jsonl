@@ -1266,3 +1266,4 @@
 {"timestamp":"2026-04-25T12:21:09Z","workflow":"contribute","event":"prs_submitted","run_id":"24930682397","run_number":249,"data":{"repo":"obra/superpowers","pr_count":1}}
 {"timestamp":"2026-04-25T12:22:10Z","workflow":"contribute","event":"prs_submitted","run_id":"24930676975","run_number":244,"data":{"repo":"googleworkspace/cli","pr_count":4}}
 {"timestamp":"2026-04-25T12:22:58Z","workflow":"contribute","event":"prs_submitted","run_id":"24930680191","run_number":247,"data":{"repo":"K-Dense-AI/scientific-agent-skills","pr_count":5}}
+{"timestamp":"2026-04-25T12:37:13Z","workflow":"case-study","event":"published","run_id":"24930814360","run_number":233,"data":{"repo":"feiskyer/claude-code-settings","article_lines":165,"has_cover":true}}
