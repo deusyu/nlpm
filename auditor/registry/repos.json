@@ -5049,11 +5049,13 @@
       "stars": 57097,
       "artifacts": 118,
       "description": "A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code by TÂCHES.",
-      "status": "discovered",
+      "status": "complete",
       "score": null,
       "audit_issue": 210,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "case_study": "case-studies/2026-04-06-how-we-helped-gsd.md",
+      "note": "Manually audited 2026-04-06 before auditor pipeline shipped; case study published. Re-discovered by topic-tag search 2026-04-25; corrected to complete."
     },
     "github/awesome-copilot": {
       "discovered": "2026-04-25T01:06:48Z",

@@ -59,12 +59,34 @@ jobs:
           jq -s 'add | group_by(.fullName) | map(max_by(.stargazersCount))' "$RESULTS_FILE" > /tmp/candidates.json
           echo "Found $(jq length /tmp/candidates.json) unique candidate repos"
 
-      - name: Filter against registry
+      - name: Filter against registry + published case studies
         run: |
-          jq --slurpfile registry auditor/registry/repos.json '
-            [.[] | select(.fullName as $name | ($registry[0].repos | has($name)) | not)]
+          # The registry is the primary dedup source, but pre-pipeline
+          # engagements (e.g., gsd-build/get-shit-done audited on
+          # 2026-04-06 before this pipeline shipped) live in case-studies/
+          # without a registry entry. Mining the case-study markdown for
+          # cited repo URLs catches those — without this guard, the topic
+          # search re-flagged a repo whose case study was already published.
+          # Build a deny list of "owner/name" strings cited in any case study,
+          # then dedup candidates against (registry ∪ case-study citations).
+          {
+            grep -ohE 'https://github\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+' \
+              case-studies/*.md 2>/dev/null \
+              | sed 's|https://github.com/||;s|\.git$||' \
+              | grep -vE '^(xiaolai/nlpm-for-claude|xiaolai/claude-plugin-marketplace)$' \
+              || true
+          } | sort -u > /tmp/case_study_repos.txt
+          echo "case-study-cited repos: $(wc -l < /tmp/case_study_repos.txt | tr -d ' ')"
+
+          jq --slurpfile registry auditor/registry/repos.json \
+             --rawfile cs_list /tmp/case_study_repos.txt '
+            ($cs_list | split("\n") | map(select(length > 0))) as $cs_set
+            | [.[] | select(.fullName as $name |
+                (($registry[0].repos | has($name)) | not) and
+                (($cs_set | index($name)) == null)
+              )]
           ' /tmp/candidates.json > /tmp/new_candidates.json
-          echo "New repos not yet in registry: $(jq length /tmp/new_candidates.json)"
+          echo "New repos (post registry + case-study filter): $(jq length /tmp/new_candidates.json)"
 
       - name: Probe repos for NL artifacts
         env:
