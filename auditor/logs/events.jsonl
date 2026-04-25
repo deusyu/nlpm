@@ -1224,3 +1224,4 @@
 {"timestamp":"2026-04-24T16:30:03Z","workflow":"track","event":"status_check","run_id":"24900166809","run_number":35,"data":{"contributed":46,"tracked":12,"case_study_ready":16,"rule_adopted":2}}
 {"timestamp":"2026-04-24T20:24:07Z","workflow":"track","event":"status_check","run_id":"24910010057","run_number":36,"data":{"contributed":46,"tracked":12,"case_study_ready":16,"rule_adopted":2}}
 {"timestamp":"2026-04-24T22:14:53Z","workflow":"daily-report","event":"report_generated","run_id":"24914271331","run_number":20,"data":{"total_repos":98}}
+{"timestamp":"2026-04-25T01:03:52Z","workflow":"case-study","event":"published","run_id":"24918396161","run_number":145,"data":{"repo":"luongnv89/claude-howto","article_lines":126,"has_cover":true}}
