@@ -4976,11 +4976,14 @@
       "stars": 10609,
       "artifacts": 8,
       "description": "Hindsight: Agent Memory That  Learns",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 94,
       "audit_issue": 202,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "e1c6092785eae1da8f0114d3ee61bc69b210e6f8"
     },
     "webdevtodayjason/sub-agents": {
       "discovered": "2026-04-25T01:06:48Z",
