@@ -3256,7 +3256,7 @@
       "stars": 27150,
       "artifacts": 186,
       "description": "A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value.",
-      "status": "tracked",
+      "status": "complete",
       "score": 77,
       "audit_issue": 95,
       "prs": [
@@ -3311,7 +3311,8 @@
         91
       ],
       "rule_adopted": false,
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "case_study": "case-studies/2026-04-25-luongnv89-claude-howto.md"
     },
     "davila7/claude-code-templates": {
       "discovered": "2026-04-18T22:52:00Z",
