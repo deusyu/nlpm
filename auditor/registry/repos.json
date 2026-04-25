@@ -5120,14 +5120,19 @@
       "stars": 189,
       "artifacts": 39,
       "description": "Claude Code Sub Agent Manager. A simple Manager for adding Claude Code Sub Agents with hooks and custom slash commands.",
-      "status": "audited",
+      "status": "contributed",
       "score": 78,
       "audit_issue": 203,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "batched",
       "security": "REVIEW",
-      "commit_sha_at_audit": "dbbc2fff2baab8e898f625ef5c5bd2efaaea4043"
+      "commit_sha_at_audit": "dbbc2fff2baab8e898f625ef5c5bd2efaaea4043",
+      "pipeline_prs": [
+        9,
+        10,
+        11
+      ]
     },
     "zhsama/claude-sub-agent": {
       "discovered": "2026-04-25T01:06:48Z",
