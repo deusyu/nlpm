@@ -4799,11 +4799,14 @@
       "stars": 26807,
       "artifacts": 55,
       "description": "An AI-powered task-management system you can drop into Cursor, Lovable, Windsurf, Roo, and others.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 67,
       "audit_issue": 187,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "c0c98d367c55296bfe69e65680625b6db437af02"
     },
     "iannuttall/claude-agents": {
       "discovered": "2026-04-25T01:06:48Z",

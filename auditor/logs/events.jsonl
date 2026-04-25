@@ -1249,3 +1249,5 @@
 {"timestamp":"2026-04-25T08:29:45Z","workflow":"track","event":"finding_outcome","run_id":"24926698065","run_number":39,"data":{"pr":"caliber-ai-org/ai-setup#182","pr_state":"merged","fingerprints":[],"rule_ids":[]}}
 {"timestamp":"2026-04-25T08:29:58Z","workflow":"track","event":"status_check","run_id":"24926698065","run_number":39,"data":{"contributed":44,"tracked":13,"case_study_ready":18,"rule_adopted":2}}
 {"timestamp":"2026-04-25T08:44:17Z","workflow":"case-study","event":"published","run_id":"24926779295","run_number":232,"data":{"repo":"caliber-ai-org/ai-setup","article_lines":170,"has_cover":false}}
+{"timestamp":"2026-04-25T09:19:25Z","workflow":"audit","event":"findings_aggregated","run_id":"24927328963","run_number":335,"data":{"repo":"eyaltoledano/claude-task-master","findings":31,"invalid_lines":0,"self_false_positives":0}}
+{"timestamp":"2026-04-25T09:19:25Z","workflow":"audit","event":"audit_complete","run_id":"24927328963","run_number":335,"data":{"repo":"eyaltoledano/claude-task-master","score":67,"artifacts":57,"strategy":"batched"}}
