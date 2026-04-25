@@ -5076,11 +5076,14 @@
       "stars": 27917,
       "artifacts": 46,
       "description": "A lightweight alternative to OpenClaw that runs in containers for security. Connects to WhatsApp, Telegram, Slack, Discord, Gmail and other messaging apps,, has memory, scheduled jobs, and runs directly on Anthropic's Agents SDK",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 81,
       "audit_issue": 212,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "batched",
+      "security": "UNKNOWN",
+      "commit_sha_at_audit": "8d8522202a0604d187f9da132c59f386e3c489a9"
     },
     "googleworkspace/cli": {
       "discovered": "2026-04-25T01:06:48Z",
