@@ -5017,22 +5017,28 @@
       "stars": 4,
       "artifacts": 6,
       "description": "Iterative artifact refinement with investigation-first judge board - constructs problem-specific judges that read the code, understand the problem, and propose evidence-based improvements",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 93,
       "audit_issue": 207,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "bf58540cf5d5e26f27f4f50d2bc924bfbf004f00"
     },
     "888wing/codetape": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 0,
       "artifacts": 16,
       "description": "The flight recorder for AI coding — keeps your docs in sync with your code",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 88,
       "audit_issue": 208,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "7a54141eb1ca6b0e040002d6c7215ec31a6add7d"
     },
     "anthropics/skills": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5065,22 +5071,28 @@
       "stars": 31146,
       "artifacts": 527,
       "description": "Community-contributed instructions, agents, skills, and configurations to help you make the most of GitHub Copilot.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 73,
       "audit_issue": 211,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "progressive",
+      "security": "UNKNOWN",
+      "commit_sha_at_audit": "63d08d51f792d53feec8c1c06897cee870e83c18"
     },
     "qwibitai/nanoclaw": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 27917,
       "artifacts": 46,
       "description": "A lightweight alternative to OpenClaw that runs in containers for security. Connects to WhatsApp, Telegram, Slack, Discord, Gmail and other messaging apps,, has memory, scheduled jobs, and runs directly on Anthropic's Agents SDK",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 81,
       "audit_issue": 212,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "batched",
+      "security": "UNKNOWN",
+      "commit_sha_at_audit": "8d8522202a0604d187f9da132c59f386e3c489a9"
     },
     "googleworkspace/cli": {
       "discovered": "2026-04-25T01:06:48Z",
