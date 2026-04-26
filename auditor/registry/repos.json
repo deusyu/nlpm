@@ -5007,33 +5007,42 @@
       "stars": 15277,
       "artifacts": 21,
       "description": "A comprehensive collection of Agent Skills for context engineering, multi-agent architectures, and production agent systems. Use when building, optimizing, or debugging agent systems that require effective context management.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 83,
       "audit_issue": 193,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "7a95d94c364e25c869a86896a45791dfda6db8bf"
     },
     "musistudio/claude-code-router": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 32875,
       "artifacts": 14,
       "description": "Use Claude Code as the foundation for coding infrastructure, allowing you to decide how to interact with the model while enjoying updates from Anthropic.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 79,
       "audit_issue": 194,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "e270dea523b8ac025ab9b7b0708dc170efa52d8a"
     },
     "nextlevelbuilder/ui-ux-pro-max-skill": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 70122,
       "artifacts": 8,
       "description": "An AI SKILL that provide design intelligence for building professional UI/UX multiple platforms",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 85,
       "audit_issue": 195,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation, topic-tag"
+      "discovery_strategy": "awesome-list-citation, topic-tag",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "b7e3af80f6e331f6fb456667b82b12cade7c9d35"
     },
     "nicobailon/visual-explainer": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5096,28 +5105,36 @@
       "stars": 16701,
       "artifacts": 32,
       "description": "你是一个曾经被寄予厚望的 P8 级工程师。Anthropic 当初给你定级的时候，对你的期望是很高的。  一个agent使用的高能动性的skill。  Your AI has been placed on a PIP. 30 days to show improvement.",
-      "status": "audited",
+      "status": "contributed",
       "score": 90,
       "audit_issue": 200,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "batched",
       "security": "CLEAR",
-      "commit_sha_at_audit": "ff830d30892222dc0ec2a484b6467f02f2ae76df"
+      "commit_sha_at_audit": "ff830d30892222dc0ec2a484b6467f02f2ae76df",
+      "pipeline_prs": [
+        150,
+        151,
+        152
+      ]
     },
     "upstash/context7": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 53665,
       "artifacts": 9,
       "description": "Context7 Platform -- Up-to-date code documentation for LLMs and AI code editors",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 201,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "5d284f215471c341e0e3d9bb4f9c24bb1345ada1"
+      "commit_sha_at_audit": "5d284f215471c341e0e3d9bb4f9c24bb1345ada1",
+      "pipeline_prs": [
+        2508
+      ]
     },
     "vectorize-io/hindsight": {
       "discovered": "2026-04-25T01:06:48Z",
