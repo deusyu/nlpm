@@ -5093,14 +5093,19 @@
       "stars": 16701,
       "artifacts": 32,
       "description": "你是一个曾经被寄予厚望的 P8 级工程师。Anthropic 当初给你定级的时候，对你的期望是很高的。  一个agent使用的高能动性的skill。  Your AI has been placed on a PIP. 30 days to show improvement.",
-      "status": "audited",
+      "status": "contributed",
       "score": 90,
       "audit_issue": 200,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "batched",
       "security": "CLEAR",
-      "commit_sha_at_audit": "ff830d30892222dc0ec2a484b6467f02f2ae76df"
+      "commit_sha_at_audit": "ff830d30892222dc0ec2a484b6467f02f2ae76df",
+      "pipeline_prs": [
+        150,
+        151,
+        152
+      ]
     },
     "upstash/context7": {
       "discovered": "2026-04-25T01:06:48Z",
