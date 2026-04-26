@@ -4985,11 +4985,14 @@
       "stars": 57,
       "artifacts": 5,
       "description": "ClickUp CLI for AI agents",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 95,
       "audit_issue": 191,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "48aeedb5a998df0fb4f5b4502dc01b5b645d8915"
     },
     "mksglu/context-mode": {
       "discovered": "2026-04-25T01:06:48Z",
