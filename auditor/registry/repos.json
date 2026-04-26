@@ -4836,11 +4836,14 @@
       "stars": 2312,
       "artifacts": 25,
       "description": "Web & Mobile UI for Claude Code & Codex . Launch sessions, stream responses, approve tools.  All from your browser / mobile",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 91,
       "audit_issue": 178,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "52883144858f62d6f9b418c00432279f28d119d4"
     },
     "Xquik-dev/x-twitter-scraper": {
       "discovered": "2026-04-25T01:06:48Z",
