@@ -4931,14 +4931,21 @@
       "stars": 3566,
       "artifacts": 40,
       "description": "Master Claude Code Hooks",
-      "status": "audited",
+      "status": "contributed",
       "score": 77,
       "audit_issue": 185,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "batched",
       "security": "REVIEW",
-      "commit_sha_at_audit": "052ad1cbd5aeb1ec4a1def22012d1293c6225625"
+      "commit_sha_at_audit": "052ad1cbd5aeb1ec4a1def22012d1293c6225625",
+      "pipeline_prs": [
+        46,
+        47,
+        48,
+        41,
+        43
+      ]
     },
     "expo/skills": {
       "discovered": "2026-04-25T01:06:48Z",
