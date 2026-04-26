@@ -4977,22 +4977,28 @@
       "stars": 26283,
       "artifacts": 6,
       "description": "Agent skills for Obsidian. Teach your agent to use Markdown, Bases, JSON Canvas, and use the CLI.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 100,
       "audit_issue": 190,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "fa1e131a014576ff8f8919f191a7ca8d8fded39b"
     },
     "krodak/clickup-cli": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 57,
       "artifacts": 5,
       "description": "ClickUp CLI for AI agents",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 95,
       "audit_issue": 191,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "48aeedb5a998df0fb4f5b4502dc01b5b645d8915"
     },
     "mksglu/context-mode": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5013,56 +5019,79 @@
       "stars": 15277,
       "artifacts": 21,
       "description": "A comprehensive collection of Agent Skills for context engineering, multi-agent architectures, and production agent systems. Use when building, optimizing, or debugging agent systems that require effective context management.",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 193,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "batched",
       "security": "CLEAR",
-      "commit_sha_at_audit": "7a95d94c364e25c869a86896a45791dfda6db8bf"
+      "commit_sha_at_audit": "7a95d94c364e25c869a86896a45791dfda6db8bf",
+      "pipeline_prs": [
+        80,
+        81,
+        82,
+        83
+      ]
     },
     "musistudio/claude-code-router": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 32875,
       "artifacts": 14,
       "description": "Use Claude Code as the foundation for coding infrastructure, allowing you to decide how to interact with the model while enjoying updates from Anthropic.",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 194,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "e270dea523b8ac025ab9b7b0708dc170efa52d8a"
+      "commit_sha_at_audit": "e270dea523b8ac025ab9b7b0708dc170efa52d8a",
+      "pipeline_prs": [
+        1357,
+        1358,
+        1359
+      ]
     },
     "nextlevelbuilder/ui-ux-pro-max-skill": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 70122,
       "artifacts": 8,
       "description": "An AI SKILL that provide design intelligence for building professional UI/UX multiple platforms",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 195,
       "prs": [],
       "discovery_strategy": "awesome-list-citation, topic-tag",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "b7e3af80f6e331f6fb456667b82b12cade7c9d35"
+      "commit_sha_at_audit": "b7e3af80f6e331f6fb456667b82b12cade7c9d35",
+      "pipeline_prs": [
+        281,
+        282,
+        283,
+        284,
+        285
+      ]
     },
     "nicobailon/visual-explainer": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 7692,
       "artifacts": 10,
       "description": "Agent skill that generates rich HTML pages or slide decks for diagrams, diff reviews, plan audits, data tables, and project recaps",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 196,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "9a97a5818bebbcb61cccf8941d533b82a1ce958b"
+      "commit_sha_at_audit": "9a97a5818bebbcb61cccf8941d533b82a1ce958b",
+      "pipeline_prs": [
+        43,
+        44,
+        45
+      ]
     },
     "peterkrueck/Claude-Code-Development-Kit": {
       "discovered": "2026-04-25T01:06:48Z",
