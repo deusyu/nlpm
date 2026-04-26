@@ -5040,11 +5040,14 @@
       "stars": 7692,
       "artifacts": 10,
       "description": "Agent skill that generates rich HTML pages or slide decks for diagrams, diff reviews, plan audits, data tables, and project recaps",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 66,
       "audit_issue": 196,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "9a97a5818bebbcb61cccf8941d533b82a1ce958b"
     },
     "peterkrueck/Claude-Code-Development-Kit": {
       "discovered": "2026-04-25T01:06:48Z",
