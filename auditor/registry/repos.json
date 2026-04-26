@@ -4996,11 +4996,14 @@
       "stars": 9822,
       "artifacts": 8,
       "description": "Context window optimization for AI coding agents. Sandboxes tool output, 98% reduction. 12 platforms",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 92,
       "audit_issue": 192,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation, topic-tag"
+      "discovery_strategy": "awesome-list-citation, topic-tag",
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "d858c2284670c7340b82757914290ec5ee439ae2"
     },
     "muratcankoylan/Agent-Skills-for-Context-Engineering": {
       "discovered": "2026-04-25T01:06:48Z",
