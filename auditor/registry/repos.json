@@ -4876,7 +4876,10 @@
       "score": null,
       "audit_issue": 181,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "f10ac8b2a284fa6421778bab0d245ee54c16c3c2"
     },
     "agent-sh/agnix": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4912,7 +4915,10 @@
       "score": null,
       "audit_issue": 184,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "9639f757853149f0cb16663cc8b6b6468f27a25f"
     },
     "disler/claude-code-hooks-mastery": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4955,14 +4961,20 @@
       "stars": 2046,
       "artifacts": 7,
       "description": "Custom subagents to use with Claude Code.",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 188,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "f7df2c3e7395d163ad52d0793bac8fa7ce0d776a"
+      "commit_sha_at_audit": "f7df2c3e7395d163ad52d0793bac8fa7ce0d776a",
+      "pipeline_prs": [
+        12,
+        13,
+        14,
+        15
+      ]
     },
     "kbwo/ccmanager": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4990,7 +5002,8 @@
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "fa1e131a014576ff8f8919f191a7ca8d8fded39b"
+      "commit_sha_at_audit": "fa1e131a014576ff8f8919f191a7ca8d8fded39b",
+      "pipeline_prs": []
     },
     "krodak/clickup-cli": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5004,7 +5017,10 @@
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "48aeedb5a998df0fb4f5b4502dc01b5b645d8915"
+      "commit_sha_at_audit": "48aeedb5a998df0fb4f5b4502dc01b5b645d8915",
+      "pipeline_prs": [
+        63
+      ]
     },
     "mksglu/context-mode": {
       "discovered": "2026-04-25T01:06:48Z",
