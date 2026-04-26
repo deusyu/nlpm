@@ -4847,11 +4847,14 @@
       "stars": 55,
       "artifacts": 46,
       "description": "X (Twitter) data platform skill for AI coding agents. 111 REST API endpoints, 2 MCP tools, 23 extraction types, HMAC webhooks. Reads from $0.00015/call - 33x cheaper than the official X API. Works with Claude Code, Cursor, Codex, Copilot, Windsurf & 40+ agents.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 97,
       "audit_issue": 179,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "c9945b1061a0bc14f88cff48402442392f495ac0"
     },
     "addyosmani/agent-skills": {
       "discovered": "2026-04-25T01:06:48Z",
