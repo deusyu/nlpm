@@ -5007,11 +5007,14 @@
       "stars": 15277,
       "artifacts": 21,
       "description": "A comprehensive collection of Agent Skills for context engineering, multi-agent architectures, and production agent systems. Use when building, optimizing, or debugging agent systems that require effective context management.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 83,
       "audit_issue": 193,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "7a95d94c364e25c869a86896a45791dfda6db8bf"
     },
     "musistudio/claude-code-router": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5110,14 +5113,17 @@
       "stars": 53665,
       "artifacts": 9,
       "description": "Context7 Platform -- Up-to-date code documentation for LLMs and AI code editors",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 201,
       "prs": [],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
-      "commit_sha_at_audit": "5d284f215471c341e0e3d9bb4f9c24bb1345ada1"
+      "commit_sha_at_audit": "5d284f215471c341e0e3d9bb4f9c24bb1345ada1",
+      "pipeline_prs": [
+        2508
+      ]
     },
     "vectorize-io/hindsight": {
       "discovered": "2026-04-25T01:06:48Z",
