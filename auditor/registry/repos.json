@@ -4614,11 +4614,14 @@
       "stars": 95,
       "artifacts": 26,
       "description": "Nemp - The memory plugin for Claude Code that remembers everything.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 92,
       "audit_issue": 170,
       "prs": [],
-      "discovery_strategy": "skill-md-content"
+      "discovery_strategy": "skill-md-content",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "5f3e48af5129d00fb28c7e8b27e03aeb3b89ed28"
     },
     "obra/superpowers": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4676,11 +4679,14 @@
       "stars": 4630,
       "artifacts": 7,
       "description": "Design engineering for Claude Code. Craft, memory, and enforcement for consistent UI.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 94,
       "audit_issue": 173,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "8c407c1c42890010a9eb403a9f419b1eeadcfdad"
     },
     "K-Dense-AI/scientific-agent-skills": {
       "discovered": "2026-04-25T01:06:48Z",
