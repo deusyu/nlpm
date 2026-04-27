@@ -1509,13 +1509,13 @@
       "prs": [
         {
           "number": 166,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-26T09:09:37Z",
+          "closedAt": "2026-04-26T09:09:37Z",
           "title": "fix: correct broken repo reference and add name to sync-allowlist",
-          "updatedAt": "2026-04-22T06:44:37Z",
+          "updatedAt": "2026-04-26T09:09:37Z",
           "createdAt": "2026-04-22T06:44:37Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
@@ -1526,7 +1526,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix: add missing name frontmatter to update-readme, sync-claude-md, load-claude-md",
-          "updatedAt": "2026-04-22T06:45:03Z",
+          "updatedAt": "2026-04-26T09:12:32Z",
           "createdAt": "2026-04-22T06:45:03Z",
           "outcome": "open",
           "fingerprints": [],
@@ -1548,13 +1548,13 @@
         },
         {
           "number": 169,
-          "state": "OPEN",
+          "state": "CLOSED",
           "mergedAt": null,
-          "closedAt": null,
+          "closedAt": "2026-04-26T09:15:47Z",
           "title": "fix: add missing frontmatter to 10 supabase-cli reference skill docs",
-          "updatedAt": "2026-04-22T06:46:24Z",
+          "updatedAt": "2026-04-26T09:15:47Z",
           "createdAt": "2026-04-22T06:46:24Z",
-          "outcome": "open",
+          "outcome": "rejected",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
@@ -1565,7 +1565,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix: add path traversal guard in sync_marketplace_to_plugins.py",
-          "updatedAt": "2026-04-22T06:46:51Z",
+          "updatedAt": "2026-04-26T09:13:15Z",
           "createdAt": "2026-04-22T06:46:51Z",
           "outcome": "open",
           "fingerprints": [],
@@ -1802,13 +1802,13 @@
       "prs": [
         {
           "number": 44,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-26T12:03:28Z",
+          "closedAt": "2026-04-26T12:03:28Z",
           "title": "fix: replace word-split tags with domain-specific cybersecurity tags",
-          "updatedAt": "2026-04-21T00:35:54Z",
+          "updatedAt": "2026-04-26T12:03:28Z",
           "createdAt": "2026-04-21T00:35:54Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
@@ -1819,7 +1819,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix: fill stub workflow in performing-ssl-tls-security-assessment",
-          "updatedAt": "2026-04-21T00:37:24Z",
+          "updatedAt": "2026-04-26T12:14:24Z",
           "createdAt": "2026-04-21T00:37:24Z",
           "outcome": "open",
           "fingerprints": [],
@@ -1832,7 +1832,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix: fill stub workflow in detecting-aws-cloudtrail-anomalies",
-          "updatedAt": "2026-04-21T00:38:50Z",
+          "updatedAt": "2026-04-26T12:14:26Z",
           "createdAt": "2026-04-21T00:38:50Z",
           "outcome": "open",
           "fingerprints": [],
@@ -1845,7 +1845,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix: fill stub workflow in analyzing-office365-audit-logs-for-compromise",
-          "updatedAt": "2026-04-21T00:40:22Z",
+          "updatedAt": "2026-04-26T12:14:14Z",
           "createdAt": "2026-04-21T00:40:22Z",
           "outcome": "open",
           "fingerprints": [],
@@ -1858,7 +1858,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix: fill stub workflow in performing-red-team-with-covenant",
-          "updatedAt": "2026-04-21T00:42:00Z",
+          "updatedAt": "2026-04-26T12:14:20Z",
           "createdAt": "2026-04-21T00:42:00Z",
           "outcome": "open",
           "fingerprints": [],
@@ -3413,19 +3413,19 @@
       "stars": 3099,
       "artifacts": 290,
       "description": "Spec-driven development (SDD) for your team's workflow. Kiro style commands that enforce structured requirements→design→tasks workflow and steering, transforming how you build with AI. Support Claude Code, Codex, Opencode, Cursor, Github Copilot, Gemini CLI and Windsurf.",
-      "status": "contributed",
+      "status": "complete",
       "score": null,
       "audit_issue": 107,
       "prs": [
         {
           "number": 166,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-26T10:06:39Z",
+          "closedAt": "2026-04-26T10:06:39Z",
           "title": "fix: replace non-existent tool names with correct Claude Code tool names in steering.md",
-          "updatedAt": "2026-04-23T00:40:43Z",
+          "updatedAt": "2026-04-26T10:06:39Z",
           "createdAt": "2026-04-23T00:40:43Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
@@ -3458,26 +3458,26 @@
         },
         {
           "number": 169,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-26T10:06:50Z",
+          "closedAt": "2026-04-26T10:06:50Z",
           "title": "fix: correct @ path separator to / in windsurf-skills AGENTS.md",
-          "updatedAt": "2026-04-23T00:43:22Z",
+          "updatedAt": "2026-04-26T10:06:50Z",
           "createdAt": "2026-04-23T00:43:22Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         },
         {
           "number": 170,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-26T10:07:00Z",
+          "closedAt": "2026-04-26T10:07:00Z",
           "title": "fix: document {{DEV_GUIDELINES}} placeholder in all 7 platform docs templates",
-          "updatedAt": "2026-04-23T00:45:24Z",
+          "updatedAt": "2026-04-26T10:07:00Z",
           "createdAt": "2026-04-23T00:45:24Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
@@ -3495,7 +3495,8 @@
         169,
         170
       ],
-      "rule_adopted": false
+      "rule_adopted": false,
+      "case_study": "case-studies/2026-04-27-gotalab-cc-sdd.md"
     },
     "htdt/godogen": {
       "discovered": "2026-04-18T22:52:00Z",
@@ -4614,11 +4615,14 @@
       "stars": 95,
       "artifacts": 26,
       "description": "Nemp - The memory plugin for Claude Code that remembers everything.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 92,
       "audit_issue": 170,
       "prs": [],
-      "discovery_strategy": "skill-md-content"
+      "discovery_strategy": "skill-md-content",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "5f3e48af5129d00fb28c7e8b27e03aeb3b89ed28"
     },
     "obra/superpowers": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4665,22 +4669,28 @@
       "stars": 859,
       "artifacts": 138,
       "description": "A comprehensive collection of 100+ production-ready development subagents for Claude Code",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 74,
       "audit_issue": 172,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "progressive",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "9236d10702cdbba37eaa34515f1e1dbff8452506"
     },
     "Dammyjay93/interface-design": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 4630,
       "artifacts": 7,
       "description": "Design engineering for Claude Code. Craft, memory, and enforcement for consistent UI.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 94,
       "audit_issue": 173,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "8c407c1c42890010a9eb403a9f419b1eeadcfdad"
     },
     "K-Dense-AI/scientific-agent-skills": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4802,12 +4812,16 @@
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 11187,
       "artifacts": 30,
-      "description": "",
-      "status": "discovered",
-      "score": null,
+      "description": "MiniMax AI skills collection: mobile dev, media generation, document processing, vision analysis, and presentation tools for Claude Code.",
+      "status": "audited",
+      "score": 89,
       "audit_issue": 175,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "60aaae52bb2af8162732751a4332f62a5fef518b",
+      "audited_at": "2026-04-27T00:41:00Z"
     },
     "PeonPing/peon-ping": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4818,18 +4832,27 @@
       "score": null,
       "audit_issue": 176,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "progressive",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "a3fc765dacc749b8f717e705c906c8f1da9fd0d2"
     },
     "SuperClaude-Org/SuperClaude_Framework": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 22474,
       "artifacts": 113,
       "description": "A configuration framework that enhances Claude Code with specialized commands, cognitive personas, and development methodologies.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 84,
+      "security_status": "BLOCKED",
+      "audited": "2026-04-26T18:30:00Z",
+      "commit_sha": "unknown",
       "audit_issue": 177,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "progressive",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "af3a965da2ec4f481fe1a1a459899cf3f811894a"
     },
     "The-Vibe-Company/companion": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4840,7 +4863,10 @@
       "score": null,
       "audit_issue": 178,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "52883144858f62d6f9b418c00432279f28d119d4"
     },
     "Xquik-dev/x-twitter-scraper": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4851,7 +4877,10 @@
       "score": null,
       "audit_issue": 179,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "c9945b1061a0bc14f88cff48402442392f495ac0"
     },
     "addyosmani/agent-skills": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4889,11 +4918,19 @@
       "stars": 207,
       "artifacts": 85,
       "description": "The missing linter and lsp for AI coding assistants. Validate CLAUDE.md, AGENTS.md, SKILL.md, hooks, MCP. Plugin for all major IDEs included, with autofixes.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 64,
       "audit_issue": 182,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "progressive",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "24efafb6d670cb6b6c0394afe69c1cdce585534a",
+      "pipeline_prs": [
+        828,
+        829,
+        830
+      ]
     },
     "backnotprop/plannotator": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4907,7 +4944,11 @@
       "discovery_strategy": "awesome-list-citation",
       "strategy": "batched",
       "security": "REVIEW",
-      "commit_sha_at_audit": "ef3172e33924d0eb3721573f9283bc6fb50a2603"
+      "commit_sha_at_audit": "ef3172e33924d0eb3721573f9283bc6fb50a2603",
+      "pipeline_prs": [
+        613,
+        614
+      ]
     },
     "czlonkowski/n8n-mcp": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4928,22 +4969,148 @@
       "stars": 3566,
       "artifacts": 40,
       "description": "Master Claude Code Hooks",
-      "status": "discovered",
-      "score": null,
+      "status": "contributed",
+      "score": 77,
       "audit_issue": 185,
-      "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "prs": [
+        {
+          "number": 46,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix(agent): declare WebSearch tool in llm-ai-agents-and-eng-research",
+          "updatedAt": "2026-04-26T18:30:15Z",
+          "createdAt": "2026-04-26T18:30:15Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:1c85c2d86af8e5673e07a44860a9e5e27706f3dbdbfd82582c2e008942d9b043"
+          ],
+          "rule_ids": [
+            "BUG-undeclared-tool"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 47,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix(commands): add missing frontmatter to cook and cook_research_only",
+          "updatedAt": "2026-04-26T18:30:49Z",
+          "createdAt": "2026-04-26T18:30:49Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:a11a860b0a81ae252d352dd9f5524c5ba7e2e50107fbc4881c98b5aa4aaa19e7",
+            "sha256:36516f6a39351aa171f4f077859c5aa5b9f407e2fbead97ed5b554dafff8cc81"
+          ],
+          "rule_ids": [
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 48,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix(commands): add missing frontmatter to all_tools and update_status_line",
+          "updatedAt": "2026-04-26T18:31:26Z",
+          "createdAt": "2026-04-26T18:31:26Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:f22b8ff336d1d5f52ab744486a420858db99ec7a5585547c79aa0fabd5f884c3",
+            "sha256:d8b3f13c23ac4eeac3d2d5ff81a19cc70f7bf4cbcc3648d498ae8b40c865a25e"
+          ],
+          "rule_ids": [
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 41,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix(commands): add missing frontmatter descriptions to all agent prompt files",
+          "updatedAt": "2026-04-26T18:32:55Z",
+          "createdAt": "2026-04-26T18:21:51Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:6594c616946f4b1a26957e670a11b8059814a8ace42b0734ee28a61a625e8cb7",
+            "sha256:89f438a37b023db362a7b0e63e2c7ff7eddae022ed20960c9261e7f17928e4d4",
+            "sha256:a47d6651e1380926eececed904fe39575fab4b6828f4920643dffccab212e760",
+            "sha256:59537e3e4da5e89196c91dfd81cfdc7876fe158b758fb55e10ddeb7dac726146",
+            "sha256:6f787f1b37d99204c91025ddab50f22bc789ee221a8085a431dd5bf9d72f6f9b",
+            "sha256:1ba4d1831f08d06fcf68aab36f111618e5eed8252144669a89376d660f32ce11",
+            "sha256:1b09ded0841fd2f2e416e0d84cfbf9e479f597316faaba88b1cd353a9de6508e"
+          ],
+          "rule_ids": [
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter",
+            "BUG-missing-frontmatter"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 43,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix(commands): correct misleading description in sentient.md",
+          "updatedAt": "2026-04-26T18:33:43Z",
+          "createdAt": "2026-04-26T18:23:04Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:7aaa378211b71ab434a78984e346f5077f0f1f159cc36d2c24ed7ef2ed3c8343",
+            "sha256:91a816dd674ffcf4b44c12cc2d1d544196039864285730e8d2a152097075081b",
+            "sha256:cfa3127a1442ca10d5832a7ba7510eee3a4c3b25306b55d673485f067be471cf"
+          ],
+          "rule_ids": [
+            "SEC-destructive-command",
+            "CC-terminology-drift",
+            "R05"
+          ],
+          "stale_90d_emitted": false
+        }
+      ],
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "batched",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "052ad1cbd5aeb1ec4a1def22012d1293c6225625",
+      "pipeline_prs": [
+        46,
+        47,
+        48,
+        41,
+        43
+      ],
+      "rule_adopted": false
     },
     "expo/skills": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 1784,
       "artifacts": 14,
       "description": "A collection of AI agent skills for working with Expo projects and Expo Application Services",
-      "status": "discovered",
+      "status": "contributed",
       "score": null,
       "audit_issue": 186,
       "prs": [],
-      "discovery_strategy": "awesome-list-citation"
+      "discovery_strategy": "awesome-list-citation",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "93751dadf0494110893a9f7a2091ca14833d8212",
+      "pipeline_prs": [
+        50,
+        51,
+        52,
+        53
+      ]
     },
     "eyaltoledano/claude-task-master": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -4970,7 +5137,76 @@
       "status": "contributed",
       "score": null,
       "audit_issue": 188,
-      "prs": [],
+      "prs": [
+        {
+          "number": 12,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix: add missing tools declaration to vibe-coding-coach agent",
+          "updatedAt": "2026-04-26T12:25:20Z",
+          "createdAt": "2026-04-26T12:25:20Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:bc3acd0457290846d72d2d96527966fe4025cd4d5e8b4ae5656113676090d853"
+          ],
+          "rule_ids": [
+            "BUG-missing-tools"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 13,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix: add missing tools declaration to content-writer agent",
+          "updatedAt": "2026-04-26T12:25:47Z",
+          "createdAt": "2026-04-26T12:25:47Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:b37c6ab4468fd7c737f7bc738060825f49bcaebd4bd1c1328e563d4cdcd79eb2"
+          ],
+          "rule_ids": [
+            "BUG-missing-tools"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 14,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix: add missing tools declaration to frontend-designer agent",
+          "updatedAt": "2026-04-26T12:26:12Z",
+          "createdAt": "2026-04-26T12:26:12Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:9475bdb8a8f5b838e74567011dc544192581e00ee7c68c4203284568f7b253ef"
+          ],
+          "rule_ids": [
+            "BUG-missing-tools"
+          ],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 15,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix: remove contradictory Task tool from prd-writer agent",
+          "updatedAt": "2026-04-26T12:26:39Z",
+          "createdAt": "2026-04-26T12:26:39Z",
+          "outcome": "open",
+          "fingerprints": [
+            "sha256:d1b6b2750ecdaf2926f83527bb0a3f10c0fd8a2f588d7b6c1fd97fd3d08d1417"
+          ],
+          "rule_ids": [
+            "BUG-contradictory-tool"
+          ],
+          "stale_90d_emitted": false
+        }
+      ],
       "discovery_strategy": "awesome-list-citation",
       "strategy": "single",
       "security": "CLEAR",
@@ -4980,7 +5216,8 @@
         13,
         14,
         15
-      ]
+      ],
+      "rule_adopted": false
     },
     "kbwo/ccmanager": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5731,11 +5968,14 @@
       "stars": 16912,
       "artifacts": 21,
       "description": "The container platform tailored for Kubernetes multi-cloud, datacenter, and edge management ⎈ 🖥 ☁️",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 89,
       "audit_issue": 215,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "batched",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "1681475e5864bbf2fbad3965b16686dd204c738b"
     },
     "JimLiu/baoyu-skills": {
       "discovered": "2026-04-25T01:06:48Z",
