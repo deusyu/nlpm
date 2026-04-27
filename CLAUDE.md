@@ -173,15 +173,31 @@ Both preserve the audit data and only skip PR creation.
 | Gate | Trigger | Status set | Label | Recovery |
 |------|---------|------------|-------|----------|
 | no-external-PRs | Owner in `DENY_OWNERS` (currently `anthropics`) | `policy_denied` | `policy-no-external-prs` | Manual override only — permanent. |
-| CLA-required | Owner in `CLA_REQUIRED_OWNERS` (Google's various orgs: `google`, `google-gemini`, `googleworkspace`, `google-labs-code`, `googleapis`, `googlecloudplatform`) **and** `vars.GOOGLE_CLA_SIGNED != 'true'` | `policy_cla_required` | `policy-cla-required` | Sign the individual CLA at <https://cla.developers.google.com/about>, set repo variable `GOOGLE_CLA_SIGNED=true` in this repo's Actions settings, re-add `contribute-approved` to the audit issue. |
+| CLA-required (signature missing) | Owner in `CLA_REQUIRED_OWNERS` (Google's various orgs: `google`, `google-gemini`, `googleworkspace`, `google-labs-code`, `googleapis`, `googlecloudplatform`) **and** `vars.GOOGLE_CLA_SIGNED != 'true'` | `policy_cla_required` | `policy-cla-required` | Sign the individual CLA at <https://cla.developers.google.com/about>, set repo variable `GOOGLE_CLA_SIGNED=true`, set `CONTRIBUTE_AUTHOR_EMAIL` and `CONTRIBUTE_AUTHOR_NAME` to the CLA-signed identity, re-add `contribute-approved` on the audit issue. |
+| CLA-required (author identity missing) | Owner in `CLA_REQUIRED_OWNERS` **and** `GOOGLE_CLA_SIGNED == 'true'` **but** `CONTRIBUTE_AUTHOR_EMAIL` or `CONTRIBUTE_AUTHOR_NAME` is empty | `policy_cla_required` | `policy-cla-required` | Set both repo variables to the CLA-signed human identity, re-add `contribute-approved`. |
 
-Why both: `anthropics/*` rejected 3/3 of our PRs as a policy matter (no
-external PRs accepted at all). Google orgs accept external PRs in
-principle but require a signed CLA before any human reviews the diff —
-confirmed by `cla/google: FAILURE` on `googleworkspace/cli` #757–#760
-and `google-gemini/gemini-skills` #36–#38, all OPEN with zero human
-review possible. Without the CLA gate, the pipeline opens PRs that sit
-indefinitely and inflate the "in flight" count for rule-health.
+Why three separate trigger rows: a signed CLA is necessary but not
+sufficient. `claude-code-action`'s default commit identity is `claude[bot]
+<claude[bot]@users.noreply.github.com>`, which is not covered by any CLA.
+Even with `GOOGLE_CLA_SIGNED=true`, commits authored by the bot leave
+`cla/google` on FAILURE — confirmed by `googleworkspace/cli` #757–#760
+(bot-authored, all stuck) and `google-gemini/gemini-skills` #36–#38
+(authored by `lixiaolai@gmail.com` because the human ran the contribute
+step locally rather than via CI). The author-identity gate prevents
+future CI runs from re-creating the first failure mode.
+
+`anthropics/*` rejected 3/3 of our PRs as a policy matter (no external
+PRs at all). Google orgs accept external PRs but only when the commit
+author has signed the CLA — confirmed across both stranded sets.
+Without these gates, the pipeline opens PRs that sit indefinitely and
+inflate "in flight" counts for rule-health.
+
+The `Configure commit author identity` workflow step (after the policy
+gates, before `Contribute with Claude Code`) sets `git config --global
+user.email` and `user.name` from the two `CONTRIBUTE_AUTHOR_*` vars
+when both are present. The contribute prompt then re-applies the same
+identity inside the target fork's working directory before any commit,
+so claude-code-action's bot identity is overridden in both places.
 
 The track workflow detects the `cla_blocked` PR state by inspecting
 `statusCheckRollup` for a check whose name matches `^cla(/|$)/i` with

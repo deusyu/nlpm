@@ -146,41 +146,55 @@ jobs:
           # cla/google: FAILURE) so the gate doesn't grow on speculation.
           CLA_REQUIRED_OWNERS=(google google-gemini googleworkspace google-labs-code googleapis googlecloudplatform)
 
+          # Resolve CLA author identity — required for CLA-covered orgs
+          # because claude-code-action's default commit identity is `claude[bot]
+          # <claude[bot]@users.noreply.github.com>`, which can never sign a CLA.
+          # Even with CLA_SIGNED=true, commits authored by the bot identity
+          # leave the cla/google check on FAILURE. The configure-author step
+          # below uses these vars to set the global git author identity to a
+          # CLA-covered human BEFORE claude-code-action makes any commits.
+          CLA_AUTHOR_EMAIL="${{ vars.CONTRIBUTE_AUTHOR_EMAIL || '' }}"
+          CLA_AUTHOR_NAME="${{ vars.CONTRIBUTE_AUTHOR_NAME || '' }}"
+
           for cla_owner in "${CLA_REQUIRED_OWNERS[@]}"; do
-            if [ "$OWNER" = "$cla_owner" ] && [ "$CLA_SIGNED" != "true" ]; then
-              echo "Policy gate: $OWNER requires a signed Google CLA — skipping contribute step."
-              {
-                echo "## Contribute step skipped — CLA required"
-                echo ""
-                echo "Owner \`$OWNER\` requires a signed Contributor License Agreement (CLA)"
-                echo "before any external PR can be reviewed. The contributor identity used by"
-                echo "this pipeline has not signed the CLA."
-                echo ""
-                echo "**To unblock**:"
-                echo ""
-                echo "1. Sign the individual CLA at <https://cla.developers.google.com/about> using the GitHub identity that opens PRs."
-                echo "2. Set repository variable \`GOOGLE_CLA_SIGNED=true\` in this repo's Actions settings."
-                echo "3. Re-add the \`contribute-approved\` label on this issue (or workflow_dispatch this workflow with this issue number)."
-                echo ""
-                echo "Audit data has been captured for rule-health analysis; no PRs will be opened until the CLA is in place."
-              } | gh issue comment "$ISSUE_NUM" --body-file - 2>/dev/null || true
-              gh issue edit "$ISSUE_NUM" --add-label "policy-cla-required" --remove-label "contribute-approved" 2>/dev/null || true
+            if [ "$OWNER" = "$cla_owner" ]; then
+              # Determine why we're gating (if at all):
+              #   - CLA_SIGNED != true                  → gate (need signature)
+              #   - CLA_SIGNED = true but author unset  → gate (need authored-by config)
+              #   - both set                            → pass through
+              GATE_REASON=""
+              if [ "$CLA_SIGNED" != "true" ]; then
+                GATE_REASON="cla_unsigned"
+              elif [ -z "$CLA_AUTHOR_EMAIL" ] || [ -z "$CLA_AUTHOR_NAME" ]; then
+                GATE_REASON="cla_author_missing"
+              fi
 
-              jq --arg name "$TARGET_REPO" \
-                 '.repos[$name].policy_cla_required = true |
-                  .repos[$name].status = "policy_cla_required"' \
-                 auditor/registry/repos.json > /tmp/reg.json && mv /tmp/reg.json auditor/registry/repos.json
+              if [ -n "$GATE_REASON" ]; then
+                echo "Policy gate ($GATE_REASON): $OWNER requires CLA-covered authorship — skipping contribute step."
+                # Comment templates live in auditor/scripts/cla-gate-messages/.
+                # ${OWNER} expansion happens via envsubst (only $OWNER is substituted —
+                # the rest is literal markdown so backticked CLI snippets stay intact).
+                MSG_FILE="auditor/scripts/cla-gate-messages/${GATE_REASON}.md"
+                OWNER="$OWNER" envsubst '$OWNER' < "$MSG_FILE" \
+                  | gh issue comment "$ISSUE_NUM" --body-file - 2>/dev/null || true
+                gh issue edit "$ISSUE_NUM" --add-label "policy-cla-required" --remove-label "contribute-approved" 2>/dev/null || true
 
-              git config user.name "nlpm-auditor[bot]"
-              git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
-              git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-              git add auditor/registry/repos.json
-              bash auditor/scripts/guard-protected-paths.sh || exit 1
-              git diff --cached --quiet || {
-                git commit -m "policy: $TARGET_REPO — CLA required (gated in contribute step)"
-                git push 2>/dev/null || true
-              }
-              exit 0
+                jq --arg name "$TARGET_REPO" \
+                   '.repos[$name].policy_cla_required = true |
+                    .repos[$name].status = "policy_cla_required"' \
+                   auditor/registry/repos.json > /tmp/reg.json && mv /tmp/reg.json auditor/registry/repos.json
+
+                git config user.name "nlpm-auditor[bot]"
+                git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
+                git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+                git add auditor/registry/repos.json
+                bash auditor/scripts/guard-protected-paths.sh || exit 1
+                git diff --cached --quiet || {
+                  git commit -m "policy: $TARGET_REPO — CLA gate ($GATE_REASON)"
+                  git push 2>/dev/null || true
+                }
+                exit 0
+              fi
             fi
           done
 
@@ -240,11 +254,34 @@ jobs:
           echo "has_sidecar=true" >> "$GITHUB_OUTPUT"
           echo "Prepared $COUNT findings with fingerprints."
 
+      - name: Configure commit author identity
+        # Set the global git author identity BEFORE claude-code-action runs.
+        # Without this, claude-code-action commits under its default bot
+        # identity (claude[bot] <claude[bot]@users.noreply.github.com>),
+        # which is fine for repos that don't enforce CLAs but fatal for
+        # Google-org repos where every PR is gated by `cla/google`. The
+        # contribute-step's CLA gate above ensures both vars are set
+        # whenever the target is in CLA_REQUIRED_OWNERS, so this step is
+        # idempotent: when the vars are missing (non-Google audits with
+        # no override), git falls back to the bot identity exactly as
+        # before; when they're set, every commit on the target's fork is
+        # authored by the configured human.
+        if: vars.CONTRIBUTE_AUTHOR_EMAIL != '' && vars.CONTRIBUTE_AUTHOR_NAME != ''
+        env:
+          AUTHOR_EMAIL: ${{ vars.CONTRIBUTE_AUTHOR_EMAIL }}
+          AUTHOR_NAME: ${{ vars.CONTRIBUTE_AUTHOR_NAME }}
+        run: |
+          git config --global user.email "$AUTHOR_EMAIL"
+          git config --global user.name "$AUTHOR_NAME"
+          echo "Configured commit author: $AUTHOR_NAME <$AUTHOR_EMAIL>"
+
       - name: Contribute with Claude Code
         uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           FORK_TOKEN: ${{ secrets.PAT_TOKEN }}
+          CONTRIBUTE_AUTHOR_EMAIL: ${{ vars.CONTRIBUTE_AUTHOR_EMAIL }}
+          CONTRIBUTE_AUTHOR_NAME: ${{ vars.CONTRIBUTE_AUTHOR_NAME }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: "github-actions[bot],nlpm-auditor[bot]"
@@ -282,7 +319,18 @@ jobs:
             3. Fork the repo if not already forked:
                Run: gh repo fork ${{ steps.target.outputs.repo }} --clone -- target-repo-fork
 
-            4. For each bug (max 5):
+            4. After cloning into `target-repo-fork`, ALWAYS verify the commit
+               author identity inside that directory before making any commit.
+               If `$CONTRIBUTE_AUTHOR_EMAIL` and `$CONTRIBUTE_AUTHOR_NAME` are
+               set in the environment, `cd target-repo-fork` and run:
+                 git config user.email "$CONTRIBUTE_AUTHOR_EMAIL"
+                 git config user.name  "$CONTRIBUTE_AUTHOR_NAME"
+               This is required for CLA-covered orgs (Google) — bot-authored
+               commits cannot pass `cla/google` even when the human has signed.
+               If the env vars are not set, do NOT override; the workflow's
+               outer git config (set by the previous step) is authoritative.
+
+            5. For each bug (max 5):
                a. Create branch: fix/nlpm-{short-description}
                b. Read the file, understand existing format
                c. Make the minimal fix matching repo style
@@ -320,7 +368,7 @@ jobs:
                   must have missed it), still include the block with an empty findings
                   array: `{"version":1,"findings":[]}`.
 
-            5. Create a tracking issue in the TARGET repo. The issue body MUST include:
+            6. Create a tracking issue in the TARGET repo. The issue body MUST include:
                - The same disclosure block as above at the top
                - NLPM methodology and scoring explanation
                - All bugs found with priority
@@ -329,9 +377,9 @@ jobs:
 
                Do NOT include a metadata block in this tracking issue — only PR bodies carry it.
 
-            6. Comment on issue #${{ steps.target.outputs.issue }} in THIS repo (${{ github.repository }}) with links to all PRs and the tracking issue.
+            7. Comment on issue #${{ steps.target.outputs.issue }} in THIS repo (${{ github.repository }}) with links to all PRs and the tracking issue.
 
-            7. After creating each PR, write all PR info to `created-prs.json` in the workspace root.
+            8. After creating each PR, write all PR info to `created-prs.json` in the workspace root.
                Format: JSON array of objects:
                [{"number": 123, "url": "https://...", "fingerprints": ["sha256:...", "sha256:..."]}]
 
