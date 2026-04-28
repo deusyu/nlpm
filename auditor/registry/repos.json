@@ -739,6 +739,19 @@
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
+        },
+        {
+          "number": 53,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix(security): pin npm dependency versions to exact ranges",
+          "updatedAt": "2026-04-21T12:28:12Z",
+          "createdAt": "2026-04-21T12:28:12Z",
+          "outcome": "open",
+          "fingerprints": [],
+          "rule_ids": [],
+          "stale_90d_emitted": false
         }
       ],
       "rule_adopted": false
