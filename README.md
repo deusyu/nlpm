@@ -213,4 +213,4 @@ None. Pure markdown plugin -- no Python, no Node.js, no compiled dependencies. T
 
 ## License
 
-MIT
+ISC

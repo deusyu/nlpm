@@ -1,11 +1,11 @@
 {
   "name": "nlpm",
-  "version": "0.7.12",
+  "version": "0.7.13",
   "description": "Natural-Language Programming Manager \u2014 scan, lint, and write NL artifacts with Claude-native quality scoring",
   "author": {
     "name": "xiaolai"
   },
-  "license": "MIT",
+  "license": "ISC",
   "keywords": [
     "nlp",
     "lint",
