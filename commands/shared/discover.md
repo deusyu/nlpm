@@ -1,5 +1,5 @@
 ---
-description: "Discover NL programming artifact files in a directory by category (A: plugin, B: project config, F: memory)"
+description: "Discover NL programming artifact files in a directory by category (A: plugin, B: project config, F: memory). Used by /nlpm:ls, /nlpm:score, /nlpm:check, and /nlpm:trend."
 user-invocable: false
 ---
 

@@ -182,3 +182,11 @@ The security scan section in an audit report follows this structure:
 ## Risk Gate
 
 If any Critical or High findings exist, the `contribute-approved` label must NOT be applied. The audit report must include a prominent warning and the tracking issue must link to the security findings.
+
+## Scope Note
+
+This skill covers the security-pattern catalog and risk-gate logic used by
+the `security-scanner` agent. For the schemas of executable artifacts the
+scanner inspects (hooks, scripts, MCP configs), see `nlpm:conventions`.
+For the broader anti-pattern catalog covering NL-quality issues that are
+not security risks, see `nlpm:patterns`.

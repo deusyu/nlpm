@@ -152,3 +152,19 @@ The tester discovers specs by:
 1. Looking in `.nlpm-test/` directory
 2. Matching spec filename to artifact filename: `my-agent.spec.md` → `agents/my-agent.md` (uses the `artifact:` frontmatter field)
 3. If `artifact` path doesn't exist → spec is RED by default (artifact not yet created — this is the TDD "write test first" state)
+
+## Worked Example: TDD Cycle
+
+1. **RED — write the spec first.** Create `.nlpm-test/my-agent.spec.md` with `artifact: agents/my-agent.md` and a `triggers_on:` block listing 5 user queries the agent should match. The artifact does not exist yet — `/nlpm:test` reports RED with one failure: `artifact not found`.
+
+2. **GREEN — write the artifact.** Create `agents/my-agent.md` with frontmatter (name, description, model, tools) and a body. The description must be specific enough that the listed trigger queries land on it. Re-run `/nlpm:test`: the agent now exists, the tester predicts triggers, and the spec passes.
+
+3. **REFACTOR — change the body, re-run the spec.** Edit the artifact's behavior. The same spec runs unchanged; if a refactor breaks a trigger query or violates a `handles_input` case, the test goes RED. Fix forward, re-run.
+
+This is the natural-language analogue of `pytest` or `jest` — specs are the contract; artifacts are the implementation.
+
+## Scope Note
+
+This skill covers the spec format and runner contract for NL-TDD. For the
+scoring rubric the tester compares against, see `nlpm:scoring`. For the
+schemas of artifact frontmatter the spec validates, see `nlpm:conventions`.

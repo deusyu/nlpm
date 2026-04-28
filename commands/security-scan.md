@@ -2,7 +2,8 @@
 name: security-scan
 description: Scan a Claude Code plugin for security risks in executable artifacts (hooks, scripts, MCP configs, dependencies).
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Agent
+argument-hint: "[path]"
+allowed-tools: Read, Glob, Grep, Task
 ---
 
 # Security Scan
@@ -32,7 +33,17 @@ Wait for the agent to complete and collect its report.
 
 ## Step 3: Present Results
 
-Display the agent's full report to the user.
+Display the full report in this exact structure: the agent report as the body, followed by the gate banner as the footer. The `security-scanner` agent emits the body; this command appends only the banner.
+
+```
+{security-scanner agent report — verbatim}
+
+────────────────────────────────────────────────────────────
+{GATE BANNER — chosen per recommendation, see below}
+────────────────────────────────────────────────────────────
+```
+
+Gate banners:
 
 If the recommendation is BLOCK:
 ```

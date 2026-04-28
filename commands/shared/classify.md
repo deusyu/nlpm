@@ -1,5 +1,5 @@
 ---
-description: "Classify a file path to its NL artifact type — command, agent, skill, rule, hook-config, manifest, etc."
+description: "Classify a file path to its NL artifact type — command, agent, skill, rule, hook-config, manifest, etc. Used by /nlpm:score, /nlpm:fix, /nlpm:test, and /nlpm:check."
 user-invocable: false
 ---
 

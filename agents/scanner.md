@@ -14,7 +14,7 @@ description: |
   </example>
 model: haiku
 color: cyan
-tools: Read, Glob, Grep
+tools: Read, Glob
 skills:
   - nlpm:conventions
 ---

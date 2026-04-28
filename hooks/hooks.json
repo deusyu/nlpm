@@ -1,3 +1,17 @@
 {
-  "hooks": {}
+  "description": "Advise when an NL artifact is written or edited; remind to run /nlpm:score on the changed file. Fail-open per R31 — script exits 0 on any error.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-artifact.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }

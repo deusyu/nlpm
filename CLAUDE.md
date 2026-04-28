@@ -31,13 +31,15 @@ Each command does one thing -- no flags (except `--changed` on score).
 
 ## Skills
 
-### Core (loaded by agents)
-- skills/nlpm/conventions/ -- Claude Code schemas, hook events, naming patterns
-- skills/nlpm/patterns/ -- NL programming patterns + anti-patterns (cross-referenced to rules)
-- skills/nlpm/scoring/ -- penalty tables with rule number cross-references
-- skills/nlpm/rules/ -- the 50 Rules of Natural Language Programming (R01-R50) -- single source of truth
-- skills/nlpm/testing/ -- NL-TDD spec format, test patterns
-- skills/nlpm/security/ -- security pattern database for executable artifact scanning
+### Auto-loaded by agents (declared in agent frontmatter `skills:`)
+- skills/nlpm/conventions/ -- Claude Code schemas, hook events, naming patterns -- loaded by scanner, scorer, checker, tester
+- skills/nlpm/scoring/ -- penalty tables with rule number cross-references -- loaded by scorer, tester
+- skills/nlpm/testing/ -- NL-TDD spec format, test patterns -- loaded by tester
+- skills/nlpm/security/ -- security pattern database for executable artifact scanning -- loaded by security-scanner
+
+### Reference (loaded on demand by agents that need them, via cross-references in `nlpm:scoring`, `nlpm:conventions`, and skill scope notes)
+- skills/nlpm/rules/ -- the 50 Rules of Natural Language Programming (R01-R50) -- single source of truth, referenced by rule number from `nlpm:scoring`
+- skills/nlpm/patterns/ -- NL programming patterns + anti-patterns -- referenced by `nlpm:scoring` scope note
 
 ### Writing Reference (loaded on demand)
 - skills/nlpm/writing-skills/ -- how to write SKILL.md files
@@ -50,7 +52,7 @@ Each command does one thing -- no flags (except `--changed` on score).
 
 ## Hooks
 
-- hooks/hooks.json -- PostToolUse command hook on Write|Edit
+- hooks/hooks.json -- PostToolUse command hook on Write|Edit|MultiEdit
 - scripts/check-artifact.sh -- classifies written file, emits advisory only for NL artifacts
 
 ## Self-Tests
