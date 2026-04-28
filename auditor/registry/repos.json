@@ -4494,22 +4494,28 @@
       "stars": 404,
       "artifacts": 5,
       "description": "Comprehensive status line plugin for Claude Code with context usage, API rate limits, and cost tracking",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 99,
       "audit_issue": 159,
       "prs": [],
-      "discovery_strategy": "recent-pushed-mid-tier"
+      "discovery_strategy": "recent-pushed-mid-tier",
+      "strategy": "single",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "1281b7d66dbcd88e9891574706ce2edb29b00c26"
     },
     "vladikk/modularity": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 337,
       "artifacts": 5,
       "description": "Claude Code plugin for designing modular systems from functional requirements and reviewing existing codebases for modularity problems with actionable improvement recommendations. Based on the Balanced Coupling model.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 98,
       "audit_issue": 160,
       "prs": [],
-      "discovery_strategy": "recent-pushed-mid-tier, topic-tag"
+      "discovery_strategy": "recent-pushed-mid-tier, topic-tag",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "bcdca9a595764b9aa88d5d8d6020f52e7f5f1f52"
     },
     "mbruhler/claude-orchestration": {
       "discovered": "2026-04-25T01:06:48Z",
