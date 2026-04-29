@@ -6771,11 +6771,14 @@
       "stars": 697,
       "artifacts": 56,
       "description": "A world-class collection of Claude Code utilities: autonomous skills, expert agents, slash commands, and prompts that supercharge your development workflow",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 62,
       "audit_issue": 230,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "progressive",
+      "security": "UNKNOWN",
+      "commit_sha_at_audit": "4b680504d29a205380436e9970eccf8faa28d21d"
     },
     "alexgreensh/token-optimizer": {
       "discovered": "2026-04-25T01:06:48Z",

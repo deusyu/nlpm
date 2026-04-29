@@ -1571,3 +1571,5 @@
 {"timestamp":"2026-04-29T16:39:22Z","workflow":"track","event":"finding_outcome","run_id":"25121444386","run_number":65,"data":{"pr":"dontbesilent2025/dbskill#11","pr_state":"merged","fingerprints":[],"rule_ids":[]}}
 {"timestamp":"2026-04-29T16:39:23Z","workflow":"track","event":"finding_outcome","run_id":"25121444386","run_number":65,"data":{"pr":"dontbesilent2025/dbskill#12","pr_state":"merged","fingerprints":[],"rule_ids":[]}}
 {"timestamp":"2026-04-29T16:44:21Z","workflow":"track","event":"status_check","run_id":"25121444386","run_number":65,"data":{"contributed":54,"tracked":20,"case_study_ready":20,"rule_adopted":2}}
+{"timestamp":"2026-04-29T18:46:37Z","workflow":"audit","event":"findings_aggregated","run_id":"25126881629","run_number":409,"data":{"repo":"alirezarezvani/claude-code-tresor","findings":34,"invalid_lines":0,"self_false_positives":1}}
+{"timestamp":"2026-04-29T18:46:37Z","workflow":"audit","event":"audit_complete","run_id":"25126881629","run_number":409,"data":{"repo":"alirezarezvani/claude-code-tresor","score":62,"artifacts":65,"strategy":"progressive"}}
