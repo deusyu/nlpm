@@ -33,6 +33,8 @@ claude plugin install nlpm@xiaolai --scope project
 claude plugin install nlpm@xiaolai --scope user
 ```
 
+> **Install fails with "Plugin not found in marketplace 'xiaolai'"?** Your local marketplace clone is stale. Run `claude plugin marketplace update xiaolai` and retry — `plugin install` does not auto-refresh.
+
 ## Quick Start
 
 ```
