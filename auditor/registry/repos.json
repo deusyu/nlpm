@@ -6749,11 +6749,14 @@
       "stars": 1000,
       "artifacts": 5,
       "description": "A self-learning system for Claude Code that captures corrections, positive feedback, and preferences — then syncs them to CLAUDE.md and AGENTS.md.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 99,
       "audit_issue": 228,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "8dc9db43c9bfaa53b567d63f3f48385bcf3d3084"
     },
     "alirezarezvani/claude-code-skill-factory": {
       "discovered": "2026-04-25T01:06:48Z",
