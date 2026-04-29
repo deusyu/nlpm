@@ -20,15 +20,28 @@ conflicted_paths() {
   git diff --name-only --diff-filter=U 2>/dev/null || true
 }
 
-# Registry: deep merge preserves fields from both sides.
+# Registry: 3-way merge preserves remote updates to entries this workflow
+# didn't touch. The previous strategy (`jq -s '.[0] * .[1]' theirs ours`)
+# was a 2-way recursive merge with ours-wins, which silently reverted
+# remote updates whenever this workflow's checkout was stale. Concrete
+# symptom: audit commits flipping unrelated entries (e.g.,
+# kepano/obsidian-skills) back to status=discovered/score=null on every
+# concurrent push. The 3-way merge uses git's BASE (:1) to distinguish
+# "current workflow changed this field" from "field is the same as
+# checkout-time." Only fields the current workflow actually modified
+# come from ours; everything else takes the remote version.
+#
 # Validate the merged result before writing — a malformed merge would
 # silently corrupt the registry on disk (observed 2026-04-28: an
 # unguarded merge produced two concatenated top-level objects).
 if conflicted_paths | grep -qx "auditor/registry/repos.json"; then
-  echo "Resolving auditor/registry/repos.json via jq deep merge"
-  git show :2:auditor/registry/repos.json > /tmp/reg-ours.json
-  git show :3:auditor/registry/repos.json > /tmp/reg-theirs.json
-  jq -s '.[0] * .[1]' /tmp/reg-theirs.json /tmp/reg-ours.json > /tmp/reg.json
+  echo "Resolving auditor/registry/repos.json via 3-way merge"
+  git show :1:auditor/registry/repos.json > /tmp/reg-base.json   # merge base
+  git show :2:auditor/registry/repos.json > /tmp/reg-ours.json   # our commit
+  git show :3:auditor/registry/repos.json > /tmp/reg-theirs.json # remote
+  python3 auditor/scripts/three-way-merge-registry.py \
+      /tmp/reg-base.json /tmp/reg-ours.json /tmp/reg-theirs.json > /tmp/reg.json \
+    || { echo "ERROR: three-way merge failed; refusing to write"; exit 1; }
   REG_TMP=/tmp/reg.json bash auditor/scripts/atomic-registry-write.sh
   git add auditor/registry/repos.json
 fi
