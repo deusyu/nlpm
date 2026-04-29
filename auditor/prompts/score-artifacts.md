@@ -65,7 +65,7 @@ Score each file on a 100-point scale. Start at 100, subtract penalties:
 - Unused tools declared: -3 each
 - Scalar-string `tools` format is valid — do NOT penalize
 
-Before reporting any finding, run this 4-step check (same gate as the scorer
+Before reporting any finding, run this 5-step check (same gate as the scorer
 agent — `agents/scorer.md`):
 
 1. **Rubric check** — Does the penalty appear in `skills/nlpm/scoring/` for
@@ -75,11 +75,26 @@ agent — `agents/scorer.md`):
    type? These fields are explicitly NOT required — do not penalize their
    absence: `namespace:` on skills; `main:`, `engines:`, `minClaudeVersion:`
    in plugin.json; inline `hooks:` / `skills:` arrays in plugin.json;
-   `tools:` on reference-only skills; `commentary:` tags in agent examples.
-3. **Intent check** — If `CLAUDE.md` or a comment in the artifact documents
+   `tools:` on reference-only skills; `commentary:` tags in agent examples;
+   **`name:` on commands** (Claude Code commands register by filename;
+   `description:` is the only required command field per
+   `skills/nlpm/conventions/` §2).
+3. **Path scope check** — Claude Code artifact paths only. Do NOT emit
+   `BUG-missing-frontmatter` or any other Claude Code schema bug on files
+   under `.cursor/`, `.opencode/`, `.continue/`, `.aider/`, `.codeium/`,
+   `.copilot/`, or any other non-Claude tooling directory — those follow
+   different schemas. Valid Claude Code artifact paths:
+   - `.claude/commands/**/*.md`, `commands/**/*.md` (plugin commands)
+   - `.claude/agents/**/*.md`, `agents/**/*.md` (plugin agents)
+   - `.claude/skills/**/SKILL.md`, `skills/**/SKILL.md`
+   - `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
+   - `hooks/hooks.json`, `.mcp.json`, `CLAUDE.md`
+   When a file lives outside these paths, drop the finding silently — it
+   is not an NLPM-governed artifact regardless of file extension.
+4. **Intent check** — If `CLAUDE.md` or a comment in the artifact documents
    an intentional omission, respect it. Do not report intentional design
    choices as findings.
-4. **Tool catalog check** — Built-ins like `AskUserQuestion`, `Task`,
+5. **Tool catalog check** — Built-ins like `AskUserQuestion`, `Task`,
    `WebFetch`, `TodoWrite` are always valid — do not flag as "undocumented".
 
 Silent omission is preferable to a false positive.

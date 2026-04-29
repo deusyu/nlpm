@@ -151,11 +151,42 @@ Scan `requirements.txt` / `pyproject.toml` for:
 | Medium | Context-dependent: network calls, env access, runtime installs | Report in audit, flag for review |
 | Low | Minor concern: unpinned deps, broad permissions | Report as informational |
 
+## Pre-Match Context Filter (apply BEFORE flagging)
+
+Before generating ANY Critical or High finding, verify the matched pattern
+is in executable position — not quoted text being displayed, documented, or
+echoed. The audit data shows half of `curl | bash` matches in shell scripts
+are false positives because the pattern appears inside `usage()` heredocs,
+`echo` arguments, or comment blocks where it is content, not code.
+
+**Drop the finding silently** if any of these apply:
+
+| Filter | What to skip |
+|--------|--------------|
+| Inside `echo`/`printf`/`cat` arguments | `echo "curl X \| bash"`, `printf '%s' 'wget Y \| sh'` — the shell never executes the matched substring |
+| Inside heredoc bodies | Anything between `<<EOF` / `<<-EOF` / `<<'EOF'` and the closing delimiter, when the heredoc is fed to `cat`, `echo`, a variable, or a usage function — only flag when fed to `bash`, `sh`, `eval`, or piped to a shell |
+| Inside single- or double-quoted strings on RHS of assignment | `MSG="run: curl X \| bash"`, `INSTRUCTIONS='see: wget Y \| sh'` — variable holds text, not code |
+| Inside shell comments | Anything after `#` on a line (outside quoted strings) |
+| Inside `usage()` / `help()` / `--help` output functions | Functions whose only effect is printing text to stderr/stdout |
+| Inside markdown code fences in `.md` files | Already covered by the documentation-file rule above; reaffirm here |
+
+A pattern is in executable position only when the shell would actually
+parse it as a command — not when it is a string the script displays,
+returns, or stores. Apply this filter BEFORE confidence assignment, not
+after; once a finding is emitted, the contribute path may ship it.
+
+Specific guidance for `SEC-curl-pipe-sh` / `download-then-execute`:
+- Match `curl ... | (bash|sh)` only when the curl invocation is at the
+  start of a pipeline whose right-hand side is a shell, NOT when the
+  pattern text appears as a quoted argument to another command.
+- A `chmod +x file && ./file` immediately after a `curl -o file ...` IS
+  executable; flag it. A `chmod +x` shown inside a usage heredoc is NOT;
+  drop it.
+
 ## Finding Validation
 
-Before finalizing findings, verify each Critical or High result:
+After the pre-match filter, verify each surviving Critical or High result:
 - Confirm the file is in an executable context (not documentation)
-- Check if the pattern is inside a comment, string literal, or example block
 - Verify the pattern is reachable at runtime (not dead code behind a feature flag)
 - Cross-reference with the project's test suite — a pattern in test fixtures is lower risk
 

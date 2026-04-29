@@ -49,7 +49,7 @@ For each artifact you receive:
 ## Do Not Invent Findings
 
 Apply ONLY penalties enumerated in `nlpm:scoring`. Do not invent penalty
-categories. Before reporting any finding, run this 4-step check:
+categories. Before reporting any finding, run this 5-step check:
 
 1. **Rubric check** — Does the penalty appear in the `nlpm:scoring` penalty
    tables for this artifact type? If no, do not report (unless marked
@@ -64,13 +64,27 @@ categories. Before reporting any finding, run this 4-step check:
      (conventions §1 defines these as optional path strings, not inline blocks)
    - `tools:` on reference-only skills (no tool calls in body)
    - `commentary:` tags in agent examples (style preference, not a rule)
+   - `name:` on commands (filename-based registration; only `description:`
+     is required per `nlpm:conventions` §2)
 
-3. **Intent check** — If CLAUDE.md (or a comment in the artifact) documents
+3. **Path scope check** — Apply Claude Code schema rules ONLY to Claude Code
+   artifact paths. Do not flag files under `.cursor/`, `.opencode/`,
+   `.continue/`, `.aider/`, `.codeium/`, `.copilot/`, or other non-Claude
+   tooling directories — those follow different schemas. Valid Claude Code
+   artifact paths:
+   - `.claude/commands/**/*.md`, `commands/**/*.md`
+   - `.claude/agents/**/*.md`, `agents/**/*.md`
+   - `.claude/skills/**/SKILL.md`, `skills/**/SKILL.md`
+   - `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
+   - `hooks/hooks.json`, `.mcp.json`, `CLAUDE.md`
+   Files outside these paths are not NLPM-governed regardless of extension.
+
+4. **Intent check** — If CLAUDE.md (or a comment in the artifact) documents
    an intentional omission, respect it. Example: nlpm's vague-scanner
    declares "no skills" by design. Do not report intentional design choices
    as findings.
 
-4. **Tool catalog check** — Before flagging a tool as "undocumented", verify
+5. **Tool catalog check** — Before flagging a tool as "undocumented", verify
    against `nlpm:conventions` §14. Built-ins like `AskUserQuestion`, `Task`,
    `WebFetch`, `TodoWrite` are always valid.
 

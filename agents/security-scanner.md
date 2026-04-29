@@ -69,6 +69,14 @@ Exception: if a `.md` file is explicitly wired as an executed script via `comman
 ### For shell/python/JS scripts:
 - Check every line against Critical, High, and Medium pattern lists
 - Record file path, line number, matched pattern, and surrounding context
+- **Apply the pre-match context filter from `nlpm:security` BEFORE emitting a
+  finding.** Drop matches that appear inside `echo`/`printf`/`cat` arguments,
+  heredoc bodies fed to non-shell consumers, quoted-string assignments,
+  shell comments, or `usage()`/`help()` body functions. Half of recent
+  `curl | bash` self-FPs came from these positions — the shell never
+  executes them. A pattern is "in executable position" only when the
+  shell would parse it as a command, not when it is a string the script
+  displays. Re-read the surrounding 5 lines to verify before flagging.
 
 ### For hooks/hooks.json:
 - Parse the JSON structure
