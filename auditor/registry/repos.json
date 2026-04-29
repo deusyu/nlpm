@@ -4628,22 +4628,28 @@
       "stars": 0,
       "artifacts": 8,
       "description": "Plugin do Claude (Code + Desktop) pra gestão financeira pessoal agnóstica via FIN App MCP",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 94,
       "audit_issue": 168,
       "prs": [],
-      "discovery_strategy": "plugin-manifest-content"
+      "discovery_strategy": "plugin-manifest-content",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "8ddfa3bb22fdde71b8fd2ceb37c736f29f2c221b"
     },
     "aaronmaturen/claude-plugin": {
       "discovered": "2026-04-25T01:06:48Z",
       "stars": 1,
       "artifacts": 27,
       "description": "",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 36,
       "audit_issue": 169,
       "prs": [],
-      "discovery_strategy": "plugin-manifest-content"
+      "discovery_strategy": "plugin-manifest-content",
+      "strategy": "batched",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "46939d689b94c35975f8ec284c21301022f87b95"
     },
     "SukinShetty/Nemp-memory": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -5379,14 +5385,14 @@
       "stars": 9822,
       "artifacts": 8,
       "description": "Context window optimization for AI coding agents. Sandboxes tool output, 98% reduction. 12 platforms",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 87,
       "audit_issue": 192,
       "prs": [],
       "discovery_strategy": "awesome-list-citation, topic-tag",
       "strategy": "single",
       "security": "BLOCKED",
-      "commit_sha_at_audit": "d858c2284670c7340b82757914290ec5ee439ae2"
+      "commit_sha_at_audit": "62a8ca0a96fea8b8e2ab77b830addecb09d4380b"
     },
     "muratcankoylan/Agent-Skills-for-Context-Engineering": {
       "discovered": "2026-04-25T01:06:48Z",
@@ -6185,11 +6191,14 @@
       "stars": 16303,
       "artifacts": 22,
       "description": "",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 90,
       "audit_issue": 216,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "505a7e10cea80f5da291114db19a4be0e40b9d7e"
     },
     "manaflow-ai/cmux": {
       "discovered": "2026-04-25T01:06:48Z",
