@@ -1334,7 +1334,7 @@
       "rule_adopted": false
     },
     "dontbesilent2025/dbskill": {
-      "status": "contributed",
+      "status": "tracked",
       "score": 90,
       "strategy": "single",
       "security": "REVIEW",
@@ -1345,32 +1345,33 @@
       "prs": [
         {
           "number": 11,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-29T15:35:59Z",
+          "closedAt": "2026-04-29T15:35:59Z",
           "title": "fix: replace broken /文风分析 skill reference in dbs-ai-check",
-          "updatedAt": "2026-04-22T06:42:24Z",
+          "updatedAt": "2026-04-29T15:35:59Z",
           "createdAt": "2026-04-22T06:42:24Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         },
         {
           "number": 12,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-29T15:38:55Z",
+          "closedAt": "2026-04-29T15:38:55Z",
           "title": "fix: harden record-demo.sh against sed injection and brittle ls parsing",
-          "updatedAt": "2026-04-22T06:43:12Z",
+          "updatedAt": "2026-04-29T15:38:55Z",
           "createdAt": "2026-04-22T06:43:12Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         }
       ],
-      "rule_adopted": false
+      "rule_adopted": false,
+      "case_study_candidate": true
     },
     "diet103/claude-code-infrastructure-showcase": {
       "status": "audited",
