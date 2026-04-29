@@ -6692,11 +6692,14 @@
       "stars": 1804,
       "artifacts": 6,
       "description": "Agent Skills for optimizing web quality based on Lighthouse and Core Web Vitals.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 97,
       "audit_issue": 224,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "fed9617111260e19f4f54b72a2874a3f3de8ff94"
     },
     "softaworks/agent-toolkit": {
       "discovered": "2026-04-25T01:06:48Z",
