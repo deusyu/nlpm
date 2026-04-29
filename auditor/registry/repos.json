@@ -6645,11 +6645,14 @@
       "stars": 2278,
       "artifacts": 6,
       "description": "Templates and workflow for generating PRDs, Tech Designs, and MVP and more using LLMs for AI IDEs",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 80,
       "audit_issue": 222,
       "prs": [],
-      "discovery_strategy": "topic-tag"
+      "discovery_strategy": "topic-tag",
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "e063721c7917b0205557178092efab43eba3c77a"
     },
     "RKiding/Awesome-finance-skills": {
       "discovered": "2026-04-25T01:06:48Z",
