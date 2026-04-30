@@ -3418,14 +3418,17 @@
     },
     "Ibrahim-3d/orchestrator-supaconductor": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 89,
       "artifacts": 97,
       "audit_issue": 235,
-      "status": "discovered",
+      "status": "audited",
       "description": "Multi-agent orchestration system for Claude Code with parallel execution, automated quality gates, Board of Directors, and bundled Superpowers skills",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 336
+      "stars": 336,
+      "strategy": "progressive",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "af66b7d9422723dd3bf703b8722009c7b14aaa0c"
     },
     "ananddtyagi/cc-marketplace": {
       "score": 73,
