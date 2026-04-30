@@ -1176,14 +1176,17 @@
     },
     "memvid/claude-brain": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 96,
       "artifacts": 7,
       "audit_issue": 233,
-      "status": "discovered",
+      "status": "audited",
       "description": "Give Claude Code photographic memory in ONE portable file. No database, no SQLite, no ChromaDB - just a single .mv2 file you can git commit, scp, or share. Native Rust core with sub-ms operations.",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 465
+      "stars": 465,
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "5df71f77aafa4ec50e7fd4672997b6da7e2c3198"
     },
     "davila7/claude-code-templates": {
       "score": 84,
