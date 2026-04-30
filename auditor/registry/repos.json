@@ -1181,14 +1181,17 @@
     },
     "memvid/claude-brain": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 96,
       "artifacts": 7,
       "audit_issue": 233,
-      "status": "discovered",
+      "status": "audited",
       "description": "Give Claude Code photographic memory in ONE portable file. No database, no SQLite, no ChromaDB - just a single .mv2 file you can git commit, scp, or share. Native Rust core with sub-ms operations.",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 465
+      "stars": 465,
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "5df71f77aafa4ec50e7fd4672997b6da7e2c3198"
     },
     "davila7/claude-code-templates": {
       "score": 84,
@@ -2378,14 +2381,17 @@
     },
     "peterfei/ai-agent-team": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 82,
       "artifacts": 22,
       "audit_issue": 236,
-      "status": "discovered",
+      "status": "audited",
       "description": "AI Agent Team-拥有24/7专业AI开发团队：产品经理、前端开发、后端开发、测试工程师、DevOps工程师、技术负责人。一键安装，支持中英文命令，大幅提升开发效率！",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 336
+      "stars": 336,
+      "strategy": "batched",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "598c020a438af24e208ede52d80255b722a21543"
     },
     "anthropics/skills": {
       "score": null,
@@ -3423,14 +3429,17 @@
     },
     "Ibrahim-3d/orchestrator-supaconductor": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 89,
       "artifacts": 97,
       "audit_issue": 235,
-      "status": "discovered",
+      "status": "audited",
       "description": "Multi-agent orchestration system for Claude Code with parallel execution, automated quality gates, Board of Directors, and bundled Superpowers skills",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 336
+      "stars": 336,
+      "strategy": "progressive",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "af66b7d9422723dd3bf703b8722009c7b14aaa0c"
     },
     "ananddtyagi/cc-marketplace": {
       "score": 73,
@@ -4409,14 +4418,17 @@
     },
     "josstei/maestro-orchestrate": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 87,
       "artifacts": 39,
       "audit_issue": 234,
-      "status": "discovered",
+      "status": "audited",
       "description": "Multi-agent orchestration platform for Gemini CLI, Claude Code, Codex, and Qwen Code — 39 specialists, parallel subagents, persistent sessions, and built-in code review, debugging, security, SEO, accessibility, and compliance tools",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 370
+      "stars": 370,
+      "strategy": "progressive",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "173af6e0faba5a9e0f2175448129773b4d415679"
     },
     "foryourhealth111-pixel/Vibe-Skills": {
       "score": 30,
@@ -6755,14 +6767,17 @@
     },
     "kazukinagata/shinkoku": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 94,
       "artifacts": 25,
       "audit_issue": 237,
-      "status": "discovered",
+      "status": "audited",
       "description": "確定申告自動化 AI エージェントプラグイン — 帳簿管理から e-Tax 入力代行まで",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 335
+      "stars": 335,
+      "strategy": "batched",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "e610b30c549ccc954717561c87004b6079d03f77"
     },
     "safishamsi/graphify": {
       "score": 58,
