@@ -3376,12 +3376,15 @@
       "prs": []
     },
     "shinpr/claude-code-workflows": {
+      "commit_sha_at_audit": "905dbe85aae1ff8d359639a2b348f830ed2dbcd9",
       "artifacts": 51,
       "description": "Production-ready development workflows for Claude Code, powered by specialized AI agents.",
+      "strategy": "batched",
+      "score": 86,
+      "security": "CLEAR",
       "audit_issue": 238,
-      "status": "discovered",
+      "status": "audited",
       "stars": 320,
-      "score": null,
       "discovered": "2026-04-25T01:06:48Z",
       "discovery_strategy": "topic-tag",
       "prs": []
