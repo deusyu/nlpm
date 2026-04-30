@@ -4404,14 +4404,17 @@
     },
     "josstei/maestro-orchestrate": {
       "discovered": "2026-04-25T01:06:48Z",
-      "score": null,
+      "score": 87,
       "artifacts": 39,
       "audit_issue": 234,
-      "status": "discovered",
+      "status": "audited",
       "description": "Multi-agent orchestration platform for Gemini CLI, Claude Code, Codex, and Qwen Code — 39 specialists, parallel subagents, persistent sessions, and built-in code review, debugging, security, SEO, accessibility, and compliance tools",
       "prs": [],
       "discovery_strategy": "topic-tag",
-      "stars": 370
+      "stars": 370,
+      "strategy": "progressive",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "173af6e0faba5a9e0f2175448129773b4d415679"
     },
     "foryourhealth111-pixel/Vibe-Skills": {
       "score": 30,
