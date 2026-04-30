@@ -1298,12 +1298,15 @@
       "artifacts": 5,
       "description": "Plugin suite + bundled MCP servers for Claude Code. Full delivery lifecycle: Agile pipeline with multi-model AI review, project bootstrap, documentation generation, codebase audits, performance optimization, community workflows. Includes hex-line (hash-verified editing), hex-graph (code knowledge graph), and hex-ssh (remote SSH) MCP servers.",
       "audit_issue": 157,
-      "status": "discovered",
+      "status": "audited",
       "stars": 423,
-      "score": null,
+      "score": 77,
       "discovered": "2026-04-25T01:06:48Z",
       "discovery_strategy": "recent-pushed-mid-tier",
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "b56e470e75df4ca3ed21bfcf131f9e5cdf13e6e2"
     },
     "OthmanAdi/planning-with-files": {
       "case_study_candidate": true,
