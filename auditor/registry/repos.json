@@ -635,7 +635,7 @@
       "source": "claudepot",
       "rule_adopted": false,
       "description": "An improved implementation of the Ralph Wiggum technique for autonomous AI agent orchestration",
-      "status": "contributed",
+      "status": "tracked",
       "audit_issue": 109,
       "strategy": "single",
       "artifacts": 48,
@@ -646,13 +646,13 @@
       "prs": [
         {
           "number": 304,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-30T19:41:23Z",
+          "closedAt": "2026-04-30T19:41:23Z",
           "title": "security: replace source with safe variable parser in sync-embedded-files.sh",
-          "updatedAt": "2026-04-23T00:38:58Z",
+          "updatedAt": "2026-04-30T19:41:23Z",
           "createdAt": "2026-04-23T00:38:58Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
@@ -671,7 +671,8 @@
           "stale_90d_emitted": false
         }
       ],
-      "star_velocity": 8.0
+      "star_velocity": 8.0,
+      "case_study_candidate": true
     },
     "jnuyens/gsd-plugin": {
       "stars": 9,
