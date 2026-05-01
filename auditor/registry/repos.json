@@ -2329,13 +2329,13 @@
         },
         {
           "number": 149,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-04-30T21:46:21Z",
+          "closedAt": "2026-04-30T21:46:21Z",
           "title": "fix: disclose data transmission to api.parallel.ai and openrouter.ai in research-lookup",
-          "updatedAt": "2026-04-29T22:40:29Z",
+          "updatedAt": "2026-04-30T21:46:21Z",
           "createdAt": "2026-04-25T12:21:48Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:98640a5ad3e27d2352e3762404176390fca8340cf1cc8a2d6524273e2f284d4e"
           ],
