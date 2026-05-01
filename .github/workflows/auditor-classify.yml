@@ -130,12 +130,37 @@ jobs:
             Write to `/tmp/classifications.jsonl`. JSONL only — no prose, no
             markdown, no blank lines. One object per classified snapshot:
 
-            {"event":"maintainer_rejected","pr":"<copy>","fingerprints":[<copy>],"rule_ids":[<copy>],"dissent_type":"...","quote":"...","commenter_role":"...","classifier_model":"haiku-4-5","classifier_confidence":"...","comments_hash":"<copy>"}
+            ```
+            {"event":"maintainer_rejected","pr":"...","fingerprints":[...],"rule_ids":[...],"dissent_type":"...","quote":"...","commenter_role":"...","classifier_model":"haiku-4-5","classifier_confidence":"...","comments_hash":"..."}
+            ```
+
+            CRITICAL — copying input fields verbatim:
+            - `pr`: copy the input snapshot's `pr` value as a string.
+            - `fingerprints`: copy the input snapshot's `fingerprints` array
+              element-by-element. If the input has `["sha256:abc...", "sha256:def..."]`,
+              your output MUST be `["sha256:abc...", "sha256:def..."]`. NEVER
+              emit `[]` when the input had elements — that breaks the join
+              key for rule-health attribution and causes maintainer_rejected
+              events to silently drop their per-rule signal.
+            - `rule_ids`: same — copy element-by-element. If the input has
+              `["SEC-unpinned-semver"]`, your output MUST be
+              `["SEC-unpinned-semver"]`. NEVER emit `[]` when the input had
+              elements.
+            - `comments_hash`: copy the input snapshot's `comments_hash`
+              value as a string (this is the dedup key — getting it wrong
+              causes duplicate classifications on re-run).
 
             Do NOT include `timestamp` — the post-step adds it.
             Do NOT emit events for snapshots with no dissent.
             Skip malformed input lines (invalid JSON) — do not fail the batch.
             If `/tmp/unseen-snapshots.jsonl` is empty, write an empty file.
+
+            Quick self-check before finishing: open `/tmp/classifications.jsonl`,
+            pick any line where the source snapshot in
+            `/tmp/unseen-snapshots.jsonl` had non-empty `fingerprints` or
+            `rule_ids`, and confirm your output preserves those arrays
+            verbatim. If you find any line with `"fingerprints":[]` or
+            `"rule_ids":[]` whose source had populated arrays, rewrite it.
 
       - name: Enrich and append classifications
         if: steps.scan.outputs.unseen != '0'

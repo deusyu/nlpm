@@ -46,14 +46,30 @@ if conflicted_paths | grep -qx "auditor/registry/repos.json"; then
   git add auditor/registry/repos.json
 fi
 
-# Event log: append-union of both sides
-if conflicted_paths | grep -qx "auditor/logs/events.jsonl"; then
-  echo "Resolving auditor/logs/events.jsonl via line union"
-  git show :2:auditor/logs/events.jsonl > /tmp/ev-ours.jsonl
-  git show :3:auditor/logs/events.jsonl > /tmp/ev-theirs.jsonl
-  cat /tmp/ev-theirs.jsonl /tmp/ev-ours.jsonl | awk '!seen[$0]++' > auditor/logs/events.jsonl
-  git add auditor/logs/events.jsonl
-fi
+# Append-only logs: union both sides, dedupe identical lines.
+#
+# Why findings.jsonl was added 2026-05-01: per-audit sidecars contained
+# 2,279 finding entries cumulatively, but only 644 (28%) had reached the
+# global log. Investigation traced the gap to the same race that
+# previously corrupted the registry: two parallel audits both append
+# findings, the loser pulls and runs this resolver, the previous
+# `--ours` fallback dropped the remote's appended findings entirely.
+# Result: rule-health metrics systematically undercounted by ~3-4×,
+# every per-rule precision number was wrong, BUG-missing-frontmatter
+# and SEC-curl-pipe-sh false-positive ratios were wildly off.
+#
+# disagreements.jsonl has the same shape and the same race, so it
+# joins the union list defensively rather than waiting for a similar
+# investigation to surface a similar gap.
+for log in auditor/logs/events.jsonl auditor/findings.jsonl auditor/disagreements.jsonl; do
+  if conflicted_paths | grep -qx "$log"; then
+    echo "Resolving $log via line union"
+    git show ":2:$log" > /tmp/log-ours.jsonl
+    git show ":3:$log" > /tmp/log-theirs.jsonl
+    cat /tmp/log-theirs.jsonl /tmp/log-ours.jsonl | awk '!seen[$0]++' > "$log"
+    git add "$log"
+  fi
+done
 
 # Everything else: prefer ours so the current workflow's work survives
 conflicted_paths | while read -r f; do
