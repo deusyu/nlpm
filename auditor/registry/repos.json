@@ -7166,10 +7166,13 @@
       "stars": 20558,
       "artifacts": 62,
       "description": "🎨 Local-first, open-source alternative to Anthropic's Claude Design. ⚡ 19 Skills · ✨ 71 brand-grade Design Systems 🖼 Generate web · desktop · mobile prototypes · slides · images · videos · HyperFrames 📦 Sandboxed preview · HTML/PDF/PPTX/MP4 export 🤖 Runs on Claude Code / Codex / Cursor / Gemini / OpenCode / Qwen / Copilot / Hermes / Kimi CLI.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 95,
       "audit_issue": 241,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "653c506b105a2fd47ffca6f0805da7f70350b82c"
     }
   }
 }
