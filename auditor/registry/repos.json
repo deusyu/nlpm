@@ -1653,10 +1653,13 @@
       "artifacts": 4,
       "description": "Claude Code plugin: automated code review loop with Codex",
       "stars": 655,
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 89,
       "discovered": "2026-05-05T00:52:16Z",
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "244f4c7bc15e98552af7cc5a67e70dfcdea9ab12"
     },
     "pbakaus/impeccable": {
       "rule_adopted": false,
