@@ -1880,3 +1880,5 @@
 {"timestamp":"2026-05-05T12:41:26Z","workflow":"audit","event":"findings_aggregated","run_id":"25376415654","run_number":439,"data":{"repo":"wasp-lang/open-saas","findings":11,"invalid_lines":0,"self_false_positives":2}}
 {"timestamp":"2026-05-05T12:41:26Z","workflow":"audit","event":"audit_complete","run_id":"25376415654","run_number":439,"data":{"repo":"wasp-lang/open-saas","score":87,"artifacts":3,"strategy":"single"}}
 {"timestamp":"2026-05-05T16:45:46Z","workflow":"track","event":"status_check","run_id":"25389362715","run_number":101,"data":{"contributed":49,"tracked":24,"case_study_ready":25,"rule_adopted":2}}
+{"timestamp":"2026-05-05T20:33:51Z","workflow":"track","event":"finding_outcome","run_id":"25400574891","run_number":102,"data":{"pr":"htdt/godogen#34","pr_state":"closed_unmerged","fingerprints":[],"rule_ids":[]}}
+{"timestamp":"2026-05-05T20:36:56Z","workflow":"track","event":"status_check","run_id":"25400574891","run_number":102,"data":{"contributed":48,"tracked":25,"case_study_ready":25,"rule_adopted":2}}

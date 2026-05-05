@@ -3992,7 +3992,7 @@
       "description": "Claude Code & Codex skills that build complete Godot projects from a game description",
       "audit_issue": 108,
       "rule_adopted": false,
-      "status": "contributed",
+      "status": "tracked",
       "security": "CLEAR",
       "strategy": "single",
       "pipeline_prs": [
@@ -4002,13 +4002,13 @@
       "prs": [
         {
           "number": 34,
-          "state": "OPEN",
+          "state": "CLOSED",
           "mergedAt": null,
-          "closedAt": null,
+          "closedAt": "2026-05-05T17:56:44Z",
           "title": "fix: add minimum version pins to requirements.txt",
-          "updatedAt": "2026-04-23T00:39:24Z",
+          "updatedAt": "2026-05-05T17:56:44Z",
           "createdAt": "2026-04-23T00:39:24Z",
-          "outcome": "open",
+          "outcome": "rejected",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
