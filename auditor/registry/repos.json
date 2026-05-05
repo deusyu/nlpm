@@ -7256,10 +7256,13 @@
       "stars": 7272,
       "artifacts": 3,
       "description": "The first open-source agent skills builder. Define skills by vibe workflow, run on Claude Code, Cursor, Codex & more. Build Clawdbot 🦞· APIs for Lovable · Bots for Slack & Lark/Feishu · Skills are infrastructure, not prompts.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 89,
       "audit_issue": 250,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "BLOCKED",
+      "commit_sha_at_audit": "330c01b123b85c8245d2e093eca4bb71585bbc6f"
     },
     "twostraws/SwiftUI-Agent-Skill": {
       "discovered": "2026-05-05T00:52:16Z",

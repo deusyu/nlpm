@@ -1846,3 +1846,5 @@
 {"timestamp":"2026-05-04T22:20:52Z","workflow":"daily-report","event":"report_generated","run_id":"25346683929","run_number":30,"data":{"total_repos":186}}
 {"timestamp":"2026-05-05T00:49:37Z","workflow":"discover","event":"search_complete","run_id":"25351804783","run_number":9,"data":{"candidates":90,"new":34,"worthy":0,"oversized":0}}
 {"timestamp":"2026-05-05T00:52:50Z","workflow":"discover","event":"search_complete","run_id":"25351883555","run_number":10,"data":{"candidates":90,"new":34,"worthy":11,"oversized":0}}
+{"timestamp":"2026-05-05T01:08:27Z","workflow":"audit","event":"findings_aggregated","run_id":"25352219867","run_number":429,"data":{"repo":"refly-ai/refly","findings":13,"invalid_lines":0,"self_false_positives":1}}
+{"timestamp":"2026-05-05T01:08:27Z","workflow":"audit","event":"audit_complete","run_id":"25352219867","run_number":429,"data":{"repo":"refly-ai/refly","score":89,"artifacts":4,"strategy":"single"}}
