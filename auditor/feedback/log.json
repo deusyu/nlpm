@@ -9,7 +9,7 @@
       ]
     },
     "R01": {
-      "total_hits": 208,
+      "total_hits": 236,
       "repos": [
         "slavingia/skills",
         "deanpeters/Product-Manager-Skills",
@@ -92,7 +92,7 @@
       "led_to_rejected_pr": 0
     },
     "R07": {
-      "total_hits": 36,
+      "total_hits": 44,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -105,7 +105,7 @@
       "state": "healthy"
     },
     "R08": {
-      "total_hits": 72,
+      "total_hits": 78,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -118,7 +118,7 @@
       "state": "healthy"
     },
     "R12": {
-      "total_hits": 79,
+      "total_hits": 80,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -131,7 +131,7 @@
       "state": "healthy"
     },
     "R14": {
-      "total_hits": 86,
+      "total_hits": 101,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -144,7 +144,7 @@
       "state": "healthy"
     },
     "R15": {
-      "total_hits": 76,
+      "total_hits": 79,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -214,7 +214,7 @@
       "state": "healthy"
     },
     "BUG-missing-frontmatter": {
-      "total_hits": 130,
+      "total_hits": 132,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 4,
       "self_false_positive": 0,
@@ -240,7 +240,7 @@
       "state": "healthy"
     },
     "CC-broken-relative-path": {
-      "total_hits": 34,
+      "total_hits": 37,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -266,7 +266,7 @@
       "state": "healthy"
     },
     "R09": {
-      "total_hits": 99,
+      "total_hits": 100,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 1,
@@ -279,7 +279,7 @@
       "state": "healthy"
     },
     "UNCLASSIFIED": {
-      "total_hits": 134,
+      "total_hits": 154,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": -9,
       "self_false_positive": 0,
@@ -331,7 +331,7 @@
       "state": "healthy"
     },
     "BUG-undeclared-tool": {
-      "total_hits": 46,
+      "total_hits": 48,
       "led_to_merged_pr": 1,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -370,7 +370,7 @@
       "state": "healthy"
     },
     "CC-stale-count": {
-      "total_hits": 32,
+      "total_hits": 33,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -383,7 +383,7 @@
       "state": "healthy"
     },
     "CC-orphan-component": {
-      "total_hits": 31,
+      "total_hits": 33,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -487,10 +487,10 @@
       "state": "healthy"
     },
     "SEC-path-traversal": {
-      "total_hits": 24,
+      "total_hits": 26,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
-      "self_false_positive": 2,
+      "self_false_positive": 3,
       "maintainer_rejected": 0,
       "downstream_suppressions": 0,
       "verified_fixed": 2,
@@ -513,7 +513,7 @@
       "state": "healthy"
     },
     "SEC-unpinned-semver": {
-      "total_hits": 66,
+      "total_hits": 78,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 4,
       "self_false_positive": 0,
@@ -539,7 +539,7 @@
       "state": "healthy"
     },
     "R22": {
-      "total_hits": 113,
+      "total_hits": 117,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -552,7 +552,7 @@
       "state": "healthy"
     },
     "CC-terminology-drift": {
-      "total_hits": 45,
+      "total_hits": 46,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -565,7 +565,7 @@
       "state": "healthy"
     },
     "SEC-new-function-eval": {
-      "total_hits": 8,
+      "total_hits": 9,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 2,
@@ -604,7 +604,7 @@
       "state": "healthy"
     },
     "R03": {
-      "total_hits": 39,
+      "total_hits": 42,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -617,7 +617,7 @@
       "state": "healthy"
     },
     "R16": {
-      "total_hits": 25,
+      "total_hits": 26,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -630,10 +630,10 @@
       "state": "healthy"
     },
     "SEC-shell-true": {
-      "total_hits": 17,
+      "total_hits": 21,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
-      "self_false_positive": 1,
+      "self_false_positive": 4,
       "maintainer_rejected": 0,
       "downstream_suppressions": 0,
       "verified_fixed": 0,
@@ -643,10 +643,10 @@
       "state": "healthy"
     },
     "SEC-postinstall-script": {
-      "total_hits": 17,
+      "total_hits": 18,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
-      "self_false_positive": 2,
+      "self_false_positive": 3,
       "maintainer_rejected": 0,
       "downstream_suppressions": 0,
       "verified_fixed": 0,
@@ -669,7 +669,7 @@
       "state": "healthy"
     },
     "SEC-path-modification": {
-      "total_hits": 4,
+      "total_hits": 5,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -786,7 +786,7 @@
       "state": "healthy"
     },
     "R18": {
-      "total_hits": 17,
+      "total_hits": 18,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 3,
@@ -812,7 +812,7 @@
       "state": "healthy"
     },
     "SEC-runtime-install": {
-      "total_hits": 3,
+      "total_hits": 5,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -1085,7 +1085,7 @@
       "state": "healthy"
     },
     "SEC-network-call": {
-      "total_hits": 17,
+      "total_hits": 18,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 2,
@@ -1293,7 +1293,7 @@
       "state": "healthy"
     },
     "R04": {
-      "total_hits": 47,
+      "total_hits": 49,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -3371,6 +3371,227 @@
       "verify_rate": null,
       "introduced_since_audit": 0,
       "state": "healthy"
+    },
+    "SEC-credential-env-var": {
+      "total_hits": 2,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-env-var-repo-override": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-sudo": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-unverified-binary": {
+      "total_hits": 3,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-network-fetch": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-user-content-display": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-runtime-autoinstall": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-network-tunnel": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "CC-version-mismatch": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-env-var-injection": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-unpinned-runtime-install": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-missing-strictmode": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-subprocess-external-process": {
+      "total_hits": 3,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-cdn-script-inject": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-hardcoded-api-key": {
+      "total_hits": 3,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 3,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "noisy"
+    },
+    "SEC-runtime-network": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-shell-kill-pid": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
     }
   },
   "metadata": {
@@ -3380,8 +3601,8 @@
     "total_audits": 10,
     "total_prs_submitted": 273,
     "total_prs_merged": 79,
-    "total_prs_rejected": 41,
+    "total_prs_rejected": 42,
     "total_prs_applied_separately": 18,
-    "updated_at": "2026-05-04T22:20:52.473305Z"
+    "updated_at": "2026-05-05T22:20:05.334347Z"
   }
 }
