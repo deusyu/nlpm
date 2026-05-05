@@ -800,7 +800,7 @@
           "mergedAt": null,
           "closedAt": null,
           "title": "fix(skills): remove broken doc references in orca-cli SKILL.md",
-          "updatedAt": "2026-04-26T00:34:49Z",
+          "updatedAt": "2026-05-05T07:47:59Z",
           "createdAt": "2026-04-23T06:43:17Z",
           "outcome": "open",
           "fingerprints": [],
@@ -2496,6 +2496,19 @@
       "score": 91,
       "security": "REVIEW",
       "prs": [
+        {
+          "number": 137,
+          "state": "MERGED",
+          "mergedAt": "2026-04-21T13:47:17Z",
+          "closedAt": "2026-04-21T13:47:17Z",
+          "title": "fix: correct PowerShell syntax in Pi session-catchup invocation",
+          "updatedAt": "2026-04-21T13:53:18Z",
+          "createdAt": "2026-04-21T12:28:10Z",
+          "outcome": "merged",
+          "fingerprints": [],
+          "rule_ids": [],
+          "stale_90d_emitted": false
+        },
         {
           "number": 138,
           "state": "MERGED",
@@ -5298,6 +5311,19 @@
           "title": "fix: add missing YAML frontmatter to ship reference docs",
           "updatedAt": "2026-04-21T18:27:27Z",
           "createdAt": "2026-04-21T18:27:27Z",
+          "outcome": "open",
+          "fingerprints": [],
+          "rule_ids": [],
+          "stale_90d_emitted": false
+        },
+        {
+          "number": 183,
+          "state": "OPEN",
+          "mergedAt": null,
+          "closedAt": null,
+          "title": "fix: add missing YAML frontmatter to audit-project reference docs",
+          "updatedAt": "2026-04-21T18:28:09Z",
+          "createdAt": "2026-04-21T18:28:09Z",
           "outcome": "open",
           "fingerprints": [],
           "rule_ids": [],

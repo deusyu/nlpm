@@ -1872,3 +1872,6 @@
 {"timestamp":"2026-05-05T06:56:58Z","workflow":"audit","event":"audit_complete","run_id":"25362085861","run_number":435,"data":{"repo":"hamelsmu/claude-review-loop","score":89,"artifacts":4,"strategy":"single"}}
 {"timestamp":"2026-05-05T06:58:59Z","workflow":"audit","event":"findings_aggregated","run_id":"25362083098","run_number":434,"data":{"repo":"evo-hq/evo","findings":11,"invalid_lines":0,"self_false_positives":2}}
 {"timestamp":"2026-05-05T06:58:59Z","workflow":"audit","event":"audit_complete","run_id":"25362083098","run_number":434,"data":{"repo":"evo-hq/evo","score":98,"artifacts":4,"strategy":"single"}}
+{"timestamp":"2026-05-05T08:54:06Z","workflow":"track","event":"finding_outcome","run_id":"25366863156","run_number":99,"data":{"pr":"OthmanAdi/planning-with-files#137","pr_state":"merged","fingerprints":[],"rule_ids":[]}}
+{"timestamp":"2026-05-05T08:56:56Z","workflow":"track","event":"finding_outcome","run_id":"25366863156","run_number":99,"data":{"pr":"ComposioHQ/awesome-claude-plugins#183","pr_state":"open","fingerprints":[],"rule_ids":[]}}
+{"timestamp":"2026-05-05T08:59:19Z","workflow":"track","event":"status_check","run_id":"25366863156","run_number":99,"data":{"contributed":49,"tracked":24,"case_study_ready":25,"rule_adopted":2}}
