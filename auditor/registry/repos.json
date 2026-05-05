@@ -7196,10 +7196,13 @@
       "stars": 2669,
       "artifacts": 3,
       "description": "Visual Skills Pack for Obsidian: generate Canvas, Excalidraw, and Mermaid diagrams from text with Claude Code",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 90,
       "audit_issue": 244,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "1265976d9746a84858b4b7b42fb86a215aa93de9"
     },
     "evo-hq/evo": {
       "discovered": "2026-05-05T00:52:16Z",
@@ -7269,10 +7272,13 @@
       "stars": 3806,
       "artifacts": 3,
       "description": "SwiftUI agent skill for Claude Code, Codex, and other AI tools.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 89,
       "audit_issue": 251,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "be297ff80dddec529af1f9b1f1f114aab6c9d11c"
     },
     "wasp-lang/open-saas": {
       "discovered": "2026-05-05T00:52:16Z",
