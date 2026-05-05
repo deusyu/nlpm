@@ -31,10 +31,13 @@
       "artifacts": 3,
       "description": "Native-first Claude Code plugin for third-party models with silent Agent model injection and output styles.",
       "stars": 651,
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 84,
       "discovered": "2026-05-05T00:52:16Z",
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "REVIEW",
+      "commit_sha_at_audit": "ad09b98cfdc17dbaa13f4889f27a98823e049f31"
     },
     "timescale/pg-aiguide": {
       "audit_issue": 75,
@@ -1656,10 +1659,13 @@
       "artifacts": 4,
       "description": "Claude Code plugin: automated code review loop with Codex",
       "stars": 655,
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 89,
       "discovered": "2026-05-05T00:52:16Z",
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "244f4c7bc15e98552af7cc5a67e70dfcdea9ab12"
     },
     "pbakaus/impeccable": {
       "rule_adopted": false,
@@ -2395,10 +2401,13 @@
       "artifacts": 3,
       "description": "Minimal plugin that lets Claude Code call you on the phone.",
       "stars": 2590,
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 80,
       "discovered": "2026-05-05T00:52:16Z",
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "4e0aa2072ffcb93ecb2204931802338b34a40e12"
     },
     "itsmostafa/aws-agent-skills": {
       "audit_issue": 227,
@@ -5801,10 +5810,13 @@
       "artifacts": 4,
       "description": "",
       "stars": 556,
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 97,
       "discovered": "2026-05-05T00:52:16Z",
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "d870a097ca7ae82977b7b32cfccc4a5991a405d0"
     },
     "kangraemin/claude-inspector": {
       "audit_issue": 83,
