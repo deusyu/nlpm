@@ -2392,10 +2392,13 @@
       "artifacts": 3,
       "description": "Minimal plugin that lets Claude Code call you on the phone.",
       "stars": 2590,
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 80,
       "discovered": "2026-05-05T00:52:16Z",
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "4e0aa2072ffcb93ecb2204931802338b34a40e12"
     },
     "itsmostafa/aws-agent-skills": {
       "audit_issue": 227,
