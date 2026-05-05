@@ -7196,10 +7196,13 @@
       "stars": 2669,
       "artifacts": 3,
       "description": "Visual Skills Pack for Obsidian: generate Canvas, Excalidraw, and Mermaid diagrams from text with Claude Code",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 90,
       "audit_issue": 244,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "1265976d9746a84858b4b7b42fb86a215aa93de9"
     },
     "evo-hq/evo": {
       "discovered": "2026-05-05T00:52:16Z",
