@@ -233,19 +233,6 @@
       ],
       "prs": [
         {
-          "number": 74,
-          "state": "CLOSED",
-          "mergedAt": null,
-          "closedAt": "2026-04-28T09:44:55Z",
-          "title": "fix: add missing name field to docs-manager OpenCode agent",
-          "updatedAt": "2026-04-28T09:44:55Z",
-          "createdAt": "2026-04-20T12:34:19Z",
-          "outcome": "rejected",
-          "fingerprints": [],
-          "rule_ids": [],
-          "stale_90d_emitted": false
-        },
-        {
           "number": 75,
           "state": "CLOSED",
           "mergedAt": null,
@@ -1211,23 +1198,6 @@
         614
       ],
       "prs": [
-        {
-          "number": 613,
-          "state": "CLOSED",
-          "mergedAt": null,
-          "closedAt": "2026-05-01T21:08:58Z",
-          "title": "fix: add missing instruction body to opencode plannotator-last command",
-          "updatedAt": "2026-05-01T21:08:58Z",
-          "createdAt": "2026-04-26T18:20:48Z",
-          "outcome": "rejected",
-          "fingerprints": [
-            "sha256:76544d68a446869602e6c8ca3dc364e478a4b0516b88890e139ec39c59661bac"
-          ],
-          "rule_ids": [
-            "BUG-missing-frontmatter"
-          ],
-          "stale_90d_emitted": false
-        },
         {
           "number": 614,
           "state": "CLOSED",
@@ -4884,27 +4854,6 @@
             "BUG-missing-frontmatter",
             "BUG-missing-frontmatter",
             "BUG-missing-frontmatter"
-          ],
-          "stale_90d_emitted": false
-        },
-        {
-          "number": 43,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
-          "title": "fix(commands): correct misleading description in sentient.md",
-          "updatedAt": "2026-04-26T18:33:43Z",
-          "createdAt": "2026-04-26T18:23:04Z",
-          "outcome": "open",
-          "fingerprints": [
-            "sha256:7aaa378211b71ab434a78984e346f5077f0f1f159cc36d2c24ed7ef2ed3c8343",
-            "sha256:91a816dd674ffcf4b44c12cc2d1d544196039864285730e8d2a152097075081b",
-            "sha256:cfa3127a1442ca10d5832a7ba7510eee3a4c3b25306b55d673485f067be471cf"
-          ],
-          "rule_ids": [
-            "SEC-destructive-command",
-            "CC-terminology-drift",
-            "R05"
           ],
           "stale_90d_emitted": false
         }
