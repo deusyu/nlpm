@@ -1955,7 +1955,7 @@
       "description": "omo; the best agent harness - previously oh-my-opencode",
       "audit_issue": 88,
       "rule_adopted": false,
-      "status": "contributed",
+      "status": "tracked",
       "security": "REVIEW",
       "strategy": "single",
       "pipeline_prs": [
@@ -1965,20 +1965,21 @@
       "prs": [
         {
           "number": 3578,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-06T06:44:57Z",
+          "closedAt": "2026-05-06T06:44:57Z",
           "title": "docs(agents): add YAML frontmatter to AGENTS.md documentation files",
-          "updatedAt": "2026-04-22T18:33:31Z",
+          "updatedAt": "2026-05-06T06:44:57Z",
           "createdAt": "2026-04-22T18:28:09Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         }
       ],
       "source": "claudepot",
-      "stars": 51912
+      "stars": 51912,
+      "case_study_candidate": true
     },
     "addyosmani/agent-skills": {
       "score": 94,
@@ -3730,7 +3731,7 @@
       "description": "The container platform tailored for Kubernetes multi-cloud, datacenter, and edge management ⎈ 🖥 ☁️",
       "audit_issue": 215,
       "rule_adopted": false,
-      "status": "contributed",
+      "status": "tracked",
       "security": "REVIEW",
       "strategy": "batched",
       "pipeline_prs": [
@@ -3743,13 +3744,13 @@
       "prs": [
         {
           "number": 6632,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-06T07:15:21Z",
+          "closedAt": "2026-05-06T07:15:21Z",
           "title": "fix(devops-credentials): use correct Secret type in credential API examples",
-          "updatedAt": "2026-04-27T07:09:30Z",
+          "updatedAt": "2026-05-06T07:15:21Z",
           "createdAt": "2026-04-27T07:07:49Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:d7125c5c8c94a753e89aaf150c84e91185af2824559c8e8597bcef64aa04fa7c"
           ],
@@ -3760,13 +3761,13 @@
         },
         {
           "number": 6633,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-06T07:15:48Z",
+          "closedAt": "2026-05-06T07:15:48Z",
           "title": "fix(fluid): close unclosed double-quote in Dataset tieredstore YAML template",
-          "updatedAt": "2026-04-27T07:13:02Z",
+          "updatedAt": "2026-05-06T07:15:48Z",
           "createdAt": "2026-04-27T07:08:31Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:48e59502353a5665adbede1b06db2a69a4c2002e968ccfb44ef622d00910b90a"
           ],
@@ -3777,13 +3778,13 @@
         },
         {
           "number": 6634,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-06T07:16:19Z",
+          "closedAt": "2026-05-06T07:16:19Z",
           "title": "fix(whizard-logging): correct 'From Step 3' placeholder to 'From Step 2'",
-          "updatedAt": "2026-04-27T07:10:35Z",
+          "updatedAt": "2026-05-06T07:16:20Z",
           "createdAt": "2026-04-27T07:09:07Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:866ff4edfa78d47baa05df21199201de19b87960829a9958f0fdab84b666cdc0"
           ],
@@ -3794,13 +3795,13 @@
         },
         {
           "number": 6635,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-06T07:16:32Z",
+          "closedAt": "2026-05-06T07:16:33Z",
           "title": "fix(devops-pipeline): close unclosed bold marker in 'Step 3b' heading",
-          "updatedAt": "2026-04-27T07:12:06Z",
+          "updatedAt": "2026-05-06T07:16:33Z",
           "createdAt": "2026-04-27T07:10:02Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:3fea9e06f7927b9e887cb79c522463be8820db21b5629905df31f54e0c92d6b6"
           ],
@@ -3811,13 +3812,13 @@
         },
         {
           "number": 6636,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-06T07:16:53Z",
+          "closedAt": "2026-05-06T07:16:53Z",
           "title": "fix(devops-overview): remove duplicate Project Components ASCII diagram",
-          "updatedAt": "2026-04-27T07:12:54Z",
+          "updatedAt": "2026-05-06T07:16:53Z",
           "createdAt": "2026-04-27T07:10:55Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:7baa04098f252c88f3e6494c7405143d88acfc54fb15cd376d7bc40d842c6bfc"
           ],
@@ -3827,7 +3828,8 @@
           "stale_90d_emitted": false
         }
       ],
-      "stars": 16912
+      "stars": 16912,
+      "case_study_candidate": true
     },
     "0xfurai/claude-code-subagents": {
       "score": 74,
