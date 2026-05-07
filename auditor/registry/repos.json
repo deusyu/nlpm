@@ -5750,6 +5750,19 @@
           "stale_90d_emitted": false
         },
         {
+          "number": 184,
+          "state": "MERGED",
+          "mergedAt": "2026-04-21T14:24:44Z",
+          "closedAt": "2026-04-21T14:24:44Z",
+          "title": "Fix: add missing name field to planning command frontmatter",
+          "updatedAt": "2026-04-21T14:24:45Z",
+          "createdAt": "2026-04-21T12:28:42Z",
+          "outcome": "merged",
+          "fingerprints": [],
+          "rule_ids": [],
+          "stale_90d_emitted": false
+        },
+        {
           "number": 185,
           "state": "MERGED",
           "mergedAt": "2026-04-21T14:24:57Z",
