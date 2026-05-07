@@ -249,7 +249,7 @@
       "verified_fixed": 0,
       "verified_persists": 0,
       "verify_rate": null,
-      "introduced_since_audit": 4,
+      "introduced_since_audit": 8,
       "state": "healthy"
     },
     "R11": {
@@ -288,7 +288,7 @@
       "verified_fixed": 85,
       "verified_persists": 0,
       "verify_rate": 1.0,
-      "introduced_since_audit": 12,
+      "introduced_since_audit": 16,
       "state": "healthy"
     },
     "R02": {
@@ -613,7 +613,7 @@
       "verified_fixed": 1,
       "verified_persists": 0,
       "verify_rate": 1.0,
-      "introduced_since_audit": 19,
+      "introduced_since_audit": 22,
       "state": "healthy"
     },
     "R16": {
@@ -1081,7 +1081,7 @@
       "verified_fixed": 0,
       "verified_persists": 0,
       "verify_rate": null,
-      "introduced_since_audit": 0,
+      "introduced_since_audit": 2,
       "state": "healthy"
     },
     "SEC-network-call": {
@@ -3612,10 +3612,10 @@
     "last_updated": "2026-04-10",
     "total_events": 16,
     "total_audits": 10,
-    "total_prs_submitted": 272,
-    "total_prs_merged": 84,
+    "total_prs_submitted": 273,
+    "total_prs_merged": 85,
     "total_prs_rejected": 42,
     "total_prs_applied_separately": 18,
-    "updated_at": "2026-05-06T22:17:02.834219Z"
+    "updated_at": "2026-05-07T22:22:26.311262Z"
   }
 }
