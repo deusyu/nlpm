@@ -164,7 +164,17 @@ jobs:
           find . -path '*/agents/*.md' -type f > /tmp/artifacts-agents.txt 2>/dev/null || true
           find . -path '*/commands/*.md' -type f > /tmp/artifacts-commands.txt 2>/dev/null || true
           find . -name 'SKILL.md' -type f > /tmp/artifacts-skills.txt 2>/dev/null || true
-          find . -path '*/hooks/*.json' -type f > /tmp/artifacts-hooks.txt 2>/dev/null || true
+          # Restrict to the canonical Claude Code hook config filename
+          # (hooks.json). The previous pattern `*/hooks/*.json` matched any
+          # .json file under any hooks/ directory, including unrelated
+          # tsconfig.json, package.json, and IDE configs in tool-specific
+          # hook subdirectories. Concrete case from 2026-05-06: the
+          # code-yeongyu/oh-my-openagent audit swept in
+          # src/hooks/atlas/tsconfig.json and scored it 50/100 as if it
+          # were an NL artifact. The canonical Claude Code hook config is
+          # always named hooks.json (see skills/nlpm/conventions §8); other
+          # JSON files in hooks/ subdirs are not hook configs.
+          find . -path '*/hooks/hooks.json' -type f > /tmp/artifacts-hooks.txt 2>/dev/null || true
           find . -name 'CLAUDE.md' -type f > /tmp/artifacts-claude-md.txt 2>/dev/null || true
           find . -name 'plugin.json' -path '*/.claude-plugin/*' -type f > /tmp/artifacts-manifests.txt 2>/dev/null || true
 

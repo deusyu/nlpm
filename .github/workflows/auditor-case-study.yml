@@ -296,7 +296,12 @@ jobs:
           find . -path '*/agents/*.md' -type f > /tmp/re-artifacts-agents.txt 2>/dev/null || true
           find . -path '*/commands/*.md' -type f > /tmp/re-artifacts-commands.txt 2>/dev/null || true
           find . -name 'SKILL.md' -type f > /tmp/re-artifacts-skills.txt 2>/dev/null || true
-          find . -path '*/hooks/*.json' -type f > /tmp/re-artifacts-hooks.txt 2>/dev/null || true
+          # Mirror of audit.yml's tightened hook-config find. See the
+          # comment there: previous `*/hooks/*.json` pattern swept in
+          # tsconfig.json and other unrelated .json files; restricting to
+          # `*/hooks/hooks.json` matches the canonical Claude Code hook
+          # config filename only.
+          find . -path '*/hooks/hooks.json' -type f > /tmp/re-artifacts-hooks.txt 2>/dev/null || true
           find . -name 'CLAUDE.md' -type f > /tmp/re-artifacts-claude-md.txt 2>/dev/null || true
           find . -name 'plugin.json' -path '*/.claude-plugin/*' -type f > /tmp/re-artifacts-manifests.txt 2>/dev/null || true
 
