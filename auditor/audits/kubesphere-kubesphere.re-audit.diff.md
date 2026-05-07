@@ -8,7 +8,7 @@
 |---------|------:|
 | fixed — our PR merged | 5 |
 | fixed — upstream, not via our PR | 13 |
-| newly introduced (regressions) | 10 |
+| newly introduced (regressions) | 3 |
 
 ## Original findings — verification
 
@@ -39,14 +39,7 @@ These findings appear in the re-audit but were not in the original audit. They m
 
 | # | File | Line | Rule | Pattern | Description |
 |---|------|------|------|---------|-------------|
-| 1 | `skills/kubesphere-volcano/SKILL.md` | 712 | R03 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' in 'Use appropriate queue' leaves queue selection criteria undefined |
-| 2 | `skills/kubesphere-volcano/SKILL.md` | 792 | R03 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' in template application instruction provides no guidance on which fields to modify |
-| 3 | `skills/kubesphere-devops-pipeline/SKILL.md` | 1247 | R03 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' in Common Mistakes table does not specify how to select the container image |
-| 4 | `skills/kubesphere-devops-credentials/SKILL.md` | 544 | UNCLASSIFIED | `broken-markdown-table` | Blank line inside Common Mistakes table splits it into two fragments; second fragment renders as plain text, not a table |
-| 5 | `skills/kubesphere-devops-overview/SKILL.md` | 277 | UNCLASSIFIED | `content-duplication` | Architecture table contains a duplicate separator row and four repeated data rows (copy-paste artifact) |
-| 6 | `skills/kubesphere-devops-pipeline/SKILL.md` | 1276 | UNCLASSIFIED | `orphan-table` | Orphaned Common Mistakes table at lines 1276–1282 appears inside Debugging Steps without heading or context; duplicates earlier table |
-| 7 | `skills/kubesphere-devops-tenant/SKILL.md` | 253 | UNCLASSIFIED | `malformed-code-block` | Orphaned shell flag at line 253 appears as a standalone line after the preceding curl command completes; likely a copy-paste artifact |
-| 8 | `skills/kubesphere-devops-tenant/SKILL.md` | 50 | CC-broken-relative-path | `broken-relative-path` | References sibling skills via relative paths '../../core/kubesphere-core/SKILL.md' and '../kubesphere-devops-overview/SKILL.md'; flat layout at skills/kubesphere-devops-tenant/ would resolve these outside the repository root |
-| 9 | `skills/frontend-forge-fi-operations/SKILL.md` | — | CC-broken-relative-path | `unverified-local-reference` | References local references/ subdirectory files (references/lifecycle.md, references/extension-management.md, references/inspection.md); existence of these files not confirmed |
-| 10 | `skills/kubesphere-network-extension-operations/SKILL.md` | — | CC-broken-relative-path | `unverified-local-reference` | References local references/ subdirectory files (references/api_doc.md, references/values.yaml, etc.); existence of these files not confirmed |
+| 1 | `skills/kubesphere-volcano/SKILL.md` | 715 | R24 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' appears 3 times at lines 715, 733, 790 (penalty -2 each = -6 total) |
+| 2 | `skills/kubesphere-devops-pipeline/SKILL.md` | 185 | R24 | `vague-quantifier-properly` | Vague quantifier 'properly' appears 1 time at line 185 (penalty -2) |
+| 3 | `skills/kubesphere-devops-tenant/SKILL.md` | 49 | CC-broken-relative-path | `broken-relative-path` | Lines 49 and 75 reference '../../core/kubesphere-core/SKILL.md'; kubesphere-core skill exists at 'skills/kubesphere-core/SKILL.md', expected relative path is '../kubesphere-core/SKILL.md' |
 
