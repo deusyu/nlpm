@@ -1,6 +1,6 @@
 # Re-Audit: kubesphere/kubesphere
 
-**Date**: 2026-05-06  |  **Before**: `1681475` (89/100)  |  **After**: `00d94f4` (92/100)
+**Date**: 2026-05-07  |  **Before**: `1681475` (89/100)  |  **After**: `00d94f4` (—)
 
 ## Summary
 
@@ -8,7 +8,7 @@
 |---------|------:|
 | fixed — our PR merged | 5 |
 | fixed — upstream, not via our PR | 13 |
-| newly introduced (regressions) | 8 |
+| newly introduced (regressions) | 10 |
 
 ## Original findings — verification
 
@@ -39,12 +39,14 @@ These findings appear in the re-audit but were not in the original audit. They m
 
 | # | File | Line | Rule | Pattern | Description |
 |---|------|------|------|---------|-------------|
-| 1 | `skills/kubesphere-fluid/SKILL.md` | 666 | BUG-broken-example | `broken-yaml-example` | YAML indentation error in ThinRuntime template: `thin:` and its children are misaligned, producing an invalid spec hierarchy |
-| 2 | `skills/kubesphere-devops-tenant/SKILL.md` | 249 | BUG-broken-example | `orphaned-shell-fragment` | Stray duplicate shell fragment in List Pipelines (Tenant View) code example makes the block non-executable |
-| 3 | `skills/whizard-notification/SKILL.md` | 251 | BUG-broken-example | `broken-shell-continuation` | Two curl GET commands end with dangling backslash continuations followed by blank lines, rendering both commands syntactically invalid |
-| 4 | `skills/kubesphere-devops-overview/SKILL.md` | — | R15 | `duplicate-content` | Duplicate architecture table increases maintenance surface and confuses readers about which copy is authoritative |
-| 5 | `skills/kubesphere-devops-overview/SKILL.md` | 338 | R15 | `duplicate-section-header` | Consecutive duplicate section header `## Key Resources` creates a malformed document outline |
-| 6 | `skills/kubesphere-devops-pipeline/SKILL.md` | 1276 | R15 | `duplicate-content` | Duplicate troubleshooting table near end of file repeats content already present earlier in the document |
-| 7 | `skills/kubesphere-openkruise/SKILL.md` | 7 | R12 | `redundant-heading` | Redundant skill title heading inside the body duplicates frontmatter and adds visual noise without informational value |
-| 8 | `skills/whizard-telemetry-ruler/SKILL.md` | 34 | R14 | `empty-list-item` | Stray empty bullet point in Dependencies section is a formatting artifact with no informational content |
+| 1 | `skills/kubesphere-volcano/SKILL.md` | 712 | R03 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' in 'Use appropriate queue' leaves queue selection criteria undefined |
+| 2 | `skills/kubesphere-volcano/SKILL.md` | 792 | R03 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' in template application instruction provides no guidance on which fields to modify |
+| 3 | `skills/kubesphere-devops-pipeline/SKILL.md` | 1247 | R03 | `vague-quantifier-appropriate` | Vague quantifier 'appropriate' in Common Mistakes table does not specify how to select the container image |
+| 4 | `skills/kubesphere-devops-credentials/SKILL.md` | 544 | UNCLASSIFIED | `broken-markdown-table` | Blank line inside Common Mistakes table splits it into two fragments; second fragment renders as plain text, not a table |
+| 5 | `skills/kubesphere-devops-overview/SKILL.md` | 277 | UNCLASSIFIED | `content-duplication` | Architecture table contains a duplicate separator row and four repeated data rows (copy-paste artifact) |
+| 6 | `skills/kubesphere-devops-pipeline/SKILL.md` | 1276 | UNCLASSIFIED | `orphan-table` | Orphaned Common Mistakes table at lines 1276–1282 appears inside Debugging Steps without heading or context; duplicates earlier table |
+| 7 | `skills/kubesphere-devops-tenant/SKILL.md` | 253 | UNCLASSIFIED | `malformed-code-block` | Orphaned shell flag at line 253 appears as a standalone line after the preceding curl command completes; likely a copy-paste artifact |
+| 8 | `skills/kubesphere-devops-tenant/SKILL.md` | 50 | CC-broken-relative-path | `broken-relative-path` | References sibling skills via relative paths '../../core/kubesphere-core/SKILL.md' and '../kubesphere-devops-overview/SKILL.md'; flat layout at skills/kubesphere-devops-tenant/ would resolve these outside the repository root |
+| 9 | `skills/frontend-forge-fi-operations/SKILL.md` | — | CC-broken-relative-path | `unverified-local-reference` | References local references/ subdirectory files (references/lifecycle.md, references/extension-management.md, references/inspection.md); existence of these files not confirmed |
+| 10 | `skills/kubesphere-network-extension-operations/SKILL.md` | — | CC-broken-relative-path | `unverified-local-reference` | References local references/ subdirectory files (references/api_doc.md, references/values.yaml, etc.); existence of these files not confirmed |
 

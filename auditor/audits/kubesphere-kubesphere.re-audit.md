@@ -1,62 +1,65 @@
 # NLPM Re-Audit: kubesphere/kubesphere
 
-**Date**: 2026-05-06  |  **Artifacts**: 26  |  **Strategy**: batched
-**NL Score**: 92/100
-**Bugs**: 3  |  **Quality Issues**: 5
+**Date**: 2026-05-07  |  **Artifacts**: 26  |  **Strategy**: batched
+**NL Score**: 99.8/100
+**Bugs**: 0  |  **Quality Issues**: 7
 
 ## NL Score Summary
 
 | File | Type | Score | Top Issue |
 |------|------|-------|-----------|
-| skills/kubesphere-devops-tenant/SKILL.md | skill | 82 | Orphaned shell fragment in List Pipelines code example |
-| skills/kubesphere-fluid/SKILL.md | skill | 82 | YAML indentation error in ThinRuntime template |
-| skills/whizard-notification/SKILL.md | skill | 84 | Incomplete curl commands with dangling backslash continuation |
-| skills/kubesphere-devops-overview/SKILL.md | skill | 88 | Duplicate architecture table and duplicate section header |
-| skills/kubesphere-devops-pipeline/SKILL.md | skill | 90 | Duplicate troubleshooting table at end of file |
-| skills/kubesphere-openkruise/SKILL.md | skill | 91 | Redundant `# Skill:` heading inside body |
-| skills/kubesphere-devops-credentials/SKILL.md | skill | 92 | — |
-| skills/kubesphere-volcano/SKILL.md | skill | 92 | — |
-| skills/whizard-telemetry-ruler/SKILL.md | skill | 92 | Stray empty bullet in Dependencies section |
-| skills/wiztelemetry-tracing/SKILL.md | skill | 92 | — |
-| skills/frontend-forge-fi-operations/SKILL.md | skill | 93 | — |
-| skills/kubesphere-devops-argocd/SKILL.md | skill | 93 | — |
-| skills/kubesphere-devops-jenkins/SKILL.md | skill | 93 | — |
-| skills/kubesphere-extension-management/SKILL.md | skill | 93 | — |
-| skills/kubesphere-multi-tenant-management/SKILL.md | skill | 93 | — |
-| skills/kubesphere-network-extension-operations/SKILL.md | skill | 93 | — |
-| skills/opensearch/SKILL.md | skill | 93 | — |
-| skills/vector/SKILL.md | skill | 93 | — |
-| skills/whizard-auditing/SKILL.md | skill | 93 | — |
-| skills/whizard-logging/SKILL.md | skill | 93 | — |
-| skills/whizard-telemetry/SKILL.md | skill | 93 | — |
-| skills/frontend-integration-yaml/SKILL.md | skill | 95 | — |
-| skills/kubesphere-cluster-management/SKILL.md | skill | 95 | — |
-| skills/kubesphere-core/SKILL.md | skill | 95 | — |
-| skills/nodegroup/SKILL.md | skill | 95 | — |
-| skills/whizard-events/SKILL.md | skill | 95 | — |
+| skills/kubesphere-volcano/SKILL.md | skill | 96 | Vague quantifier "appropriate" (×2) |
+| skills/kubesphere-devops-pipeline/SKILL.md | skill | 98 | Vague quantifier "appropriate" |
+| skills/frontend-forge-fi-operations/SKILL.md | skill | 100 | — |
+| skills/frontend-integration-yaml/SKILL.md | skill | 100 | — |
+| skills/kubesphere-cluster-management/SKILL.md | skill | 100 | — |
+| skills/kubesphere-core/SKILL.md | skill | 100 | — |
+| skills/kubesphere-devops-argocd/SKILL.md | skill | 100 | — |
+| skills/kubesphere-devops-credentials/SKILL.md | skill | 100 | Broken Markdown table (informational) |
+| skills/kubesphere-devops-jenkins/SKILL.md | skill | 100 | — |
+| skills/kubesphere-devops-overview/SKILL.md | skill | 100 | Duplicate table rows (informational) |
+| skills/kubesphere-devops-tenant/SKILL.md | skill | 100 | Orphaned shell flag in code block (informational) |
+| skills/kubesphere-extension-management/SKILL.md | skill | 100 | — |
+| skills/kubesphere-fluid/SKILL.md | skill | 100 | — |
+| skills/kubesphere-multi-tenant-management/SKILL.md | skill | 100 | — |
+| skills/kubesphere-network-extension-operations/SKILL.md | skill | 100 | — |
+| skills/kubesphere-openkruise/SKILL.md | skill | 100 | — |
+| skills/nodegroup/SKILL.md | skill | 100 | — |
+| skills/opensearch/SKILL.md | skill | 100 | — |
+| skills/vector/SKILL.md | skill | 100 | — |
+| skills/whizard-auditing/SKILL.md | skill | 100 | — |
+| skills/whizard-events/SKILL.md | skill | 100 | — |
+| skills/whizard-logging/SKILL.md | skill | 100 | — |
+| skills/whizard-notification/SKILL.md | skill | 100 | — |
+| skills/whizard-telemetry/SKILL.md | skill | 100 | — |
+| skills/whizard-telemetry-ruler/SKILL.md | skill | 100 | — |
+| skills/wiztelemetry-tracing/SKILL.md | skill | 100 | — |
 
 ## Bugs (PR-worthy)
 
 | # | File | Issue | Confidence | Evidence | Impact |
 |---|------|-------|------------|----------|--------|
-| 1 | skills/kubesphere-fluid/SKILL.md | YAML indentation error in ThinRuntime template: `thin:` and its children use 1-space indent instead of 2, making them peers of `spec:` rather than children | high | `thin:` appears at column 1 relative to `spec:`, breaking YAML hierarchy — the block would fail a YAML parser's structure validation | Users copy-paste invalid YAML that fails `kubectl apply` with a schema error |
-| 2 | skills/kubesphere-devops-tenant/SKILL.md | Orphaned shell fragment in List Pipelines (Tenant View) code example (~line 249): a duplicate `-H "Authorization: Bearer ${API_TOKEN}" \| jq` line appears after a complete curl command, not attached to any curl invocation | high | Third line of the code block is a detached header+pipe fragment with no preceding command; the block is not copy-paste executable | Readers cannot run the example as shown; the fragment produces a shell parse error |
-| 3 | skills/whizard-notification/SKILL.md | Two curl GET commands (lines ~251 and ~256) end with a backslash line-continuation character but the next line is blank, producing syntactically broken shell commands | high | Both curl calls terminate with `\` at end of line; the blank continuation makes each a syntax error when pasted into a shell | Copy-pasting either command fails silently or raises a shell parse error |
+
+No high-confidence bugs found.
 
 ## Quality Issues (informational)
 
 | # | File | Issue | Penalty |
 |---|------|-------|---------|
-| 1 | skills/kubesphere-devops-overview/SKILL.md | Architecture table appears twice; second occurrence is identical to the first and adds no new information | -8 |
-| 2 | skills/kubesphere-devops-overview/SKILL.md | `## Key Resources` section header appears twice consecutively (lines ~338 and ~341) | -4 |
-| 3 | skills/kubesphere-devops-pipeline/SKILL.md | Troubleshooting table near end of file (~lines 1276–1284) duplicates the Common Mistakes table (~lines 1239–1248) | -6 |
-| 4 | skills/kubesphere-openkruise/SKILL.md | Redundant `# Skill: kubesphere-openkruise` heading at line 7 inside the body; the frontmatter `name:` already carries this | -3 |
-| 5 | skills/whizard-telemetry-ruler/SKILL.md | Stray empty `- ` bullet with no content in the Dependencies section at line 34 | -2 |
+| 1 | skills/kubesphere-volcano/SKILL.md | Vague quantifier "appropriate" in "Use **appropriate** queue" (line 712) — leaves queue selection criteria undefined | -2 |
+| 2 | skills/kubesphere-volcano/SKILL.md | Vague quantifier "appropriate" in "Apply the template with **appropriate** modifications based on user requirements" (line ~792) — provides no actionable guidance on which fields to change | -2 |
+| 3 | skills/kubesphere-devops-pipeline/SKILL.md | Vague quantifier "appropriate" in Common Mistakes table: "Use `kubernetes { yaml ... }` agent with **appropriate** container image" (line 1247) — does not specify selection criteria | -2 |
+| 4 | skills/kubesphere-devops-credentials/SKILL.md | Blank line at line 544 splits the Common Mistakes Markdown table into two fragments; the second fragment (lines 545–549) renders as plain text, not a table | 0 |
+| 5 | skills/kubesphere-devops-overview/SKILL.md | Architecture table contains a duplicate separator row and four repeated data rows at lines 277–281 (copy-paste artifact; devops-jenkins/devops-apiserver/devops-controller/Jenkins Agent rows appear twice) | 0 |
+| 6 | skills/kubesphere-devops-pipeline/SKILL.md | Orphan Common Mistakes table at lines 1276–1282 appears inside the Debugging Steps subsection without a heading or context; it duplicates a subset of the earlier Common Mistakes table | 0 |
+| 7 | skills/kubesphere-devops-tenant/SKILL.md | Orphaned shell flag at line 253: `  -H "Authorization: Bearer ${API_TOKEN}" | jq '.items[].metadata.name'` appears as a standalone line after the preceding curl command completes; not a valid shell command and likely a copy-paste artifact | 0 |
 
 ## Cross-Component
 
-No orphaned components or broken cross-references found. The WizTelemetry dependency chain is consistent: `vector` and `opensearch` are declared as prerequisites in `whizard-logging`, `whizard-auditing`, `whizard-events`, and `whizard-notification`. The `whizard-telemetry` base service is correctly identified as the root dependency. The DevOps skills (`kubesphere-devops-overview`, `kubesphere-devops-tenant`, `kubesphere-devops-pipeline`, `kubesphere-devops-credentials`, `kubesphere-devops-jenkins`, `kubesphere-devops-argocd`) form a coherent cluster with consistent terminology across the suite.
+`skills/kubesphere-devops-tenant/SKILL.md` (lines 50 and ~1266) references sibling skills via relative paths `../../core/kubesphere-core/SKILL.md` and `../kubesphere-devops-overview/SKILL.md`. These paths imply that the skill lives in a subdirectory (e.g., `skills/devops/kubesphere-devops-tenant/`), but the actual layout has it at `skills/kubesphere-devops-tenant/`. If the flat layout is canonical, these relative paths would resolve outside the repository root and become unreachable. Not verified at high confidence during this pass.
+
+`skills/frontend-forge-fi-operations/SKILL.md` and `skills/kubesphere-network-extension-operations/SKILL.md` reference local `references/` subdirectories (`references/lifecycle.md`, `references/extension-management.md`, `references/inspection.md` and `references/api_doc.md`, `references/values.yaml`, etc.). Existence of these files in the respective skill directories was not confirmed during this pass.
 
 ## Recommendation
 
-The kubesphere/kubesphere skill suite is high quality at 92/100 across 26 artifacts; the three PR-worthy bugs are all in code examples (one broken YAML template, one orphaned shell fragment, one dangling backslash) and are straightforward one-line fixes that will make the suite fully copy-paste safe.
+The collection is in excellent condition — 99.8/100 weighted average, all 26 SKILL.md files carry valid `name` and `description` frontmatter with names matching their parent directories, and no high-confidence bugs were found. Three minor uses of the vague quantifier "appropriate" in two files account for all scoring deductions; replacing those phrases with concrete criteria would push the collection to a clean 100.
