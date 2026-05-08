@@ -5121,7 +5121,10 @@
       "audit_issue": 254,
       "commit_sha_at_audit": "7022117f7584c750b35b2f33c632fe5a744d3ee8",
       "description": "Agent OS: Stop prompting. Start specifying.",
-      "discovered": "2026-05-08T02:04:30Z"
+      "discovered": "2026-05-08T02:04:30Z",
+      "disclosure_url": "https://github.com/Q00/ouroboros/issues/766",
+      "disclosure_filed_at": "2026-05-08T02:27:40Z",
+      "disclosure_filed_by": "manual"
     },
     "LerianStudio/ring": {
       "stars": 174,
