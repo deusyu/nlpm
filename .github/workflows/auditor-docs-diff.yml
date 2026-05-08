@@ -1,0 +1,200 @@
+name: Docs Diff
+
+# Weekly check that the Claude Code doc URLs cited in NLPM rules
+# haven't changed. When a citation's underlying doc changes content,
+# open an issue listing which rule files reference it so the
+# maintainer can verify whether the rule is still correct.
+#
+# Reads:  auditor/docs-citations.json (citation index)
+# Writes: auditor/docs-hashes.json    (hash store)
+#
+# Doesn't auto-update rules — that's load-bearing judgment that
+# requires a human. This workflow only surfaces drift; the response
+# is always a manual review of `last_verified` and the rule body.
+
+on:
+  schedule:
+    - cron: '0 6 * * 2'  # Weekly Tuesday 06:00 UTC (off-peak vs other auditor crons)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: nlpm-docs-diff
+  cancel-in-progress: false
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+
+      - name: Fetch each cited URL, hash, compare
+        id: diff
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Bootstrap the hash store if it doesn't exist. First-run
+          # treats every URL as "newly-tracked" — no diff event, just
+          # populate the store. Subsequent runs compare and emit.
+          [ -f auditor/docs-hashes.json ] || echo '{}' > auditor/docs-hashes.json
+
+          # Extract URLs from citations file (skip _meta key).
+          URLS=$(python3 -c "
+          import json
+          d = json.load(open('auditor/docs-citations.json'))
+          for k in d:
+              if not k.startswith('_'):
+                  print(k)
+          ")
+
+          if [ -z "$URLS" ]; then
+            echo "No citations to check."
+            echo "changed_count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Updated hash store, written atomically at the end.
+          NEW_HASHES=/tmp/new-hashes.json
+          cp auditor/docs-hashes.json "$NEW_HASHES"
+
+          CHANGED_FILE=/tmp/changed-urls.txt
+          : > "$CHANGED_FILE"
+          BOOTSTRAPPED=0
+          UNCHANGED=0
+
+          while IFS= read -r url; do
+            [ -z "$url" ] && continue
+
+            # User-Agent — some doc sites refuse curl/* defaults.
+            BODY=$(curl -fsSL --max-time 30 \
+              -H 'User-Agent: nlpm-docs-diff/1.0 (+https://github.com/xiaolai/nlpm-for-claude)' \
+              "$url" 2>/dev/null) || {
+              echo "WARN: failed to fetch $url — skipping this round"
+              continue
+            }
+
+            NEW_HASH=$(printf '%s' "$BODY" | shasum -a 256 | awk '{print $1}')
+
+            OLD_HASH=$(jq -r --arg u "$url" '.[$u] // empty' "$NEW_HASHES")
+
+            if [ -z "$OLD_HASH" ]; then
+              echo "BOOTSTRAP: $url -> $NEW_HASH"
+              BOOTSTRAPPED=$((BOOTSTRAPPED + 1))
+            elif [ "$OLD_HASH" != "$NEW_HASH" ]; then
+              echo "CHANGED: $url"
+              echo "  old: $OLD_HASH"
+              echo "  new: $NEW_HASH"
+              echo "$url" >> "$CHANGED_FILE"
+            else
+              UNCHANGED=$((UNCHANGED + 1))
+            fi
+
+            # Always update the hash regardless of bootstrap/changed —
+            # next run compares against the current hash. The diff
+            # event only fires when bootstrap completes for a URL on
+            # one run AND a real change appears on a later run.
+            jq --arg u "$url" --arg h "$NEW_HASH" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+               '.[$u] = {hash: $h, last_seen: $ts}' \
+               "$NEW_HASHES" > /tmp/h.json && mv /tmp/h.json "$NEW_HASHES"
+          done <<< "$URLS"
+
+          mv "$NEW_HASHES" auditor/docs-hashes.json
+
+          CHANGED_COUNT=$(wc -l < "$CHANGED_FILE" | tr -d ' ')
+          echo "changed_count=$CHANGED_COUNT" >> "$GITHUB_OUTPUT"
+          echo "bootstrapped=$BOOTSTRAPPED" >> "$GITHUB_OUTPUT"
+          echo "unchanged=$UNCHANGED" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Docs diff summary"
+            echo ""
+            echo "| Metric | Count |"
+            echo "|---|---|"
+            echo "| Changed URLs | $CHANGED_COUNT |"
+            echo "| Bootstrapped (first sight) | $BOOTSTRAPPED |"
+            echo "| Unchanged | $UNCHANGED |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open drift issue for each changed URL
+        if: steps.diff.outputs.changed_count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          while IFS= read -r url; do
+            [ -z "$url" ] && continue
+
+            # Build issue body listing which rules cite this URL.
+            python3 - "$url" <<'PYEOF' > /tmp/issue-body.md
+          import json, sys
+          url = sys.argv[1]
+          d = json.load(open('auditor/docs-citations.json'))
+          entry = d.get(url, {})
+          rules = entry.get('rules', [])
+          last_verified = entry.get('last_verified', 'unknown')
+          print(f"## Doc drift detected: {url}")
+          print()
+          print(f"The hash of this URL changed since the last weekly check.")
+          print(f"NLPM rules cite this doc; they may need re-validation.")
+          print()
+          print(f"**Last verified**: `{last_verified}`")
+          print()
+          print(f"### Rules referencing this URL")
+          print()
+          for r in rules:
+              section = r.get('section', '?')
+              quote = r.get('quote', '')
+              refs = r.get('references', [])
+              introduced = r.get('introduced_in', '')
+              print(f"#### {section}")
+              if quote:
+                  print(f"> {quote}")
+              print()
+              print("Files referencing this:")
+              for f in refs:
+                  print(f"- `{f}`")
+              if introduced:
+                  print()
+                  print(f"_Citation introduced in {introduced}._")
+              print()
+          print("### Action")
+          print()
+          print(f"1. Open <{url}> and review the section(s) above.")
+          print(f"2. Confirm each `quote` still appears as written, or note what changed.")
+          print(f"3. If the rule is still correct, update `last_verified` in `auditor/docs-citations.json` to today's date.")
+          print(f"4. If the rule needs to change, update the referenced files and the citation index together.")
+          print()
+          print("---")
+          print()
+          print("_Filed automatically by `auditor-docs-diff.yml`._")
+          PYEOF
+
+            gh issue create \
+              --title "Docs drift: $url" \
+              --label "docs-drift" \
+              --body-file /tmp/issue-body.md || echo "WARN: issue create failed"
+          done < /tmp/changed-urls.txt
+
+      - name: Commit hash store
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "nlpm-auditor[bot]"
+          git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add auditor/docs-hashes.json
+          git diff --cached --quiet || {
+            git commit -m "docs-diff: $(date +%Y-%m-%d) — hash store update"
+            for ATTEMPT in 1 2 3 4 5; do
+              if git push 2>/dev/null; then break; fi
+              git pull --no-rebase origin main --no-edit 2>/dev/null || true
+              bash auditor/scripts/resolve-merge-conflicts.sh || true
+              git diff --cached --quiet 2>/dev/null || git commit --no-edit 2>/dev/null || true
+              [ "$ATTEMPT" -eq 5 ] && { echo "ERROR: push failed after 5 attempts"; exit 1; }
+            done
+          }

@@ -101,12 +101,24 @@ jobs:
 
             For each dissent line, assign:
 
-            1. `dissent_type` ∈ {intentional_pattern, out_of_scope, style_disagreement, context_missed, rule_disputed}:
+            1. `dissent_type` ∈ {intentional_pattern, out_of_scope, style_disagreement, context_missed, rule_disputed, docs_citation}:
                - intentional_pattern: "we do this on purpose — the input is trusted / constant / …"
                - out_of_scope: "this project is a demo / internal tool / not production"
                - style_disagreement: disagreement with a formatting or naming rule
                - context_missed: "our tests already cover this" / "this is handled elsewhere"
                - rule_disputed: disagreement with the principle behind the rule, not just this case
+               - docs_citation: maintainer cites a primary-source URL (typically
+                 docs.anthropic.com, code.claude.com, agentskills.io, or another
+                 vendor docs domain) when explaining the rejection or correction.
+                 Highest-quality dissent signal — the rule directly contradicts
+                 published authoritative documentation. When you see this, set
+                 `classifier_confidence` to "high" unless the cited URL is
+                 obviously off-topic. Quote should include enough of the comment
+                 that the cited URL is identifiable. Strict criteria: the comment
+                 must include a literal URL OR an unambiguous reference to a
+                 specific doc page (e.g., "the Claude Code slash-commands docs").
+                 Generic "the docs say" without a specific page is rule_disputed,
+                 not docs_citation.
 
             2. `commenter_role` ∈ {maintainer, contributor, bot, unknown}:
                - Prefer the `authorAssociation` field if present:

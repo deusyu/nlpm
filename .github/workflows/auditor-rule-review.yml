@@ -1,0 +1,190 @@
+name: Quarterly Rule Review
+
+# Quarterly check that NLPM's rules haven't drifted from reality.
+# The doc-diff workflow (auditor-docs-diff.yml) catches Claude Code
+# documentation changes, the classifier catches docs_citation events
+# from maintainers, but neither catches:
+#   - Rules that should have docs citations but don't
+#   - Stale `last_verified` dates that nobody re-confirmed
+#   - New Claude Code features (tools, hook events, fields) that
+#     NLPM hasn't yet learned about
+#   - Rules whose underlying premise nobody has questioned but
+#     which may have aged out invisibly
+#
+# This workflow doesn't fix anything. It opens an issue with a
+# review checklist on the 1st of every 3rd month. The maintainer
+# acts on the checklist manually.
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'  # 09:00 UTC on 1st of Jan/Apr/Jul/Oct
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: nlpm-rule-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+
+      - name: Open quarterly review issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          QUARTER=$(date +%Y-Q$(( ($(date +%m) - 1) / 3 + 1 )))
+          DATE=$(date +%Y-%m-%d)
+
+          # Cited URL count + stale citation count.
+          CITATION_STATS=$(python3 - <<'PYEOF'
+          import json
+          from datetime import datetime, timedelta, timezone
+          d = json.load(open('auditor/docs-citations.json'))
+          urls = [k for k in d if not k.startswith('_')]
+          today = datetime.now(timezone.utc).date()
+          ninety_days_ago = today - timedelta(days=90)
+          stale = []
+          for url in urls:
+              try:
+                  lv = datetime.fromisoformat(d[url].get('last_verified','1970-01-01')).date()
+                  if lv < ninety_days_ago:
+                      stale.append((url, lv.isoformat()))
+              except Exception:
+                  stale.append((url, 'unparseable'))
+          print(f"{len(urls)}|{len(stale)}")
+          for u, lv in stale:
+              print(f"STALE|{u}|{lv}")
+          PYEOF
+          )
+
+          TOTAL_URLS=$(echo "$CITATION_STATS" | head -1 | cut -d'|' -f1)
+          STALE_URLS=$(echo "$CITATION_STATS" | head -1 | cut -d'|' -f2)
+          STALE_LIST=$(echo "$CITATION_STATS" | grep '^STALE|' | sed 's/^STALE|/- /' | sed 's/|/ (last verified /' | sed 's/$/)/')
+
+          # docs_citation events since the last review (90d window).
+          DOC_CITATIONS_90D=$(python3 - <<'PYEOF'
+          import json
+          from datetime import datetime, timedelta, timezone
+          path = 'auditor/disagreements.jsonl'
+          cutoff = (datetime.now(timezone.utc) - timedelta(days=90)).isoformat()
+          count = 0
+          examples = []
+          try:
+              with open(path) as f:
+                  for line in f:
+                      if not line.strip(): continue
+                      try:
+                          e = json.loads(line)
+                      except: continue
+                      if e.get('event') != 'maintainer_rejected': continue
+                      if e.get('dissent_type') != 'docs_citation': continue
+                      if e.get('timestamp','') < cutoff: continue
+                      count += 1
+                      if len(examples) < 5:
+                          examples.append(f"  - {e.get('pr','?')}: {e.get('quote','')[:120]}")
+          except FileNotFoundError:
+              pass
+          print(count)
+          for ex in examples:
+              print(ex)
+          PYEOF
+          )
+          DOC_CITATION_COUNT=$(echo "$DOC_CITATIONS_90D" | head -1)
+          DOC_CITATION_EXAMPLES=$(echo "$DOC_CITATIONS_90D" | tail -n +2)
+
+          cat > /tmp/review-body.md <<MARKDOWN
+          ## Quarterly Rule Review — ${QUARTER}
+
+          Filed: ${DATE}. The next review is in ~90 days.
+
+          NLPM's rules encode assumptions about Claude Code's schema
+          (required/optional fields, tool catalog, hook events, path
+          conventions). The ecosystem is a moving target. Three
+          automated checks (docs-diff, classifier docs_citation,
+          maintainer feedback) cover most drift, but quarterly
+          review catches what they miss.
+
+          ### Citation index health
+
+          | Metric | Value |
+          |--------|-------|
+          | Tracked doc URLs | ${TOTAL_URLS} |
+          | Stale citations (last_verified > 90 days ago) | ${STALE_URLS} |
+          | docs_citation events from maintainers (last 90d) | ${DOC_CITATION_COUNT} |
+
+          MARKDOWN
+
+          if [ -n "$STALE_LIST" ]; then
+            cat >> /tmp/review-body.md <<MARKDOWN
+          #### Stale citations to re-verify
+
+          ${STALE_LIST}
+
+          For each: open the URL, confirm the cited \`quote\` still
+          appears, then update \`last_verified\` in
+          \`auditor/docs-citations.json\`.
+
+          MARKDOWN
+          fi
+
+          if [ -n "$DOC_CITATION_EXAMPLES" ]; then
+            cat >> /tmp/review-body.md <<MARKDOWN
+          #### docs_citation events to triage
+
+          ${DOC_CITATION_EXAMPLES}
+
+          For each: read the PR comment, confirm whether the cited
+          URL contradicts an NLPM rule, and either fix the rule or
+          mark the citation as a known-acceptable disagreement.
+
+          MARKDOWN
+          fi
+
+          cat >> /tmp/review-body.md <<'MARKDOWN'
+          ### Manual checklist
+
+          - [ ] Re-verify every URL in `auditor/docs-citations.json`
+            against the live page; bump `last_verified` for each
+            citation that still holds.
+          - [ ] Skim <https://code.claude.com/docs/en/changelog>
+            (if it exists) for new tools, hook events, frontmatter
+            fields, or path conventions added since last review.
+            For each new feature: does an NLPM rule already cover
+            it? If not, draft one.
+          - [ ] Skim <https://agentskills.io/specification> for any
+            spec revisions; cross-check against
+            `skills/nlpm/conventions/SKILL.md` §5.
+          - [ ] Review the 50 catalog rules in
+            `skills/nlpm/rules/SKILL.md` and ask, for each: "if a
+            maintainer cited official docs against this rule, would
+            the docs side win?" Flag any that feel shaky.
+          - [ ] Check the daily report's "noisy rules" section for
+            rules that have been noisy for >2 quarters — that's a
+            sign the rule itself may be wrong, not just imprecise.
+          - [ ] If any rules need updating, open a follow-up PR
+            with the changes + bump the citation `last_verified`
+            dates.
+
+          ### Action when review is complete
+
+          Close this issue with a brief comment summarizing what
+          changed (if anything) and which citations were re-verified.
+
+          ---
+
+          _Filed automatically by `auditor-rule-review.yml`._
+          MARKDOWN
+
+          gh issue create \
+            --title "Quarterly Rule Review — ${QUARTER}" \
+            --label "rule-review" \
+            --body-file /tmp/review-body.md

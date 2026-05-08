@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "purpose": "Index of NLPM rules / conventions that cite primary-source Claude Code documentation. Each top-level key is a doc URL. The auditor-docs-diff workflow fetches each URL weekly, hashes it, and opens an issue when content changes — listing the citations underneath so the maintainer knows exactly which rules to review.",
+    "schema": {
+      "<doc_url>": {
+        "last_verified": "ISO-8601 date the citation was last manually confirmed against the live doc",
+        "rules": [
+          {
+            "section": "human-readable label for the doc paragraph cited",
+            "quote": "exact quote from the doc that the rule depends on",
+            "references": ["repo-relative paths or slugs for the rule files that cite this URL"],
+            "introduced_in": "NLPM version where this citation was added"
+          }
+        ]
+      }
+    }
+  },
+  "https://code.claude.com/docs/en/slash-commands": {
+    "last_verified": "2026-05-08",
+    "rules": [
+      {
+        "section": "name field optionality on commands",
+        "quote": "name — Required: No. Display name for the skill. If omitted, uses the directory name. (Claude Code falls back to filename for command files.)",
+        "references": [
+          "skills/nlpm/conventions/SKILL.md §2 (Command Frontmatter)",
+          "auditor/prompts/score-artifacts.md (schema-check Tier-2 exclusion)",
+          "agents/scorer.md (schema-check mirror)"
+        ],
+        "introduced_in": "v0.7.30",
+        "history": "Pre-v0.7.15 NLPM penalized missing `name:` on commands as a bug. Maintainer Jeffallan cited this URL on Jeffallan/claude-skills#184 (2026-05-07). The v0.7.15 fix had already corrected the rule; v0.7.30 added the citation so a future refine-rules cycle can't regress."
+      }
+    ]
+  }
+}
