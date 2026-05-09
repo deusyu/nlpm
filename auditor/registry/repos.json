@@ -6550,45 +6550,45 @@
       "prs": [
         {
           "number": 62,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-09T10:27:48Z",
+          "closedAt": "2026-05-09T10:27:48Z",
           "title": "fix: sync extensions/dataforseo skill with core v1.9.0",
-          "updatedAt": "2026-04-22T00:33:05Z",
+          "updatedAt": "2026-05-09T10:27:48Z",
           "createdAt": "2026-04-22T00:33:04Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         },
         {
           "number": 63,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-09T10:27:57Z",
+          "closedAt": "2026-05-09T10:27:57Z",
           "title": "fix: sync extensions/banana seo-image-gen skill with core v1.9.0",
-          "updatedAt": "2026-04-22T00:33:28Z",
+          "updatedAt": "2026-05-09T10:27:57Z",
           "createdAt": "2026-04-22T00:33:27Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         },
         {
           "number": 64,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-09T10:28:05Z",
+          "closedAt": "2026-05-09T10:28:06Z",
           "title": "fix: pin MCP server package versions in extension install scripts",
-          "updatedAt": "2026-04-22T00:34:19Z",
+          "updatedAt": "2026-05-09T10:28:06Z",
           "createdAt": "2026-04-22T00:34:18Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [],
           "rule_ids": [],
           "stale_90d_emitted": false
         }
       ],
-      "status": "contributed",
+      "status": "tracked",
       "strategy": "batched",
       "rule_adopted": false,
       "pipeline_prs": [
@@ -6596,7 +6596,8 @@
         63,
         64
       ],
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "case_study_candidate": true
     },
     "diet103/claude-code-infrastructure-showcase": {
       "score": 81,
