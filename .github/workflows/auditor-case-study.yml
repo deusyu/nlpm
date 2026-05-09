@@ -528,8 +528,164 @@ jobs:
           echo "Re-audit skipped — reason: $REASON" > /tmp/evidence/re-audit-report.md
           echo "Re-audit skipped — reason: $REASON" > /tmp/evidence/re-audit-diff.md
 
-      - name: Prepare case study prompt
+      - name: Worthiness check
+        # Case-study generation is expensive: multi-pass Claude calls
+        # (write + self-review + apply-fixes + verify-facts + polish +
+        # link-validate + mermaid-validate) plus a DALL-E image. ~$1-2
+        # in API calls and 20+ min runtime per article. Auto-generating
+        # for every audited repo means the corpus dilutes — same
+        # "audit found bug, maintainer fixed it" arc told 50 times.
+        #
+        # Gate: only write a full case study when something narratively
+        # distinct happened. Otherwise close the issue with a brief
+        # summary comment + `no-narrative` label and keep the audit
+        # data (already on disk under auditor/audits/<slug>.md). The
+        # finding_verified events from the re-audit step still emit
+        # regardless — rule-health metrics aren't affected.
+        #
+        # Worthy criteria (any one triggers full case study):
+        #   1. security: BLOCKED (disclosure pattern)
+        #   2. rule_adopted: true (maintainer went beyond the PR)
+        #   3. >=3 PRs applied_separately (substantive cluster)
+        #   4. >=1 merged AND >=1 applied_separately (mixed-outcome
+        #      teaching case)
+        #   5. score < 70 (genuine quality story)
+        #
+        # Otherwise: close cleanly with summary comment.
+        id: worthiness
         if: steps.skipcheck.outputs.skip != 'true'
+        env:
+          TARGET_REPO: ${{ steps.target.outputs.repo }}
+        run: |
+          python3 - "$TARGET_REPO" <<'PYEOF' >> "$GITHUB_OUTPUT"
+          import json, sys
+          repo = sys.argv[1]
+          d = json.load(open('auditor/registry/repos.json'))
+          r = d['repos'].get(repo, {})
+          prs = r.get('prs') or []
+          merged = sum(1 for p in prs if p.get('outcome') == 'merged')
+          applied = sum(1 for p in prs if p.get('outcome') == 'applied_separately')
+          rejected = sum(1 for p in prs if p.get('outcome') == 'rejected')
+          score = r.get('score') or 100
+          security = r.get('security') or 'UNKNOWN'
+          rule_adopted = bool(r.get('rule_adopted'))
+
+          worthy = False
+          reason = ''
+          if security == 'BLOCKED':
+              worthy = True
+              reason = 'security:BLOCKED disclosure pattern'
+          elif rule_adopted:
+              worthy = True
+              reason = 'rule_adopted=true — maintainer went beyond PRs'
+          elif applied >= 3:
+              worthy = True
+              reason = f'{applied} applied_separately PRs — substantive cluster'
+          elif merged >= 1 and applied >= 1:
+              worthy = True
+              reason = f'{merged} merged + {applied} applied_separately — mixed outcome'
+          elif score < 70:
+              worthy = True
+              reason = f'score {score}/100 < 70 — quality story'
+          else:
+              reason = (f'thin narrative: score={score}, security={security}, '
+                       f'merged={merged}, applied_separately={applied}, '
+                       f'rejected={rejected}, rule_adopted={rule_adopted}')
+
+          # Output for subsequent step gating + the close-issue summary.
+          print(f"worthy={'true' if worthy else 'false'}")
+          print(f"reason<<EOF\n{reason}\nEOF")
+
+          # Stderr trace for log readability.
+          import sys as _sys
+          print(f"[worthiness] repo={repo} worthy={worthy} reason={reason}", file=_sys.stderr)
+          PYEOF
+
+      - name: No-narrative — close issue with summary
+        # Fires when the worthiness gate said no. Closes the tracking
+        # issue cleanly with a brief comment, applies the `no-narrative`
+        # label, updates the registry status to `complete`. Audit data
+        # at auditor/audits/<slug>.md stays as-is — it's the source of
+        # truth even when no article gets generated.
+        if: |
+          steps.skipcheck.outputs.skip != 'true' &&
+          steps.worthiness.outputs.worthy == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REPO: ${{ steps.target.outputs.repo }}
+          ISSUE_NUM: ${{ steps.target.outputs.issue }}
+          REASON: ${{ steps.worthiness.outputs.reason }}
+        run: |
+          SLUG="${TARGET_REPO//\//-}"
+          source auditor/scripts/log-event.sh
+
+          # Comment on the audit issue.
+          cat > /tmp/no-narrative.md <<EOF
+          ## Case study skipped — no narrative
+
+          Worthiness gate decided this repo doesn't merit a full case
+          study. The audit data is still on disk and feeds rule-health
+          metrics. Reason:
+
+          > $REASON
+
+          To override and generate a full case study anyway:
+          \`\`\`
+          gh workflow run "Write Case Study" -R xiaolai/nlpm-for-claude \\
+            -f repo=$TARGET_REPO -f issue_number=$ISSUE_NUM -f force_rewrite=true
+          \`\`\`
+          (Force-rewrite bypasses the gate.)
+
+          Audit report: \`auditor/audits/${SLUG}.md\`
+          EOF
+          gh issue comment "$ISSUE_NUM" --body-file /tmp/no-narrative.md 2>/dev/null || true
+          gh issue edit "$ISSUE_NUM" --add-label "no-narrative,complete" --remove-label "case-study-ready" 2>/dev/null || true
+          gh issue close "$ISSUE_NUM" --reason completed 2>/dev/null || true
+
+          # Mark registry status complete + log the skip.
+          jq --arg name "$TARGET_REPO" '.repos[$name].status = "complete" | .repos[$name].case_study_skipped = true | .repos[$name].case_study_skip_reason = $reason' \
+             --arg reason "$REASON" \
+             auditor/registry/repos.json > /tmp/reg.json \
+             && bash auditor/scripts/atomic-registry-write.sh
+
+          log_event "case-study" "no_narrative" "$(jq -cn --arg repo "$TARGET_REPO" --arg reason "$REASON" '{repo: $repo, reason: $reason}')" || true
+
+          # Commit the registry + event.
+          git config user.name "nlpm-auditor[bot]"
+          git config user.email "nlpm-auditor[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add auditor/registry/repos.json auditor/logs/events.jsonl
+          bash auditor/scripts/guard-protected-paths.sh || exit 1
+          git diff --cached --quiet || {
+            git commit -m "case-study: $TARGET_REPO — no narrative ($REASON)"
+            for ATTEMPT in 1 2 3 4 5; do
+              if git push 2>/dev/null; then break; fi
+              git pull --no-rebase origin main --no-edit 2>/dev/null || true
+              bash auditor/scripts/resolve-merge-conflicts.sh || true
+              git diff --cached --quiet 2>/dev/null || git commit --no-edit 2>/dev/null || true
+              [ "$ATTEMPT" -eq 5 ] && { echo "WARN: push failed after 5 attempts"; break; }
+            done
+          }
+
+      - name: Compute write_article gate
+        # Folds skipcheck + worthiness into a single output that every
+        # downstream "writing" step gates on. Avoids sprinkling
+        # `&& worthiness.outputs.worthy != 'false'` into a dozen ifs.
+        id: gate
+        run: |
+          if [ "${{ steps.skipcheck.outputs.skip }}" = "true" ]; then
+            echo "write_article=false" >> "$GITHUB_OUTPUT"
+            echo "Gate: skipping (case study already exists)"
+          elif [ "${{ steps.worthiness.outputs.worthy }}" = "false" ]; then
+            echo "write_article=false" >> "$GITHUB_OUTPUT"
+            echo "Gate: skipping (worthiness check failed)"
+          else
+            echo "write_article=true" >> "$GITHUB_OUTPUT"
+            echo "Gate: proceeding to write article"
+          fi
+
+      - name: Prepare case study prompt
+        if: steps.gate.outputs.write_article == 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
@@ -635,7 +791,7 @@ jobs:
           PROMPT_EOF
 
       - name: Write with Claude Code
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -647,7 +803,7 @@ jobs:
       # STEP A: Self-Review — 6 perspectives (replaces external Codex review)
       # ================================================================
       - name: Prepare self-review prompt
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
@@ -705,7 +861,7 @@ jobs:
           sed -i '' "s/SLUG_PLACEHOLDER/$SLUG/g" /tmp/self-review-prompt.md
 
       - name: Self-review with Claude Code
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -717,7 +873,7 @@ jobs:
       # STEP B: Apply review fixes
       # ================================================================
       - name: Prepare fix prompt
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
@@ -747,7 +903,7 @@ jobs:
           FIXES_EOF
 
       - name: Apply fixes with Claude Code
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -759,7 +915,7 @@ jobs:
       # STEP C: Verify facts against GitHub API
       # ================================================================
       - name: Verify facts
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         id: factcheck
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -843,7 +999,7 @@ jobs:
           echo "has_errors=$([ -s /tmp/fact-check-errors.txt ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Fix broken links (if any)
-        if: steps.skipcheck.outputs.skip != 'true' && steps.factcheck.outputs.has_errors == 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.factcheck.outputs.has_errors == 'true' && steps.gate.outputs.write_article == 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
@@ -868,7 +1024,7 @@ jobs:
           LINKS_EOF
 
       - name: Fix links with Claude Code
-        if: steps.skipcheck.outputs.skip != 'true' && steps.factcheck.outputs.has_errors == 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.factcheck.outputs.has_errors == 'true' && steps.gate.outputs.write_article == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -880,7 +1036,7 @@ jobs:
       # STEP D: Polish prose — ornate wording
       # ================================================================
       - name: Prepare polish prompt
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
@@ -941,7 +1097,7 @@ jobs:
           POLISH_EOF
 
       - name: Polish with Claude Code
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -953,7 +1109,7 @@ jobs:
       # STEP E: Validate all links (final pass after polish)
       # ================================================================
       - name: Final link validation
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         env:
           TARGET_REPO: ${{ steps.target.outputs.repo }}
         run: |
@@ -981,7 +1137,7 @@ jobs:
       # STEP F: Validate mermaid syntax
       # ================================================================
       - name: Validate mermaid syntax
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         id: mermaid_check
         continue-on-error: true
         env:
@@ -1053,7 +1209,7 @@ jobs:
           PYEOF
 
       - name: Fix mermaid errors (if any)
-        if: steps.skipcheck.outputs.skip != 'true' && steps.mermaid_check.outcome == 'failure'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.mermaid_check.outcome == 'failure' && steps.gate.outputs.write_article == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -1069,7 +1225,7 @@ jobs:
           claude_args: "--allowedTools Read,Edit,Grep"
 
       - name: Generate and compress cover image
-        if: steps.skipcheck.outputs.skip != 'true'
+        if: steps.skipcheck.outputs.skip != 'true' && steps.gate.outputs.write_article == 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TARGET_REPO: ${{ steps.target.outputs.repo }}
@@ -1183,6 +1339,12 @@ jobs:
           fi
 
       - name: Log, commit, and close
+        # Runs only on the "wrote an article" path. The two early-exit
+        # paths (already-exists, no-narrative) handle their own
+        # close/label/registry updates inline. Without this gate, this
+        # step would also fire on the no-narrative path and double-
+        # close the issue.
+        if: steps.gate.outputs.write_article == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_REPO: ${{ steps.target.outputs.repo }}
@@ -1190,6 +1352,7 @@ jobs:
           SKIP: ${{ steps.skipcheck.outputs.skip }}
         run: |
           # Skip path: case study already existed — just close the issue cleanly.
+          # (Kept for safety even though gate makes this unreachable.)
           if [ "$SKIP" = "true" ]; then
             echo "Skip path: a prior case study exists; closing issue without regenerating."
             if [ "$ISSUE_NUM" != "null" ] && [ "$ISSUE_NUM" != "0" ]; then
