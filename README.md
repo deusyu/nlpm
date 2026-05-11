@@ -48,6 +48,26 @@ claude plugin install nlpm@xiaolai --scope user
 /nlpm:test                  # run NL-TDD specs
 ```
 
+## For plugin/skill authors — standalone validator
+
+If you author a plugin and want NLPM in your **pre-commit hook, CI, or pre-publish gate**, use the standalone binary at [`bin/nlpm-check`](bin/nlpm-check). It's a single Python 3.11+ file with no external dependencies. It runs the deterministic subset of `/nlpm:check` — including the manifest-vs-disk consistency check that no other validator (Anthropic's official `plugin-validator`, Linux Foundation's `skills-ref`, third-party tools) currently covers.
+
+```bash
+# One-line install
+curl -fsSL -o /usr/local/bin/nlpm-check \
+  https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/bin/nlpm-check
+chmod +x /usr/local/bin/nlpm-check
+
+# Run in your plugin repo
+nlpm-check .
+```
+
+Templates ship in [`templates/`](templates/):
+- `pre-commit-nlpm.sh` — drop-in git pre-commit hook
+- `workflows/nlpm-check.yml` — drop-in GitHub Actions workflow
+
+See [`docs/for-authors.md`](docs/for-authors.md) for the full author guide. See [`analysis/ecosystem-gap.md`](analysis/ecosystem-gap.md) for the research on why this check exists and which other validators do (and don't) cover it.
+
 ## Scoring System
 
 Scores start at 100 and go down. Every issue has a fixed penalty. The score is deterministic: same artifact, same penalties, same number.
@@ -211,7 +231,9 @@ See [auditor/README.md](auditor/README.md) for full documentation.
 
 ## Prerequisites
 
-None. Pure markdown plugin -- no Python, no Node.js, no compiled dependencies. The auditor workflows require `CLAUDE_CODE_OAUTH_TOKEN`, `PAT_TOKEN`, and `OPENAI_API_KEY` secrets on the GitHub repo.
+- **Slash commands (`/nlpm:*`)**: none. Pure markdown — no Python, no Node.js.
+- **Standalone `bin/nlpm-check`**: Python 3.11+ (stdlib only; no pip install).
+- **Auditor workflows**: `CLAUDE_CODE_OAUTH_TOKEN`, `PAT_TOKEN`, and `OPENAI_API_KEY` GitHub repo secrets.
 
 ## License
 

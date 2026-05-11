@@ -1,0 +1,44 @@
+name: nlpm-check
+
+# Runs the NLPM standalone validator on every push and pull request.
+# Catches manifest-vs-disk inconsistencies, missing frontmatter, and
+# miscapitalized hook event names — the bug classes that ship in
+# practice even with the official plugin-validator passing.
+#
+# To adopt: copy this file to .github/workflows/nlpm-check.yml in your
+# plugin repo. Commit. No secrets required.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch nlpm-check
+        run: |
+          curl -fsSL -o /usr/local/bin/nlpm-check \
+            https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/bin/nlpm-check
+          chmod +x /usr/local/bin/nlpm-check
+          nlpm-check --version
+
+      - name: Run nlpm-check
+        run: nlpm-check .
+
+      # To also fail on medium/low findings, replace the step above with:
+      #   - name: Run nlpm-check (strict)
+      #     run: nlpm-check --strict .
