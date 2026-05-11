@@ -1804,7 +1804,7 @@
       "strategy": "progressive",
       "score": 46,
       "stars": 1214,
-      "status": "tracked",
+      "status": "complete",
       "pipeline_prs": [
         327,
         328,
@@ -1816,7 +1816,8 @@
       "rule_adopted": false,
       "description": "The most comprehensive toolkit for Claude Code -- 135 agents, 35 curated skills (+400,000 via SkillKit), 42 commands, 176+ plugins, 20 hooks, 15 rules, 7 templates, 14 MCP configs, 26 companion apps, 52 ecosystem entries, and more.",
       "security": "CLEAR",
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "case_study": "case-studies/2026-05-11-rohitg00-awesome-claude-code-toolkit.md"
     },
     "mukul975/Anthropic-Cybersecurity-Skills": {
       "prs": [
