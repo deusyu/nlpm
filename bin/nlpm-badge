@@ -7,9 +7,14 @@ endpoint-badge JSON to stdout. Use this in CI to publish a
 
 Usage:
   nlpm-check --json . | nlpm-badge > nlpm-badge.json
+  nlpm-check --json . | nlpm-badge --attestation > nlpm-attestation.json
 
 Then commit nlpm-badge.json to your repo and reference it in README.md:
   ![Validated by NLPM](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/nlpm-badge.json)
+
+The badge JSON only contains the fields shields.io's endpoint schema
+documents. For attestation metadata (checked_at, manifest-consistency
+flag, full finding counts), pass --attestation to emit a sidecar JSON.
 
 Reference:
   https://shields.io/badges/endpoint-badge
@@ -23,7 +28,14 @@ from datetime import datetime, timezone
 
 
 def build_badge(check_output: dict) -> dict:
-    """Map nlpm-check JSON output to a shields-endpoint badge dict."""
+    """Map nlpm-check JSON output to a shields-endpoint badge dict.
+
+    Shields.io's endpoint-badge schema is strict — it rejects unknown
+    fields with "invalid properties: <name>" rendered in the badge.
+    Only the documented fields below are emitted. For attestation
+    metadata (checked_at, commit_sha, manifest-consistency boolean),
+    see build_attestation() — a separate sidecar file.
+    """
     nlpm_version = check_output.get("version", "?")
     summary = check_output.get("summary", {})
     high = summary.get("high", 0)
@@ -36,30 +48,46 @@ def build_badge(check_output: dict) -> dict:
         color = "critical"
     elif medium + low > 0:
         advisory = medium + low
-        plural = "advisory" if advisory == 1 else "advisory"
-        message = f"0 high · {advisory} {plural}"
+        message = f"0 high · {advisory} advisory"
         color = "important"
     else:
         message = f"0 issues · v{nlpm_version}"
         color = "success"
 
-    manifest_consistent = not any(
-        f.get("rule") == "manifest-disk-diff"
-        for f in check_output.get("findings", [])
-    )
-
+    # Shields.io endpoint schema: schemaVersion, label, message, color,
+    # labelColor, isError, namedLogo, logoSvg, logoColor, style, cacheSeconds.
+    # Unknown fields render as "invalid properties: X" in the badge image.
     return {
         "schemaVersion": 1,
         "label": "nlpm",
         "message": message,
         "color": color,
         "isError": high > 0,
-        "extras": {
-            "checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "nlpm_version": nlpm_version,
-            "findings": {"high": high, "medium": medium, "low": low},
-            "manifest_disk_consistent": manifest_consistent,
+    }
+
+
+def build_attestation(check_output: dict) -> dict:
+    """Sidecar JSON with audit metadata for downstream verification.
+
+    Not consumed by shields.io. Authors who want to expose verifiable
+    metadata can publish this alongside nlpm-badge.json as
+    nlpm-attestation.json and link it from their docs.
+    """
+    nlpm_version = check_output.get("version", "?")
+    summary = check_output.get("summary", {})
+    manifest_consistent = not any(
+        f.get("rule") == "manifest-disk-diff"
+        for f in check_output.get("findings", [])
+    )
+    return {
+        "checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "nlpm_version": nlpm_version,
+        "findings": {
+            "high": summary.get("high", 0),
+            "medium": summary.get("medium", 0),
+            "low": summary.get("low", 0),
         },
+        "manifest_disk_consistent": manifest_consistent,
     }
 
 
@@ -70,8 +98,9 @@ def main(argv: list[str] | None = None) -> int:
         print(__doc__)
         return 0
     if argv and argv[0] == "--version":
-        print("nlpm-badge 0.8.3")
+        print("nlpm-badge 0.8.4")
         return 0
+    emit_attestation = argv and argv[0] == "--attestation"
 
     raw = sys.stdin.read()
     if not raw.strip():
@@ -83,8 +112,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"nlpm-badge: failed to parse stdin as JSON: {e}", file=sys.stderr)
         return 2
 
-    badge = build_badge(data)
-    json.dump(badge, sys.stdout, indent=2, ensure_ascii=False)
+    payload = build_attestation(data) if emit_attestation else build_badge(data)
+    json.dump(payload, sys.stdout, indent=2, ensure_ascii=False)
     sys.stdout.write("\n")
     return 0
 

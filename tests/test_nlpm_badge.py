@@ -26,6 +26,12 @@ sys.modules["nlpm_badge"] = nlpm_badge
 loader.exec_module(nlpm_badge)
 
 
+SHIELDS_ALLOWED_FIELDS = {
+    "schemaVersion", "label", "message", "color", "labelColor",
+    "isError", "namedLogo", "logoSvg", "logoColor", "style", "cacheSeconds",
+}
+
+
 class TestBuildBadge(unittest.TestCase):
 
     def test_clean_state(self):
@@ -40,7 +46,6 @@ class TestBuildBadge(unittest.TestCase):
         self.assertEqual(badge["isError"], False)
         self.assertIn("0 issues", badge["message"])
         self.assertIn("v0.8.2", badge["message"])
-        self.assertTrue(badge["extras"]["manifest_disk_consistent"])
 
     def test_advisory_state_only_medium_low(self):
         badge = nlpm_badge.build_badge({
@@ -65,7 +70,6 @@ class TestBuildBadge(unittest.TestCase):
         self.assertEqual(badge["color"], "critical")
         self.assertEqual(badge["isError"], True)
         self.assertEqual(badge["message"], "1 high issue")
-        self.assertFalse(badge["extras"]["manifest_disk_consistent"])
 
     def test_failing_state_multiple_high(self):
         badge = nlpm_badge.build_badge({
@@ -79,23 +83,46 @@ class TestBuildBadge(unittest.TestCase):
         self.assertEqual(badge["color"], "critical")
         self.assertEqual(badge["message"], "2 high issues")
 
-    def test_manifest_consistent_true_when_no_manifest_diff_findings(self):
-        badge = nlpm_badge.build_badge({
-            "version": "0.8.2",
-            "findings": [{"confidence": "high", "rule": "skill/frontmatter"}],
-            "summary": {"high": 1, "medium": 0, "low": 0},
-        })
-        self.assertTrue(badge["extras"]["manifest_disk_consistent"])
+    def test_badge_emits_only_shields_allowed_fields(self):
+        """Regression: shields.io rejects unknown fields with 'invalid properties: X'.
 
-    def test_extras_includes_check_metadata(self):
-        badge = nlpm_badge.build_badge({
+        Was caused 2026-05-11 by the original badge schema including an
+        'extras' object — shields rendered the badge text as "invalid
+        properties: extras" rather than the intended payload.
+        """
+        for inputs in [
+            {"version": "0.8.2", "findings": [], "summary": {"high": 0, "medium": 0, "low": 0}},
+            {"version": "0.8.2", "findings": [{"confidence": "high", "rule": "manifest-disk-diff"}], "summary": {"high": 1, "medium": 0, "low": 0}},
+            {"version": "0.8.2", "findings": [{"confidence": "medium", "rule": "x"}], "summary": {"high": 0, "medium": 1, "low": 0}},
+        ]:
+            badge = nlpm_badge.build_badge(inputs)
+            unknown = set(badge.keys()) - SHIELDS_ALLOWED_FIELDS
+            self.assertEqual(
+                unknown, set(),
+                f"badge contains shields-incompatible fields: {unknown}",
+            )
+
+
+class TestBuildAttestation(unittest.TestCase):
+
+    def test_attestation_includes_check_metadata(self):
+        att = nlpm_badge.build_attestation({
             "version": "0.8.5",
             "findings": [],
             "summary": {"high": 0, "medium": 0, "low": 0},
         })
-        self.assertIn("checked_at", badge["extras"])
-        self.assertEqual(badge["extras"]["nlpm_version"], "0.8.5")
-        self.assertEqual(badge["extras"]["findings"], {"high": 0, "medium": 0, "low": 0})
+        self.assertIn("checked_at", att)
+        self.assertEqual(att["nlpm_version"], "0.8.5")
+        self.assertEqual(att["findings"], {"high": 0, "medium": 0, "low": 0})
+        self.assertTrue(att["manifest_disk_consistent"])
+
+    def test_attestation_flags_manifest_inconsistency(self):
+        att = nlpm_badge.build_attestation({
+            "version": "0.8.5",
+            "findings": [{"confidence": "high", "rule": "manifest-disk-diff"}],
+            "summary": {"high": 1, "medium": 0, "low": 0},
+        })
+        self.assertFalse(att["manifest_disk_consistent"])
 
 
 class TestMain(unittest.TestCase):
@@ -110,6 +137,16 @@ class TestMain(unittest.TestCase):
         finally:
             sys.stdin, sys.stdout, sys.stderr = saved_in, saved_out, saved_err
 
+    def run_main_with_args(self, stdin_text, args):
+        saved_in, saved_out, saved_err = sys.stdin, sys.stdout, sys.stderr
+        sys.stdin = io.StringIO(stdin_text)
+        sys.stdout, sys.stderr = io.StringIO(), io.StringIO()
+        try:
+            code = nlpm_badge.main(args)
+            return code, sys.stdout.getvalue(), sys.stderr.getvalue()
+        finally:
+            sys.stdin, sys.stdout, sys.stderr = saved_in, saved_out, saved_err
+
     def test_main_passes_through_clean(self):
         payload = json.dumps({
             "version": "0.8.2",
@@ -120,6 +157,21 @@ class TestMain(unittest.TestCase):
         self.assertEqual(code, 0)
         parsed = json.loads(out)
         self.assertEqual(parsed["color"], "success")
+        # Regression: only shields-allowed fields in default output
+        unknown = set(parsed.keys()) - SHIELDS_ALLOWED_FIELDS
+        self.assertEqual(unknown, set())
+
+    def test_main_attestation_flag_emits_metadata(self):
+        payload = json.dumps({
+            "version": "0.8.4",
+            "findings": [],
+            "summary": {"high": 0, "medium": 0, "low": 0},
+        })
+        code, out, _err = self.run_main_with_args(payload, ["--attestation"])
+        self.assertEqual(code, 0)
+        parsed = json.loads(out)
+        self.assertIn("checked_at", parsed)
+        self.assertEqual(parsed["nlpm_version"], "0.8.4")
 
     def test_main_rejects_empty_stdin(self):
         code, _out, err = self.run_main("")
