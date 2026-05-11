@@ -7356,10 +7356,13 @@
       "stars": 561,
       "artifacts": 6,
       "description": "Give Claude the ability to watch and understand videos — Claude Code plugin with frame extraction and multimodal audio analysis",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 79,
       "audit_issue": 256,
-      "prs": []
+      "prs": [],
+      "strategy": "single",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "48a13c98f6881b1a28977bf602816cda05ffe271"
     },
     "zhukunpenglinyutong/jetbrains-cc-gui": {
       "discovered": "2026-05-11T07:07:23Z",
