@@ -34,133 +34,25 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          touch auditor/disagreements.jsonl
+          # Logic extracted to auditor/scripts/scan-suppressions.py in v0.8.10.
+          # The previous inline 110-line bash block mixed gh-api shell calls
+          # with jq, sha256sum, base64, and per-item python invocations of
+          # parse-suppressions.py. Python with subprocess does it all in one
+          # process tree and is directly testable.
+          SUMMARY=$(python3 auditor/scripts/scan-suppressions.py)
+          echo "$SUMMARY"
 
-          # Two queries: .claude/nlpm.local.md and .claude/nlpm.md with rule_overrides.
-          # The search API returns 30 results per page; paginate to get full coverage.
-          # Don't swallow failures with `|| true` — a rate-limited or auth-broken
-          # search would otherwise look like "0 candidates" and silently mark the
-          # weekly scan complete. Distinguish API failure from "no matches".
-          : > /tmp/search.jsonl
-          SEARCH_OK=true
-          if ! gh api --paginate '/search/code?q=filename:nlpm.local.md+rule_overrides' --jq '.items[]?' >> /tmp/search.jsonl; then
-            echo "WARN: search for nlpm.local.md failed (rate limit / auth?)" >&2
-            SEARCH_OK=false
-          fi
-          if ! gh api --paginate '/search/code?q=filename:nlpm.md+rule_overrides' --jq '.items[]?' >> /tmp/search.jsonl; then
-            echo "WARN: search for nlpm.md failed" >&2
-            SEARCH_OK=false
-          fi
-          if [ "$SEARCH_OK" = "false" ]; then
-            # Log the failure as a discrete event so the daily report
-            # can surface that the suppressions scan was incomplete.
+          # Surface search failure as a discrete event so the daily report
+          # can flag incomplete scans.
+          SEARCH_OK=$(echo "$SUMMARY" | python3 -c "import json,sys;print(json.load(sys.stdin).get('search_ok',True))")
+          if [ "$SEARCH_OK" = "False" ]; then
             source auditor/scripts/log-event.sh
             log_event "suppressions" "search_failed" \
-              "{\"reason\": \"gh api search returned non-zero — partial or empty results\"}"
+              '{"reason": "gh api search returned non-zero — partial or empty results"}'
           fi
 
-          TOTAL=$(wc -l < /tmp/search.jsonl | tr -d ' ')
-          echo "Candidate files: $TOTAL"
-
-          COUNT=0
-          SKIPPED_SELF=0
-          SKIPPED_DUP=0
-          SKIPPED_NO_OVERRIDES=0
-
-          SELF_REPO="${GITHUB_REPOSITORY}"
-
-          while IFS= read -r item; do
-            [ -z "$item" ] && continue
-
-            REPO=$(printf '%s' "$item" | jq -r '.repository.full_name // empty')
-            FILE_PATH=$(printf '%s' "$item" | jq -r '.path // empty')
-            SHA=$(printf '%s' "$item" | jq -r '.sha // empty')
-
-            [ -z "$REPO" ] || [ -z "$FILE_PATH" ] || [ -z "$SHA" ] && continue
-
-            # Skip our own repos to avoid self-referencing events
-            if [ "$REPO" = "$SELF_REPO" ]; then
-              SKIPPED_SELF=$((SKIPPED_SELF + 1))
-              continue
-            fi
-
-            # Dedup: if any event for this exact (repo, sha, path) already exists, skip
-            FILE_FP=$(printf '%s|%s|%s' "$REPO" "$SHA" "$FILE_PATH" | sha256sum | cut -d' ' -f1)
-            if grep -Fq "\"file_fingerprint\":\"sha256:$FILE_FP\"" auditor/disagreements.jsonl 2>/dev/null; then
-              SKIPPED_DUP=$((SKIPPED_DUP + 1))
-              continue
-            fi
-
-            # Fetch file content (base64-encoded by the API)
-            CONTENT=$(gh api "/repos/$REPO/contents/$FILE_PATH" --jq '.content' 2>/dev/null | base64 -d 2>/dev/null || echo "")
-            if [ -z "$CONTENT" ]; then
-              continue
-            fi
-
-            # Parse YAML frontmatter and extract rule_overrides. One line per override.
-            printf '%s' "$CONTENT" > /tmp/nlpm-config.md
-            OVERRIDES=$(python3 auditor/scripts/parse-suppressions.py /tmp/nlpm-config.md 2>/dev/null)
-
-            if [ -z "$OVERRIDES" ]; then
-              SKIPPED_NO_OVERRIDES=$((SKIPPED_NO_OVERRIDES + 1))
-              continue
-            fi
-
-            TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-
-            while IFS= read -r override; do
-              [ -z "$override" ] && continue
-              RULE_ID=$(printf '%s' "$override" | jq -r '.rule_id // empty')
-              VAL=$(printf '%s' "$override" | jq -c '.override')
-              [ -z "$RULE_ID" ] && continue
-
-              # Derive suppression_type from override shape
-              STYPE="rule_override"
-              if printf '%s' "$VAL" | jq -e 'type == "boolean" and . == false' >/dev/null 2>&1; then
-                STYPE="suppress"
-              elif printf '%s' "$VAL" | jq -e 'type == "object" and has("max_penalty")' >/dev/null 2>&1; then
-                STYPE="max_penalty"
-              elif printf '%s' "$VAL" | jq -e 'type == "object" and has("threshold")' >/dev/null 2>&1; then
-                STYPE="threshold_adjustment"
-              fi
-
-              RULE_FP="sha256:$(printf '%s|%s|%s' "$REPO" "$SHA" "$RULE_ID" | sha256sum | cut -d' ' -f1)"
-
-              jq -cn \
-                --arg event "downstream_suppression" \
-                --arg ts "$TS" \
-                --arg repo "$REPO" \
-                --arg sha "$SHA" \
-                --arg rule "$RULE_ID" \
-                --arg stype "$STYPE" \
-                --arg fingerprint "$RULE_FP" \
-                --arg file_fp "sha256:$FILE_FP" \
-                --arg path "$FILE_PATH" \
-                --argjson val "$VAL" \
-                '{event: $event, timestamp: $ts, repo: $repo, commit_sha: $sha, rule_id: $rule, suppression_type: $stype, fingerprint: $fingerprint, file_fingerprint: $file_fp, path: $path, override_value: $val, reason_given: ""}' \
-                >> auditor/disagreements.jsonl
-
-              COUNT=$((COUNT + 1))
-            done <<< "$OVERRIDES"
-
-            sleep 0.5
-          done < /tmp/search.jsonl
-
-          echo ""
-          echo "Suppressions scan:"
-          echo "  Emitted: $COUNT"
-          echo "  Skipped (self-repo): $SKIPPED_SELF"
-          echo "  Skipped (already seen): $SKIPPED_DUP"
-          echo "  Skipped (no overrides in frontmatter): $SKIPPED_NO_OVERRIDES"
-
           source auditor/scripts/log-event.sh
-          log_event "suppressions" "scan_complete" "$(jq -cn \
-            --arg total "$TOTAL" \
-            --arg emitted "$COUNT" \
-            --arg self "$SKIPPED_SELF" \
-            --arg dup "$SKIPPED_DUP" \
-            --arg no_ov "$SKIPPED_NO_OVERRIDES" \
-            '{candidates: ($total | tonumber), emitted: ($emitted | tonumber), skipped_self: ($self | tonumber), skipped_dup: ($dup | tonumber), skipped_no_overrides: ($no_ov | tonumber)}')" || true
+          log_event "suppressions" "scan_complete" "$SUMMARY" || true
 
       - name: Commit and push
         env:
