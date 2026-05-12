@@ -3061,12 +3061,16 @@
       "commit_sha_at_audit": "46939d689b94c35975f8ec284c21301022f87b95",
       "discovery_strategy": "plugin-manifest-content",
       "stars": 1,
-      "status": "audited",
+      "status": "contributed",
       "audit_issue": 169,
       "artifacts": 27,
       "discovered": "2026-04-25T01:06:48Z",
       "description": "",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "pipeline_prs": [
+        1,
+        2
+      ]
     },
     "antfu/skills": {
       "prs": [],
