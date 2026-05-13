@@ -377,7 +377,9 @@
       "discovered": "2026-04-25T01:06:48Z",
       "rule_adopted": false,
       "description": "ClickUp CLI for AI agents",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/krodak-clickup-cli.md"
     },
     "code-yeongyu/oh-my-openagent": {
       "case_study": "case-studies/2026-05-07-code-yeongyu-oh-my-openagent.md",
