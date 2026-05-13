@@ -6623,7 +6623,9 @@
       "artifacts": 22,
       "discovered": "2026-04-25T01:06:48Z",
       "description": "",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/JimLiu-baoyu-skills.md"
     },
     "jnuyens/gsd-plugin": {
       "prs": [],
