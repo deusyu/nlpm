@@ -562,7 +562,9 @@
       "discovered": "2026-04-13T06:41:48Z",
       "rule_adopted": false,
       "description": "Claude Code plugins for power users",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/team-attention-plugins-for-claude-natives.md"
     },
     "Imbad0202/academic-research-skills": {
       "prs": [
