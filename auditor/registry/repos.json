@@ -2146,7 +2146,9 @@
       "artifacts": 3,
       "discovered": "2026-05-05T00:52:16Z",
       "description": "Visual Skills Pack for Obsidian: generate Canvas, Excalidraw, and Mermaid diagrams from text with Claude Code",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/axtonliu-axton-obsidian-visual-skills.md"
     },
     "manaflow-ai/cmux": {
       "prs": [],
