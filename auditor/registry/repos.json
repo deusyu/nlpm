@@ -7326,7 +7326,9 @@
       "pipeline_prs": [
         2
       ],
-      "case_study_candidate": true
+      "case_study_candidate": true,
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/xiaolai-grill-for-claude.md"
     },
     "JuliusBrussee/caveman": {
       "prs": [
