@@ -122,6 +122,56 @@ class ClassifyPath(unittest.TestCase):
         self.assertEqual(self.classify("docs/random.md"), "Skills")
 
 
+class SemanticDrift(unittest.TestCase):
+    """The v0.8.16 semantic check: rule_id ↔ pattern keyword alignment."""
+
+    def setUp(self):
+        self.mod = _load_validator_module()
+        self.rubric = self.mod.parse_rubric(RUBRIC)
+
+    def test_r07_with_example_pattern_is_semantic_drift(self):
+        """R07 (scope note) on a skill is type-valid but semantic drift when
+        the pattern is missing-example-block. This is the ljg-skills bug."""
+        with tempfile.TemporaryDirectory() as td:
+            sidecar = Path(td) / "fake.findings.jsonl"
+            sidecar.write_text(json.dumps({
+                "category": "nl_quality",
+                "rule_id": "R07",
+                "file": "skills/foo/SKILL.md",
+                "penalty": -15,
+                "pattern": "missing-example-block",
+                "description": "R07 is scope-note, not examples",
+            }))
+            drifts = self.mod.validate_findings(sidecar, self.rubric)
+            self.assertEqual(len(drifts), 1)
+            self.assertEqual(drifts[0].kind, "semantic")
+            self.assertEqual(drifts[0].rule_id, "R07")
+            self.assertIn("scope", drifts[0].rule_keywords)
+            self.assertIn("example", drifts[0].pattern_tokens)
+            self.assertFalse(drifts[0].rule_keywords & drifts[0].pattern_tokens)
+
+    def test_r07_with_scope_note_pattern_is_clean(self):
+        """R07 with a pattern that mentions 'scope' or 'note' should pass."""
+        with tempfile.TemporaryDirectory() as td:
+            sidecar = Path(td) / "fake.findings.jsonl"
+            sidecar.write_text(json.dumps({
+                "category": "nl_quality",
+                "rule_id": "R07",
+                "file": "skills/foo/SKILL.md",
+                "penalty": -3,
+                "pattern": "no_scope_note",
+                "description": "correct scope-note use",
+            }))
+            self.assertEqual(self.mod.validate_findings(sidecar, self.rubric), [])
+
+    def test_singularization_lets_examples_match_example(self):
+        """Plural in rule title vs singular in pattern token must still match."""
+        tokenize = self.mod._tokenize
+        # R06's title is "Code examples must be runnable." → contains "examples" → "example"
+        self.assertIn("example", tokenize("Code examples must be runnable"))
+        self.assertIn("example", tokenize("missing-example-block"))
+
+
 class DriftDetection(unittest.TestCase):
     """Stage the known ljg-skills bug pattern and confirm the validator catches it."""
 

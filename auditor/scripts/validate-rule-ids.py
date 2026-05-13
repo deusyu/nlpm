@@ -6,21 +6,29 @@ catalog, then walks `auditor/audits/*.findings.jsonl` (or a path on argv)
 and reports every NL-quality finding whose `rule_id` is not documented in
 the rubric for that artifact's path category.
 
-Catches TYPE drift only — rule_id valid for artifact type? It does NOT
-yet check SEMANTIC drift — does the rule_id match the finding's pattern
-and penalty? Example: R07 on a skill is type-valid (R07 IS in the Skills
-rubric), but if the finding's pattern is "missing-example-block" with
-penalty -15, the rule_id is semantically wrong (R07 is scope-note at -3;
-example-block on skills is R06 at -10). Catching semantic drift requires
-building a keyword-to-rule map from the rubric's Check column — tracked
-as a TODO; the scorer prompt fix in auditor/prompts/score-artifacts.md
-addresses semantic drift going forward.
+Catches two drift kinds:
 
-The 2026-05-13 baseline was 861 type-drifts across 127 historical
-sidecars — most are real misuses like R11 on commands (R11 is
-agents-only) or R14 on skills (commands-only). The 2026-05-13
-lijigang/ljg-skills R07/-15 ladder is semantic drift and is NOT
-caught by the type check — only the scorer prompt fix prevents it.
+  TYPE drift     — rule_id not allowed for this artifact's type.
+                   E.g. R09 (agents-only) used on a SKILL.md, or R14
+                   (commands-only) used on a skill.
+
+  SEMANTIC drift — rule_id allowed for type, but the finding's pattern
+                   shares no keywords with the rule_id's bold-imperative
+                   title in rules/SKILL.md. E.g. R07 ("Scope note when
+                   related skills exist") used with pattern
+                   `missing-example-block` — type-valid but semantically
+                   wrong. The 2026-05-13 lijigang/ljg-skills audit did
+                   this 14 times. v0.8.16 catches it.
+
+The 2026-05-13 baseline across 128 historical audit sidecars:
+  861 type drifts, 126 semantic drifts, 3 format drifts (990 total).
+Most type drifts are R11 misapplied to commands (R11 is agents-only)
+or R14 to skills (commands-only). Most semantic drifts are R07 / R08
+labeled on findings about something other than scope notes.
+
+Penalty-amount drift (R07 used with -15 instead of -3) is not yet
+checked structurally — the prompt fix in auditor/prompts/score-artifacts.md
+is the only layer against that.
 
 Exit codes:
   0 — no drift detected
@@ -45,7 +53,25 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUBRIC = REPO_ROOT / "skills" / "nlpm" / "scoring" / "SKILL.md"
+DEFAULT_RULES = REPO_ROOT / "skills" / "nlpm" / "rules" / "SKILL.md"
 DEFAULT_AUDITS_DIR = REPO_ROOT / "auditor" / "audits"
+
+# Stopwords filtered from rule titles and finding patterns before keyword
+# intersection. Most are generic English; the rest are NL-meta terms that
+# appear across most rules and would over-match if kept ("missing", "no",
+# "present"). The list errs on the side of LEAVING domain words in — better
+# to over-flag false-positive drift than to miss real semantic mismatches.
+STOPWORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "do", "each", "every",
+    "exist", "for", "from", "has", "have", "if", "in", "is", "it", "its",
+    "must", "no", "not", "of", "on", "only", "or", "over", "per", "present",
+    "should", "than", "that", "the", "their", "them", "there", "these",
+    "this", "to", "too", "under", "until", "use", "valid", "when", "where",
+    "which", "while", "who", "why", "will", "with", "without", "would",
+    # NLPM-meta noise that shows up across many rules
+    "missing", "field", "fields", "rule", "rules", "skill", "skills",
+    "agent", "agents", "command", "commands", "block", "blocks",
+}
 
 ARTIFACT_TYPES = ("Skills", "Agents", "Commands", "Shared Partials", "Rules", "Hooks", "plugin.json", ".mcp.json", "CLAUDE.md", "Prompts", "Orchestration", "Plugins")
 
@@ -74,9 +100,14 @@ UNIVERSAL_RULES = {
 
 @dataclass
 class Rubric:
-    """Allowed rule_ids per artifact type, parsed from scoring/SKILL.md."""
+    """Allowed rule_ids per artifact type, parsed from scoring/SKILL.md.
+
+    `keywords_by_rule` is populated by parse_rules() from rules/SKILL.md
+    and powers the semantic-drift check.
+    """
     by_type: dict[str, set[str]] = field(default_factory=dict)
     all_rnumbers: set[str] = field(default_factory=set)
+    keywords_by_rule: dict[str, set[str]] = field(default_factory=dict)
 
     def allowed_for_path(self, path: str) -> set[str]:
         """Return the rubric rule_ids valid for the artifact at this path."""
@@ -84,12 +115,18 @@ class Rubric:
         return self.by_type.get(artifact_type, set())
 
 
-def parse_rubric(rubric_path: Path) -> Rubric:
-    """Extract rule_ids per artifact type from the rubric markdown."""
+def parse_rubric(rubric_path: Path, rules_path: Path | None = None) -> Rubric:
+    """Extract rule_ids per artifact type from the rubric markdown.
+
+    If `rules_path` is provided (default: skills/nlpm/rules/SKILL.md), also
+    populates `rubric.keywords_by_rule` for the semantic-drift check.
+    """
     if not rubric_path.exists():
         raise FileNotFoundError(f"rubric not found: {rubric_path}")
     text = rubric_path.read_text()
     rubric = Rubric()
+    rules_to_load = rules_path if rules_path is not None else DEFAULT_RULES
+    rubric.keywords_by_rule = parse_rules(rules_to_load)
 
     # Sections look like:  ### Skills    then a table starting with | Rule |
     # The table runs until a blank line or the next heading.
@@ -126,6 +163,67 @@ def parse_rubric(rubric_path: Path) -> Rubric:
     return rubric
 
 
+def _singularize(token: str) -> str:
+    """Crude English singularization so plural keywords match singular tokens.
+
+    Conservative: only trims the most reliable plural endings; would
+    otherwise produce false equivalences ("address" → "addres"). Domain
+    over-flagging would be worse than under-flagging.
+    """
+    if len(token) <= 3:
+        return token
+    if token.endswith("ies") and len(token) > 4:
+        return token[:-3] + "y"  # quantifiers → quantifier (no), but properties → property
+    if token.endswith("ses") or token.endswith("xes"):
+        return token[:-2]  # boxes → box
+    if token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]  # examples → example, tools → tool
+    return token
+
+
+def _tokenize(text: str) -> set[str]:
+    """Split a string into lowercase content tokens, dropping stopwords.
+
+    Handles kebab-case, snake_case, camelCase, and natural text. Tokens
+    shorter than 3 chars are dropped unconditionally — they're too generic
+    to carry semantic signal. Output is normalized via _singularize so
+    plurals and singulars match across the rubric ↔ findings boundary.
+    """
+    if not text:
+        return set()
+    text = re.sub(r"[-_/]+", " ", text)
+    text = re.sub(r"([a-z])([A-Z])", r"\1 \2", text)
+    tokens = re.findall(r"[A-Za-z]{3,}", text.lower())
+    return {_singularize(t) for t in tokens if t not in STOPWORDS}
+
+
+def parse_rules(rules_path: Path) -> dict[str, set[str]]:
+    """Extract keyword sets per rule_id from rules/SKILL.md bold imperatives.
+
+    Each rule appears as `**R##. <Bold imperative>.**` followed by prose.
+    We pull the bold imperative as the canonical semantic anchor — that's
+    where the rule's domain words live. Keywords come from tokenizing
+    that title.
+
+    Example:
+      `**R07. Scope note when related skills exist.**`
+      → R07 keywords: {"scope", "note", "related"}  (skills/exist filtered)
+
+      `**R06. Code examples must be runnable.**`
+      → R06 keywords: {"code", "examples", "runnable"}
+    """
+    if not rules_path.exists():
+        return {}
+    text = rules_path.read_text()
+    keywords: dict[str, set[str]] = {}
+    # Match **R##. <title>.** — title runs until first period+space or **
+    for match in re.finditer(r"\*\*(R\d{2})\.\s+([^*]+?)\.\*\*", text):
+        rule_id = match.group(1)
+        title = match.group(2)
+        keywords.setdefault(rule_id, set()).update(_tokenize(title))
+    return keywords
+
+
 def classify_path(rel_path: str) -> str:
     """Map a relative artifact path to its rubric artifact-type label.
 
@@ -154,7 +252,16 @@ def classify_path(rel_path: str) -> str:
 
 @dataclass
 class Drift:
-    """A single finding whose rule_id doesn't match the rubric."""
+    """A single finding whose rule_id doesn't match the rubric.
+
+    `kind` is one of:
+      - `type`     — rule_id not allowed for this artifact's type
+      - `semantic` — rule_id allowed for type, but the finding's pattern
+                     shares no keywords with the rule_id's title (e.g.,
+                     R07 ("scope note") used with pattern
+                     "missing-example-block")
+      - `format`   — rule_id doesn't match `R\\d{2}` and isn't an allowed prefix
+    """
     audit_file: str
     line_no: int
     file: str
@@ -164,12 +271,23 @@ class Drift:
     expected_for_type: set[str]
     artifact_type: str
     description: str
+    kind: str = "type"
+    rule_keywords: set[str] = field(default_factory=set)
+    pattern_tokens: set[str] = field(default_factory=set)
 
     def render(self) -> str:
+        header = f"{self.audit_file}:{self.line_no}  {self.file}  [{self.kind} drift]"
+        if self.kind == "semantic":
+            return (
+                f"{header}\n"
+                f"  rule_id={self.rule_id}  penalty={self.penalty}  pattern={self.pattern}\n"
+                f"  rule keywords: {sorted(self.rule_keywords) or '(none)'}\n"
+                f"  pattern tokens: {sorted(self.pattern_tokens) or '(none)'}\n"
+                f"  description={self.description[:120]}"
+            )
         allowed_list = ", ".join(sorted(self.expected_for_type)) or "(none)"
         return (
-            f"{self.audit_file}:{self.line_no}  "
-            f"{self.file}\n"
+            f"{header}\n"
             f"  rule_id={self.rule_id}  penalty={self.penalty}  pattern={self.pattern}\n"
             f"  artifact_type={self.artifact_type}; allowed R-numbers: {allowed_list}\n"
             f"  description={self.description[:120]}"
@@ -207,6 +325,7 @@ def validate_findings(jsonl_path: Path, rubric: Rubric) -> list[Drift]:
                 expected_for_type=set(),
                 artifact_type="?",
                 description=rec.get("description", ""),
+                kind="format",
             ))
             continue
         artifact_type = classify_path(rec.get("file", ""))
@@ -222,7 +341,40 @@ def validate_findings(jsonl_path: Path, rubric: Rubric) -> list[Drift]:
                 expected_for_type=allowed,
                 artifact_type=artifact_type,
                 description=rec.get("description", ""),
+                kind="type",
             ))
+            continue  # one drift per finding — don't double-flag as semantic too
+
+        # Semantic check: does the finding's pattern share at least one
+        # keyword with the rule_id's bold-imperative title? Skips when
+        # the rule has no known keywords (rules/SKILL.md unavailable or
+        # the rule's title didn't yield any post-stopword tokens).
+        rule_keywords = rubric.keywords_by_rule.get(rule_id, set())
+        if not rule_keywords:
+            continue
+        pattern_text = rec.get("pattern", "") or ""
+        pattern_tokens = _tokenize(pattern_text)
+        # Many patterns name a generic class (e.g., "missing-frontmatter")
+        # which after stopword filtering leaves no signal — don't false-flag
+        # those. Require both sides to have content before declaring drift.
+        if not pattern_tokens:
+            continue
+        if rule_keywords & pattern_tokens:
+            continue
+        drifts.append(Drift(
+            audit_file=jsonl_path.name,
+            line_no=line_no,
+            file=rec.get("file", "?"),
+            rule_id=rule_id,
+            penalty=rec.get("penalty"),
+            pattern=pattern_text,
+            expected_for_type=allowed,
+            artifact_type=artifact_type,
+            description=rec.get("description", ""),
+            kind="semantic",
+            rule_keywords=rule_keywords,
+            pattern_tokens=pattern_tokens,
+        ))
     return drifts
 
 
@@ -249,30 +401,61 @@ def self_test() -> int:
 | R09 | `<example>` blocks | Zero examples | -15 |
 | R11 | Tools | Unused | -3 |
 """
+    fake_rules = """\
+# The Rules
+
+**R04. Description triggers Claude to dispatch the skill.** Long body here.
+
+**R06. Code examples must be runnable.** Long body here.
+
+**R07. Scope note when related skills exist.** Long body here.
+
+**R09. `<example>` blocks are mandatory.** Long body here.
+
+**R11. Tools follow least-privilege.** Long body here.
+"""
     with tempfile.TemporaryDirectory() as td:
         rubric_path = Path(td) / "rubric.md"
         rubric_path.write_text(fake_rubric)
-        rubric = parse_rubric(rubric_path)
+        rules_path = Path(td) / "rules.md"
+        rules_path.write_text(fake_rules)
+        rubric = parse_rubric(rubric_path, rules_path)
         assert rubric.by_type["Skills"] == {"R04", "R06", "R07"}, rubric.by_type
         assert rubric.by_type["Agents"] == {"R09", "R11"}, rubric.by_type
+        assert "example" in rubric.keywords_by_rule.get("R06", set()), rubric.keywords_by_rule
+        assert "scope" in rubric.keywords_by_rule.get("R07", set()), rubric.keywords_by_rule
+        assert "example" not in rubric.keywords_by_rule.get("R07", set())
 
-        # The ljg-skills bug: R07 + -15 on a skill for missing example block
-        # should be detected as drift (R07 is in the Skills rubric, but the
-        # validator can't catch penalty mismatches by itself — only id-vs-type
-        # is checkable structurally). However, an R09 on a skill IS catchable.
+        # The ljg-skills bug: R07 (scope note) labeled on a missing-example-block
+        # finding is SEMANTIC drift — R07 IS valid on a Skill (type-clean) but
+        # its keywords {"scope","note","related"} share nothing with the
+        # pattern's tokens {"example","block"}.
         findings = [
+            # type drift: R09 is agents-only
             {"category": "nl_quality", "rule_id": "R09", "file": "skills/foo/SKILL.md", "penalty": -15, "pattern": "missing-example-block", "description": "should be R06 on skill"},
+            # clean
             {"category": "nl_quality", "rule_id": "R06", "file": "skills/foo/SKILL.md", "penalty": -10, "pattern": "missing-example-block", "description": "correct mapping"},
+            # clean
             {"category": "nl_quality", "rule_id": "R04", "file": "skills/foo/SKILL.md", "penalty": -10, "pattern": "description-length", "description": "correct"},
+            # clean
             {"category": "nl_quality", "rule_id": "R11", "file": "agents/bar.md", "penalty": -3, "pattern": "unused-tool", "description": "correct"},
+            # skipped
             {"category": "bug", "rule_id": "BUG-missing-frontmatter", "file": "skills/foo/SKILL.md", "penalty": None, "pattern": "missing-fm", "description": "skipped, not nl_quality"},
+            # SEMANTIC drift: ljg-skills bug verbatim
+            {"category": "nl_quality", "rule_id": "R07", "file": "skills/foo/SKILL.md", "penalty": -15, "pattern": "missing-example-block", "description": "R07 is scope-note, not examples"},
         ]
         sidecar = Path(td) / "fake.findings.jsonl"
         sidecar.write_text("\n".join(json.dumps(f) for f in findings))
         drifts = validate_findings(sidecar, rubric)
-        assert len(drifts) == 1, f"expected 1 drift, got {len(drifts)}"
-        assert drifts[0].rule_id == "R09", drifts[0].rule_id
-        assert drifts[0].file == "skills/foo/SKILL.md", drifts[0].file
+        assert len(drifts) == 2, f"expected 2 drifts, got {len(drifts)}"
+        kinds = sorted(d.kind for d in drifts)
+        assert kinds == ["semantic", "type"], f"expected one of each kind, got {kinds}"
+        semantic_drift = next(d for d in drifts if d.kind == "semantic")
+        assert semantic_drift.rule_id == "R07"
+        assert "example" in semantic_drift.pattern_tokens
+        type_drift = next(d for d in drifts if d.kind == "type")
+        assert type_drift.rule_id == "R09"
+        assert type_drift.file == "skills/foo/SKILL.md"
     print("self-test PASS")
     return 0
 
