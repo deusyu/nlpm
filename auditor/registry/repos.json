@@ -7294,7 +7294,9 @@
       "discovered": "2026-04-13T06:41:48Z",
       "rule_adopted": false,
       "description": "🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/JuliusBrussee-caveman.md"
     },
     "memvid/claude-brain": {
       "prs": [],
