@@ -800,7 +800,9 @@
         91,
         92,
         93
-      ]
+      ],
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/tech-leads-club-agent-skills.md"
     },
     "santifer/career-ops": {
       "prs": [],
