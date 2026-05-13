@@ -2783,7 +2783,9 @@
       "artifacts": 10,
       "discovered": "2026-04-25T01:06:48Z",
       "description": "A collection of Awesome Finance Agent Skills for free and easy to start | 一系列开源免费的金融分析Agent Skills",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/RKiding-Awesome-finance-skills.md"
     },
     "OthmanAdi/planning-with-files": {
       "prs": [
