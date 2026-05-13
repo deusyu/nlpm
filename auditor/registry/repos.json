@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "total_discovered": 200,
+    "total_discovered": 201,
     "total_contributed": 6,
-    "last_discovery": "2026-05-11T07:07:23Z",
+    "last_discovery": "2026-05-13T00:00:00Z",
     "total_audited": 12
   },
   "repos": {
@@ -7619,6 +7619,17 @@
       "strategy": "single",
       "security": "BLOCKED",
       "commit_sha_at_audit": "959f700bba7772fbb023c1d87f98a1d99d9c8282"
+    },
+    "lijigang/ljg-skills": {
+      "discovered": "2026-05-13T00:00:00Z",
+      "stars": 4860,
+      "artifacts": 18,
+      "description": "LJG personal Claude Code skills collection — paper reading, content casting (PNG visualizations), writing tools. 18 skills, dual-branch (master = org-mode, md = markdown).",
+      "status": "discovered",
+      "score": null,
+      "audit_issue": 265,
+      "prs": [],
+      "discovery_strategy": "manual-audit-2026-05-13"
     }
   }
 }
