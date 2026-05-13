@@ -1603,7 +1603,9 @@
       "rule_adopted": false,
       "security": "CLEAR",
       "status": "contributed",
-      "pipeline_prs": []
+      "pipeline_prs": [],
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/czlonkowski-n8n-skills.md"
     },
     "upstash/context7": {
       "prs": [
