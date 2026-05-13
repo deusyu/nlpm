@@ -40,7 +40,14 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
     exit 1
   fi
   if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
-    git rebase --continue || {
+    # `git rebase --continue` invokes $GIT_EDITOR for the commit message.
+    # In CI there is no terminal and EDITOR is unset, so the editor call
+    # fails with "Terminal is dumb, but EDITOR unset". Pin GIT_EDITOR to
+    # `true` so it accepts the existing message non-interactively.
+    # The 2026-05-13 v0.8.18 bulk-seed hit this: 50+ exemplar runs
+    # cleared the merge conflicts via resolve-merge-conflicts.sh, then
+    # this step exited 1 because the editor couldn't open.
+    GIT_EDITOR=true git rebase --continue || {
       echo "git-push-with-retry: ERROR — git rebase --continue failed"
       exit 1
     }
