@@ -7119,7 +7119,9 @@
       "artifacts": 7,
       "discovered": "2026-04-25T01:06:48Z",
       "description": "Find the ghost tokens. Fix them. Survive compaction. Avoid context quality decay. ",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/alexgreensh-token-optimizer.md"
     },
     "aaron-he-zhu/seo-geo-claude-skills": {
       "score": 91,
