@@ -7557,7 +7557,9 @@
       "discovered": "2026-04-13T06:41:48Z",
       "rule_adopted": false,
       "description": "45 tips for getting the most out of Claude Code, from basics to advanced - includes a custom status line script, cutting the system prompt in half, using Gemini CLI as Claude Code's minion, and Claude Code running itself in a container. Also includes the dx plugin.",
-      "security": "REVIEW"
+      "security": "REVIEW",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/ykdojo-claude-code-tips.md"
     },
     "leowux/pony": {
       "prs": [],
