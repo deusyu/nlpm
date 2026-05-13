@@ -4095,7 +4095,9 @@
       "pipeline_prs": [
         15,
         16
-      ]
+      ],
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/CloudAI-X-claude-workflow-v2.md"
     },
     "2389-research/review-squad": {
       "prs": [],
