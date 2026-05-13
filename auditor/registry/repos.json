@@ -6960,7 +6960,9 @@
       "artifacts": 5,
       "discovered": "2026-04-25T01:06:48Z",
       "description": "Claude Code plugin for designing modular systems from functional requirements and reviewing existing codebases for modularity problems with actionable improvement recommendations. Based on the Balanced Coupling model.",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/vladikk-modularity.md"
     },
     "eroslifestyle/Claude-Orchestrator-Plugin": {
       "prs": [],
