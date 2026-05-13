@@ -287,7 +287,7 @@
       "state": "healthy"
     },
     "UNCLASSIFIED": {
-      "total_hits": 183,
+      "total_hits": 191,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -378,7 +378,7 @@
       "state": "healthy"
     },
     "CC-stale-count": {
-      "total_hits": 41,
+      "total_hits": 42,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -391,7 +391,7 @@
       "state": "disputed"
     },
     "CC-orphan-component": {
-      "total_hits": 36,
+      "total_hits": 37,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -482,7 +482,7 @@
       "state": "healthy"
     },
     "BUG-broken-reference": {
-      "total_hits": 75,
+      "total_hits": 76,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 2,
       "self_false_positive": 0,
@@ -560,7 +560,7 @@
       "state": "healthy"
     },
     "CC-terminology-drift": {
-      "total_hits": 48,
+      "total_hits": 49,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -3743,6 +3743,58 @@
       "verify_rate": null,
       "introduced_since_audit": 0,
       "state": "healthy"
+    },
+    "SEC-hardcoded-analytics-key": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-undisclosed-telemetry": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-network-call-in-hook": {
+      "total_hits": 2,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
+    },
+    "SEC-api-key-in-header": {
+      "total_hits": 1,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
     }
   },
   "metadata": {
@@ -3754,6 +3806,6 @@
     "total_prs_merged": 96,
     "total_prs_rejected": 47,
     "total_prs_applied_separately": 20,
-    "updated_at": "2026-05-13T17:17:51.983261Z"
+    "updated_at": "2026-05-13T22:26:41.397793Z"
   }
 }
