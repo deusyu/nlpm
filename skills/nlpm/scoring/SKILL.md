@@ -31,11 +31,22 @@ Penalties stack. The floor is 0; the ceiling is 100. No bonuses — the default 
 | -- | `name` present | Missing | -25 |
 | R04 | `description` present | Missing | -25 |
 | R04 | Trigger quality | Description is generic (≤1 specific phrase) | -15 |
+| R04 | Description length | Description 500–800 chars | -5 |
+| R04 | Description length | Description >800 chars | -10 |
 | R05 | Body length | 400–500 lines | -5 |
 | R05 | Body length | >500 lines | -10 |
 | R06 | Code examples | Complex concepts with no examples | -5 |
 | R06 | Code examples | No examples at all in a technical skill | -10 |
+| R06 | `<example>` blocks | Zero `<example>` blocks on a `user_invocable: true` skill | -10 |
 | R07 | Scope note | No scope note / cross-references | -3 |
+
+> **Scope-note discipline:** R07 means "scope note when related skills exist."
+> Do NOT apply R07 to missing example blocks — that is the new R06 row above
+> (penalty -10, not -15). The 2026-05-13 lijigang/ljg-skills audit applied
+> R07 + −15 fourteen times for missing example blocks; both labels were
+> wrong (R07 is not example-related, and -15 is the agents penalty, not
+> the skills penalty). The validator at `auditor/scripts/validate-rule-ids.py`
+> catches this kind of drift in CI.
 
 ---
 

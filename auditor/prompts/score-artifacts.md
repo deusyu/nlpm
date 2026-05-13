@@ -54,7 +54,9 @@ Score each file on a 100-point scale. Start at 100, subtract penalties:
 - Missing required frontmatter (`name`, `description`): -25 each
 - **SKILL.md only** — `name` field MUST match the parent directory name
   (per agentskills.io spec); mismatch is a bug not a quality issue: -25
-- Missing example blocks on agents: -15 (zero examples) or -5 (one example)
+- Missing `<example>` blocks on **agents**: -15 (zero) or -5 (one) — rule_id R09
+- Missing `<example>` blocks on **user_invocable: true skills**: -10 — rule_id R06
+- Description length on **skills**: -5 if 500–800 chars, -10 if >800 chars — rule_id R04
 - Model not declared on agents: -5
 - **Commands only** — Missing output format: -10
 - Missing `allowed-tools` on commands: -5
@@ -66,6 +68,22 @@ Score each file on a 100-point scale. Start at 100, subtract penalties:
 - `Write`/`Edit` on read-only agents: -10
 - Unused tools declared: -3 each
 - Scalar-string `tools` format is valid — do NOT penalize
+
+**Rule-ID discipline (strict, enforced by validate-rule-ids.py in CI):**
+
+Every NL-quality finding's `rule_id` must come from the table in
+`skills/nlpm/scoring/SKILL.md` for the artifact's type. Do NOT:
+
+- Apply agent rules (R09–R13) to skills. Skills use R04–R07.
+- Reuse R07 ("scope note") for example-block findings — that is R06 for skills,
+  R09 for agents. The 2026-05-13 ljg-skills audit mislabeled this 14 times.
+- Invent new R-numbers beyond R01–R50.
+- Apply the -15 agents-example penalty to skills. The skills penalty for zero
+  examples on a user_invocable skill is -10, label R06.
+
+If a finding doesn't map cleanly to a documented rule, label it `UNCLASSIFIED`
+in the JSONL sidecar and explain in the report's quality issues table — never
+guess an R-number to make the sidecar look complete.
 
 **Penalties that DO NOT apply to SKILL.md** (cross-tool open spec at
 agentskills.io is authoritative; only `name` and `description` are
