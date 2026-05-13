@@ -141,7 +141,16 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: "github-actions[bot],nlpm-auditor[bot]"
           show_full_output: true
-          claude_args: "--allowedTools Read,Glob,Grep,Write"
+          # Bash is included because Claude reaches for `find` / `wc -l` to
+          # survey large target repos before writing — the v0.8.18 bulk-seed
+          # showed 43/56 runs where Claude read files via Bash-disabled tool
+          # paths and never reached a Write call. With Bash allowed, the
+          # discovery loop completes quickly and the Write step is reached.
+          # Restrict to harmless read/discover Bash patterns; never let the
+          # exemplar writer execute network or mutation calls.
+          claude_args: |
+            --allowedTools Read,Glob,Grep,Write,Bash
+            --disallowedTools "Bash(curl:*)" "Bash(wget:*)" "Bash(git:*)" "Bash(rm:*)" "Bash(mv:*)" "Bash(npm:*)" "Bash(pip:*)" WebFetch WebSearch
           prompt: ${{ env.EXEMPLAR_PROMPT }}
 
       - name: Validate exemplar

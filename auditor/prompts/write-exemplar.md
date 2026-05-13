@@ -64,12 +64,20 @@ framing).
 Pick **only the rules where you can quote concrete evidence from the
 repo** demonstrating compliance. Do NOT include rules where the repo
 merely doesn't break them — silence isn't an exemplar. If the repo has
-fewer than 3 rules with quotable evidence, the right move is to STOP
-and emit a minimal "no clear exemplar rules" report rather than pad.
+fewer than 3 rules with quotable evidence, still write the file with
+whatever rules you found — an exemplar citing 2 rules is better than
+no exemplar at all (the validate step requires the file to exist).
 
-### Step 3: Write the exemplar
+### Step 3: USE THE WRITE TOOL to create the exemplar file
 
-Write the output to: `{{EXEMPLAR_PATH}}`
+**Critical:** You MUST call the `Write` tool to create the file. Do not
+output the exemplar content as a chat response — the workflow checks
+the filesystem and fails if `{{EXEMPLAR_PATH}}` doesn't exist on disk.
+
+Call the Write tool with `file_path: {{EXEMPLAR_PATH}}` and `content:`
+set to the exemplar markdown described below. The 2026-05-13 v0.8.18
+bulk-seed showed many runs reading files but never calling Write,
+producing the content as text — every such run failed validation.
 
 Use this exact structure:
 
