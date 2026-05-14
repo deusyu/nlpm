@@ -78,6 +78,22 @@ for log in auditor/logs/events.jsonl auditor/findings.jsonl auditor/disagreement
   fi
 done
 
+# Exemplar gallery: regenerate from disk. The gallery is deterministic
+# from the auditor/exemplars/ directory — running build-exemplar-gallery.py
+# after the rebase has staged both sides' new exemplar files produces the
+# correct union view. Picking --ours here would silently revert exemplar
+# entries from concurrent runs (observed during the 2026-05-13 bulk-seed:
+# the gallery committed by the last winning push said "Total exemplars: 8"
+# while disk had 61 because each parallel run kept its own snapshot).
+if conflicted_paths | grep -qx "auditor/exemplars/README.md"; then
+  echo "Resolving auditor/exemplars/README.md via regenerate-from-disk"
+  # Accept either side's blob temporarily to clear the conflict, then
+  # overwrite with the freshly regenerated gallery.
+  git checkout --ours auditor/exemplars/README.md
+  python3 auditor/scripts/build-exemplar-gallery.py >/dev/null
+  git add auditor/exemplars/README.md
+fi
+
 # Everything else: prefer ours so the current workflow's work survives
 conflicted_paths | while read -r f; do
   [ -z "$f" ] && continue

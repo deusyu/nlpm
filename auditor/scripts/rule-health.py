@@ -276,6 +276,50 @@ def main() -> int:
         if rid:
             findings_by_rule[rid].append(f)
 
+    # v0.8.18 — compute drift mask so "rules with high hits but no exemplars"
+    # doesn't inflate on scorer mislabels. The 2026-05-13 investigation
+    # found R22 with 127 "hits" of which 126 were drift (R22 is a
+    # `.claude/rules/` rule; scorer applied it to SKILL.md files for
+    # vague-step-no-command patterns that should map to R01/R06/R14).
+    # The drift validator is the same one wired into auditor-audit.yml.
+    drift_by_fingerprint: set[str] = set()
+    try:
+        sys.path.insert(0, str(REGISTRY_PATH.parent.parent / "scripts"))
+        import importlib.util as _il
+        _spec = _il.spec_from_file_location(
+            "_validator",
+            Path(__file__).parent / "validate-rule-ids.py",
+        )
+        if _spec and _spec.loader:
+            _mod = _il.module_from_spec(_spec)
+            sys.modules["_validator"] = _mod
+            _spec.loader.exec_module(_mod)
+            _rubric = _mod.parse_rubric(
+                Path("skills/nlpm/scoring/SKILL.md"),
+                Path("skills/nlpm/rules/SKILL.md"),
+            )
+            # Re-walk the findings through the validator to identify which
+            # are drift. The validator works on .findings.jsonl files —
+            # synthesize a temp file from the global log for the same check.
+            import tempfile, json as _json
+            with tempfile.NamedTemporaryFile(
+                "w", suffix=".jsonl", delete=False
+            ) as _tf:
+                for f in findings:
+                    _tf.write(_json.dumps(f) + "\n")
+                _tf_path = Path(_tf.name)
+            drifts = _mod.validate_findings(_tf_path, _rubric)
+            _tf_path.unlink(missing_ok=True)
+            # Drift detection happens at the finding-line level. Mark the
+            # fingerprints whose records drifted; rule-health then counts
+            # drift hits separately from validated hits.
+            drift_finding_indices = {d.line_no - 1 for d in drifts}
+            for i, f in enumerate(findings):
+                if i in drift_finding_indices and f.get("fingerprint"):
+                    drift_by_fingerprint.add(f["fingerprint"])
+    except Exception as e:  # validator is optional — never block on it
+        print(f"WARN: drift filter unavailable: {e}", file=sys.stderr)
+
     rule_metrics: dict[str, dict] = {}
     for rid, fs in findings_by_rule.items():
         unique_fps = {f["fingerprint"] for f in fs if f.get("fingerprint")}
@@ -315,8 +359,16 @@ def main() -> int:
                 if dt:
                     dissent_types[dt] += 1
 
+        # Drift: how many of this rule's findings were scorer mislabels?
+        # validated_hits = hits - drift_hits is what every "needs attention"
+        # query should actually consume; raw hits inflate on scorer noise.
+        drift_hits = sum(1 for fp in unique_fps if fp in drift_by_fingerprint)
+        validated_hits = max(0, len(fs) - drift_hits)
+
         metrics = {
             "hits": len(fs),
+            "drift_hits": drift_hits,
+            "validated_hits": validated_hits,
             "unique_fingerprints": len(unique_fps),
             "contributed": contributed,
             "merged": merged,
@@ -450,10 +502,15 @@ def main() -> int:
         # Only flag R-numbered catalog rules — BUG-/CC-/SEC-/AGENT-/UNCLASSIFIED
         # are bug categories with no exemplar concept (you don't exemplify
         # "missing frontmatter"; you exemplify "well-written frontmatter").
+        # Use validated_hits, NOT hits — the 2026-05-13 R22 investigation
+        # found 126/127 R22 hits were scorer drift (R22 is for .claude/rules/
+        # but the LLM was applying it to SKILL.md for vague-step patterns
+        # that should map to R01/R06/R14). Raw hits would surface R22 here
+        # forever; validated_hits filters those out.
         "rules_high_hits_no_exemplar": sorted([
             rid for rid, m in rule_metrics.items()
             if re.fullmatch(r"R\d{2}", rid)
-            and m.get("hits", 0) >= 50
+            and m.get("validated_hits", m.get("hits", 0)) >= 50
             and m.get("exemplars_count", 0) == 0
         ]),
     }
