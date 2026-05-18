@@ -7774,10 +7774,13 @@
       "stars": 2976,
       "artifacts": 76,
       "description": "✨ The agentic HTML editor — your local AI agent writes the HTML, you ship it. 🚀 75 Skills × 9 Surfaces (magazine · deck · poster · XHS / tweet · prototype · data report · Hyperframes) 🛡️ Sandboxed preview · 📤 1-click to WeChat / X / Zhihu / HTML / PNG 🔑 Zero API key — Claude Code / Cursor / Codex / Gemini / Copilot / OpenCode / Qwen / Aider.",
-      "status": "discovered",
-      "score": null,
+      "status": "audited",
+      "score": 81,
       "audit_issue": 266,
-      "prs": []
+      "prs": [],
+      "strategy": "progressive",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "d23337ae3ba5fbda94da6aecde5ba75e2eaeca40"
     },
     "taishi-i/awesome-japanese-nlp-resources": {
       "discovered": "2026-05-18T07:18:21Z",
