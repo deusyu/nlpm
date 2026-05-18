@@ -1,7 +1,7 @@
 ---
 name: init
-description: "Initialize NLPM for this project — detect artifacts, set lint strictness"
-allowed-tools: Read, Write, Glob, AskUserQuestion
+description: "Initialize NLPM for this project — detect artifacts, set lint strictness, capture baseline trend snapshot"
+allowed-tools: Read, Write, Glob, Bash, AskUserQuestion, Task
 ---
 
 ## Workflow
@@ -55,18 +55,31 @@ Append the following to `.gitignore` (skip lines already present):
 .claude/nlpm-history.json
 ```
 
-### Step 6: Confirm
+### Step 6: Capture Baseline Snapshot
+
+Score every NL artifact discovered in Step 2 so `/nlpm:trend` has a starting point.
+
+1. Dispatch `nlpm:scorer` and `nlpm:vague-scanner` in parallel over the discovered artifacts (same dispatch pattern as `/nlpm:score`). The vague-scanner's counts override the scorer's heuristic detection.
+2. Persist the result by following `commands/shared/append-history.md` with `scope: "full"` and `files_scored` equal to the artifact count.
+
+If Step 2 found zero artifacts, skip this step — there is nothing to score and the partial declines to write empty snapshots.
+
+### Step 7: Confirm
 
 ```
 NLPM initialized for this project.
   Strictness: {standard}
   Threshold: {70}/100
   Artifacts found: {N}
+  Baseline score: {overall}/100   (snapshot saved to .claude/nlpm-history.json)
   Config: .claude/nlpm.local.md
 
-Run /nlpm:score to assess your artifacts.
+Run /nlpm:score to re-score later, or /nlpm:trend to compare against this baseline.
 ```
 
+If Step 6 was skipped (zero artifacts), omit the "Baseline score" line and replace the final sentence with "No artifacts found yet — re-run /nlpm:init after adding some."
+
 **Error handling:**
-- No artifacts found → still create config, note "No artifacts found yet"
+- No artifacts found → still create config, skip Step 6, note "No artifacts found yet"
 - `.claude/` directory doesn't exist → create it
+- Step 6 scorer dispatch fails → log a one-line warning, write config + .gitignore but no history, exit successfully (init's primary job is config)

@@ -15,8 +15,10 @@ $ARGUMENTS
 
 ### Step 1: Load History
 
-Read `.claude/nlpm-history.json` from the project root. If it doesn't exist, show:
-"No score history found. This is your first run — scores will be captured and a history file created."
+Read `.claude/nlpm-history.json` from the project root.
+
+- If it doesn't exist: this is the first run. Score everything in Step 2 and the snapshot saved in Step 4 becomes the baseline; Step 3's comparison is skipped (no prior data).
+- If it exists but parses as malformed JSON: warn one line, treat as empty, continue.
 
 ### Step 2: Score Current State
 
@@ -24,29 +26,18 @@ Dispatch the `nlpm:scorer` and `nlpm:vague-scanner` agents in parallel to score 
 
 ### Step 3: Compare Against History
 
+Filter the loaded snapshots to **only those whose `scope` matches the current scope** — otherwise a path-bound trend would be compared against full-repo baselines and produce nonsense deltas. The scope is derived from the current invocation's arguments using the same mapping as `commands/shared/append-history.md`.
+
 For each artifact in the current score:
-- Find its most recent entry in history
-- Compute delta: current_score - historical_score
+- Find its most recent entry in the filtered history
+- Compute delta: current_score − historical_score
 - Flag: improved (delta > 0), degraded (delta < 0), unchanged (delta == 0), new (no history)
+
+If the filtered history is empty (first run for this scope), skip the delta computation and label every artifact `new`.
 
 ### Step 4: Save Snapshot
 
-Append current scores to `.claude/nlpm-history.json`:
-
-```json
-{
-  "snapshots": [
-    {
-      "timestamp": "2026-03-28T10:00:00Z",
-      "overall": 85,
-      "files": {
-        "agents/scorer.md": { "score": 92, "type": "agent" },
-        "commands/score.md": { "score": 95, "type": "command" }
-      }
-    }
-  ]
-}
-```
+Persist this run by following `commands/shared/append-history.md` with the scope determined in Step 3, the per-file scores from Step 2, and the file count. The partial handles file creation, deduplication, and atomic write.
 
 ### Step 5: Report
 

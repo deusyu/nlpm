@@ -2,7 +2,7 @@
 name: score
 description: "Score NL programming artifacts — 100-point quality analysis per file"
 argument-hint: "[path]"
-allowed-tools: Read, Glob, Grep, Bash, Task
+allowed-tools: Read, Write, Glob, Grep, Bash, Task
 ---
 
 ## User Input
@@ -76,6 +76,18 @@ Score guide: 90+ Excellent | 80-89 Good | 70-79 Adequate | 60-69 Weak | <60 Rewr
 - Malformed YAML frontmatter → score penalty -25, continue analysis on body
 - Empty file → score 0, issue: "Empty file"
 
-### Step 6: Update History (if tracking)
+### Step 6: Append Snapshot to History
 
-If `.claude/nlpm-history.json` does not exist, skip this step. Run `/nlpm:trend` to initialize tracking — it creates the history file on first run.
+Persist this scoring run so `/nlpm:trend` has data to compare against. Follow `commands/shared/append-history.md` with:
+
+- `files`: the per-file scores from Step 4 (one entry per scored artifact, with score + type)
+- `files_scored`: the count
+- `scope`: derived from Step 2's parsed arguments —
+  - empty arguments → `"full"`
+  - directory path → `"path:<directory>/"` (trailing slash)
+  - single file path → `"path:<file>"`
+  - `--changed` → `"changed"`
+
+The partial handles file creation, deduplication of trivial repeats, and atomic write. Silent failure on write (e.g., read-only project) is acceptable — the score report the user just saw is the primary output; persistence is best-effort telemetry.
+
+If Step 4 scored zero artifacts (no NL artifacts found), skip this step.

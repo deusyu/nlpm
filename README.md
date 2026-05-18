@@ -163,7 +163,7 @@ This is advisory -- it does not block writes. For blocking enforcement, use a `P
 ## Architecture
 
 ```
-commands/           User-facing commands (8 + 2 shared partials)
+commands/           User-facing commands (8 + 3 shared partials)
   ls.md             Discover artifacts -> dispatches scanner
   score.md          Score quality -> dispatches scorer + vague-scanner in parallel
   check.md          Cross-component checks -> dispatches checker
@@ -173,8 +173,9 @@ commands/           User-facing commands (8 + 2 shared partials)
   init.md           Configure project
   security-scan.md  Scan plugins for security risks -> dispatches security-scanner
   shared/
-    discover.md     Artifact path patterns (not user-invocable)
-    classify.md     Type classification rules (not user-invocable)
+    discover.md         Artifact path patterns (not user-invocable)
+    classify.md         Type classification rules (not user-invocable)
+    append-history.md   Persist scoring snapshot to .claude/nlpm-history.json with scope marker (not user-invocable)
 
 agents/             Dispatched by commands (6 agents)
   scanner.md        haiku -- fast artifact discovery

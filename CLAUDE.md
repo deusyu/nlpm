@@ -19,6 +19,7 @@ Each command does one thing -- no flags (except `--changed` on score).
 - commands/security-scan.md -- `/nlpm:security-scan` -- scan plugin for security risks in executable artifacts
 - commands/shared/discover.md -- artifact discovery patterns (not user-invocable)
 - commands/shared/classify.md -- artifact type classification (not user-invocable)
+- commands/shared/append-history.md -- snapshot persistence to .claude/nlpm-history.json with scope marker (not user-invocable). Used by /nlpm:init, /nlpm:score, /nlpm:trend so trend data accumulates without manual upkeep.
 
 ## Agents
 
