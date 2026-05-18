@@ -5484,13 +5484,13 @@
         },
         {
           "number": 147,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-18T03:42:42Z",
+          "closedAt": "2026-05-18T03:42:42Z",
           "title": "fix: correct scanpy license typo (SD-3-Clause → BSD-3-Clause)",
-          "updatedAt": "2026-04-25T12:19:48Z",
+          "updatedAt": "2026-05-18T03:42:43Z",
           "createdAt": "2026-04-25T12:19:48Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:2f25560e64d08256d948e737e3fa93e1a2b0865b5a13a52dee96cb6ea7f9cd22"
           ],
@@ -5501,13 +5501,13 @@
         },
         {
           "number": 148,
-          "state": "OPEN",
+          "state": "CLOSED",
           "mergedAt": null,
-          "closedAt": null,
+          "closedAt": "2026-05-18T03:42:15Z",
           "title": "fix: disclose data transmission to openrouter.ai in scientific-schematics",
-          "updatedAt": "2026-04-25T12:21:06Z",
+          "updatedAt": "2026-05-18T03:42:15Z",
           "createdAt": "2026-04-25T12:21:06Z",
-          "outcome": "open",
+          "outcome": "rejected",
           "fingerprints": [
             "sha256:45321922426b0798ea5ce2ca786c9e8e0b29623bf3729ba649d444f9f9dc7215"
           ],
@@ -5539,7 +5539,7 @@
       "commit_sha_at_audit": "25e1c0f5696f8f219069acfe70856a4a3d316397",
       "discovery_strategy": "awesome-list-citation",
       "stars": 19356,
-      "status": "contributed",
+      "status": "tracked",
       "pipeline_prs": [
         145,
         146,
@@ -5552,7 +5552,8 @@
       "discovered": "2026-04-25T01:06:48Z",
       "rule_adopted": false,
       "description": "A set of ready to use Agent Skills for research, science, engineering, analysis, finance and writing.",
-      "security": "CLEAR"
+      "security": "CLEAR",
+      "case_study_candidate": true
     },
     "luongnv89/claude-howto": {
       "case_study": "case-studies/2026-04-25-luongnv89-claude-howto.md",
