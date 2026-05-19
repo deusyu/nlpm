@@ -237,7 +237,7 @@ Before shipping rules, verify:
 - [ ] Positive framing (no "Don't..." as the primary instruction)
 - [ ] Every rule passes the 30-second enforceability test
 - [ ] Total across all rule files < 500 lines
-- [ ] Rules scoped to relevant paths where possible
+- [ ] Rules scoped via `paths:` frontmatter (e.g., `paths: ["src/api/**/*.ts"]`) when not universally applicable
 - [ ] No contradictions between rule files
 - [ ] No rules that Claude follows by default from training
 - [ ] No rules that a linter already enforces (reference the linter instead)

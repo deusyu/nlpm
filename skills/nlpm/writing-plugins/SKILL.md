@@ -77,7 +77,7 @@ my-plugin/
 
 ### Pattern: Command + Multiple Agents (parallel)
 
-Command dispatches several agents simultaneously, synthesizes results.
+Command dispatches 2–6 agents in parallel, synthesizes results.
 
 ```
 Command --> agent-1 (security)

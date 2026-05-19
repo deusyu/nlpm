@@ -265,17 +265,10 @@ Total dependencies: N | Vulnerable: N | Outdated: N | License issues: N
 ```
 
 **Score breakdown:**
-- Base: 100
-- `description` present and has 3+ specific phrases: 0
-- 2 `<example>` blocks: 0
-- `model: sonnet` declared and appropriate for security analysis: 0
-- `tools` declared with only tools used: 0
-- Output format defined: 0
-- Read-only agent (no Write/Edit): 0
-- Minor: `Bash` tool declared but body doesn't explicitly call it — one unused tool: **-3**
-- No scope note in body: **-2** (vague: none)
+- Base: 100. Passes: `description` with 3+ specific phrases, 2 `<example>` blocks, `model: sonnet` (analysis-tier), declared tools used, output format defined, read-only (no Write/Edit).
+- Minor: `Bash` declared but body doesn't invoke it (one unused tool): **-3**
 
-**Final: 97/100** — Excellent. One unused tool (`Bash` declared but body text doesn't explicitly invoke it) costs 3 points.
+**Final: 97/100** — Excellent. The single unused-tool penalty costs 3 points; otherwise rubric-clean.
 
 *(For calibration: a 95 example would have zero unused tools and a scope note. The range 90-100 is Excellent regardless of the exact number.)*
 
@@ -343,18 +336,10 @@ Incorrect:
 ```
 
 **Score breakdown:**
-- Base: 100
-- `description` present: 0
-- Bold imperative opening: 0
-- Rationale follows: 0
-- Specific and testable (can grep for `/Users/` in hooks.json): 0
-- `paths` scoped: 0
-- Under 500 lines: 0
-- Does not duplicate a linter rule: 0
-- Minor: no reference to a related rule about portability in other contexts: **-3** (judgment call; not a formal penalty — scoring at 92 reflects excellent but not perfect)
-- Vague quantifiers: none: 0
+- Base: 100. Passes: `description`, bold imperative, rationale, specificity (testable via grep for `/Users/` in hooks.json), `paths` scoping, length, no linter overlap, no vague quantifiers.
+- Minor: no reference to related portability rules (env vars in MCP configs, etc.): **-3** (judgment call, not a formal penalty)
 
-**Final: 92/100** — Excellent. Loses ~8 points for not covering related portability contexts (env vars in MCP configs, etc.) — a judgment call reflected in the score rather than a formal penalty table entry.
+**Final: 92/100** — Excellent. The remaining ~5-point gap reflects scope coverage of related portability contexts rather than any rubric violation.
 
 ---
 

@@ -77,7 +77,7 @@ NLPM initialized for this project.
 Run /nlpm:score to re-score later, or /nlpm:trend to compare against this baseline.
 ```
 
-If Step 6 was skipped (zero artifacts), omit the "Baseline score" line and replace the final sentence with "No artifacts found yet — re-run /nlpm:init after adding some."
+If Step 6 was skipped (zero artifacts), omit the "Baseline score" line and replace the final sentence with "No artifacts found yet — re-run /nlpm:init after adding artifacts to the project."
 
 **Error handling:**
 - No artifacts found → still create config, skip Step 6, note "No artifacts found yet"

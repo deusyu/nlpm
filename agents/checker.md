@@ -46,7 +46,7 @@ You will receive a list of all artifacts in a plugin or project. Read every file
 
 4. **Terminology drift**
    - Same concept called different names across artifacts (e.g., "linter" vs "scorer" vs "analyzer" for the same agent)
-   - Inconsistent naming conventions (kebab-case in some places, camelCase in others)
+   - Inconsistent naming conventions (kebab-case mixed with camelCase across artifacts)
 
 ## Output Format
 

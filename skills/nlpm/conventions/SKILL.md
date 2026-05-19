@@ -345,7 +345,7 @@ Located at `.claude/hooks.json` or path specified in `plugin.json`.
 
 **Layer order** (imperative for complex prompts):
 1. Role/persona — "You are a strict code reviewer..."
-2. Context — relevant background, project state, constraints
+2. Context — project state, prior decisions, file paths, constraints
 3. Task — specific action to perform
 4. Constraints — what to avoid, limits, edge cases
 5. Output format — exact structure of the response

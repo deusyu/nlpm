@@ -277,7 +277,7 @@ operations, admin endpoints), it's a real secret — flag.
 
 Finding source: 2026-05-05 audit of `wasp-lang/open-saas` flagged 3
 PostHog/Reo public keys in `opensaas-sh/blog/public/scripts/`. All 3
-were correctly self-FP'd by the scorer. Adding this filter prevents
+were self-marked `false_positive: true` by the scorer. Adding this filter prevents
 the audit cycle from being burned on the same false positive shape.
 
 ## Finding Validation

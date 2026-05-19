@@ -318,7 +318,7 @@ assistant: "I'll dispatch the code-checker to analyze the payment module for pot
 
 **Changes made:**
 1. Description: 0 -> 6 trigger phrases (+30)
-2. Model: opus -> sonnet (appropriate for analysis, -20x cost) (+10)
+2. Model: opus -> sonnet (analysis-tier task: reasoning, not orchestration; -20x cost) (+10)
 3. Tools: 7 -> 3 (read-only analysis needs read-only tools) (+10)
 4. Added 2 examples (+15)
 5. Defined output format (+15)
