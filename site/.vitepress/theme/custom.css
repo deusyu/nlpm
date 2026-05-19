@@ -14,3 +14,14 @@
 .vp-doc._dashboard-vue {
   max-width: 100%;
 }
+
+/* The default `.vp-doc h1/h2` get a border-top + 48px top margin so
+   prose pages have visual section breaks. Inside the dashboard each
+   heading is already framed by its own .panel border — the doc-style
+   line is redundant. Drop it for this page. */
+.vp-doc._dashboard-vue :is(h1, h2, h3) {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+  letter-spacing: normal;
+}
