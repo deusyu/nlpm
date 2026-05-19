@@ -172,24 +172,34 @@ function mountTrend(container: HTMLDivElement, history: HistoryPoint[]): Graph {
 }
 
 function mountVocab(container: HTMLDivElement, vocab: any): Graph {
-  // Compound containers per scope; verbs are rounded rectangles inside
-  // their scope; nouns are circles in a separate non-combo cluster.
-  // Cross-scope homonyms get a doubled outline. Deferred verbs are
-  // dashed. Click a node → side-panel detail.
+  // Compound containers per scope.
+  //   Verbs            → rounded rectangles, label CENTERED inside the rect
+  //   Nouns            → circles, label to the RIGHT of the circle
+  //   Deferred verbs   → dashed rectangles, faded text
+  //   Cross-scope verbs (scan/test/discover) → 3px outline
+  // Click any node → side-panel detail.
   const homonyms: string[] = vocab.cross_scope_homonyms || []
   const combos = (vocab.scopes || []).map((s: any) => ({
     id: `combo-${s.id}`,
     data: { label: s.label || s.id },
     style: {
-      fill: s.id === 'auditor' ? 'rgba(139,63,255,0.04)' : 'rgba(43,95,255,0.04)',
+      fill: s.id === 'auditor' ? 'rgba(139,63,255,0.05)' : 'rgba(43,95,255,0.05)',
       stroke: s.id === 'auditor' ? '#8b3fff' : '#2b5fff',
-      lineDash: [4, 3],
+      lineDash: [6, 4],
+      lineWidth: 1.5,
+      radius: 12,
       labelText: s.label || s.id,
-      labelFontSize: 11,
+      labelFontSize: 13,
+      labelFontWeight: 600,
+      labelFill: s.id === 'auditor' ? '#8b3fff' : '#2b5fff',
+      labelPosition: 'top',
+      labelOffsetY: -10,
     },
   }))
 
   const nodes: any[] = []
+
+  // --- VERBS — rounded rectangles, label inside ---
   for (const v of vocab.verbs || []) {
     const isHomonym = homonyms.includes(v.id)
     nodes.push({
@@ -197,78 +207,123 @@ function mountVocab(container: HTMLDivElement, vocab: any): Graph {
       combo: `combo-${v.scope}`,
       data: { kind: 'verb', label: v.id, scope: v.scope, output: v.output, judgment: v.judgment, deprecated: v.deprecated || [] },
       style: {
-        size: [Math.max(36, v.id.length * 8), 24],
+        // Node shape is set globally via the `node.type` function below.
+        size: [Math.max(56, v.id.length * 9 + 18), 30],
         fill: v.judgment
-          ? (v.scope === 'auditor' ? '#e3d5ff' : '#fff3d5')
-          : (v.scope === 'auditor' ? '#e3d5ff' : '#d5e0ff'),
+          ? (v.scope === 'auditor' ? '#dabffa' : '#fbe6a8')
+          : (v.scope === 'auditor' ? '#e7d6fa' : '#dbe5fc'),
         stroke: v.scope === 'auditor' ? '#8b3fff' : '#2b5fff',
-        lineWidth: isHomonym ? 3 : 1.5,
-        radius: 6,
+        lineWidth: isHomonym ? 3 : 1.6,
+        radius: 14,
+        shadowColor: 'rgba(15,20,40,0.08)',
+        shadowBlur: 4,
+        shadowOffsetY: 1,
+        // Label placement: center of the rect, both axes.
         labelText: v.id,
-        labelFontSize: 11,
+        labelFontSize: 12,
+        labelFontWeight: 600,
         labelFill: '#1d2433',
+        labelPlacement: 'center',
         labelPosition: 'center',
+        labelTextAlign: 'center',
+        labelTextBaseline: 'middle',
       },
     })
   }
+
+  // --- NOUNS — circles, label to the right ---
   for (const n of vocab.nouns || []) {
     nodes.push({
       id: `noun-${n.id}`,
       combo: n.scope ? `combo-${n.scope}` : undefined,
       data: { kind: 'noun', label: n.id, class: n.class, definition: n.definition },
       style: {
-        size: 20,
-        fill: '#ffe7c2',
-        stroke: '#ff9d2b',
+        size: n.class === 'role_nouns' ? 14 : 18,
+        fill: n.class === 'output_class' ? '#ffd58a' : n.class === 'role_nouns' ? '#ffe9c7' : '#ffc46e',
+        stroke: '#e07a13',
         lineWidth: 1.5,
+        shadowColor: 'rgba(15,20,40,0.08)',
+        shadowBlur: 4,
+        shadowOffsetY: 1,
         labelText: n.id,
-        labelFontSize: 10,
+        labelFontSize: 11,
+        labelFontWeight: 500,
         labelFill: '#1d2433',
         labelPosition: 'right',
-        labelOffsetX: 6,
+        labelOffsetX: 8,
+        labelTextBaseline: 'middle',
       },
     })
   }
+
+  // --- DEFERRED — dashed rectangles, faded text ---
   for (const def of vocab.deferred || []) {
     nodes.push({
       id: `def-${def.verb}`,
       combo: def.scope ? `combo-${def.scope}` : undefined,
       data: { kind: 'deferred', label: def.verb, scope: def.scope, needed: def.needed_warrant },
       style: {
-        size: [Math.max(36, def.verb.length * 8), 24],
-        fill: '#fff',
+        size: [Math.max(56, def.verb.length * 9 + 18), 30],
+        fill: '#fafbff',
         stroke: '#888',
-        lineDash: [5, 4],
-        radius: 6,
+        lineDash: [6, 4],
+        lineWidth: 1.5,
+        radius: 14,
         labelText: def.verb,
-        labelFontSize: 10,
+        labelFontSize: 12,
+        labelFontWeight: 500,
         labelFill: '#666',
+        labelPlacement: 'center',
         labelPosition: 'center',
+        labelTextAlign: 'center',
+        labelTextBaseline: 'middle',
       },
     })
   }
+
+  // --- EDGES — curved, color by relationship type ---
   const edges = (vocab.edges || []).map((e: any) => ({
     source: `verb-${e.source}`,
     target: `noun-${e.target}`,
     data: { type: e.type },
     style: {
-      stroke: e.type === 'acts_as' ? '#aab' : '#2b5fff',
-      lineDash: e.type === 'acts_as' ? [3, 3] : undefined,
+      stroke: e.type === 'acts_as' ? '#bbb' : '#5a87ff',
+      lineDash: e.type === 'acts_as' ? [4, 3] : undefined,
+      lineWidth: 1.4,
       endArrow: true,
-      endArrowSize: 6,
-      lineWidth: 1.2,
+      endArrowSize: 7,
+      endArrowFill: e.type === 'acts_as' ? '#bbb' : '#5a87ff',
+      // Slight curvature for visual breathing room.
+      curveness: 0.2,
+      opacity: 0.85,
     },
   }))
 
   const g = new Graph({
     container,
     data: { nodes, edges, combos },
-    node: { type: 'rect' },  // verbs are rect; nouns override via per-node type below if needed
-    edge: { type: 'line' },
-    combo: { type: 'rect', padding: 18 },
-    layout: { type: 'combo-combined', outerLayout: { type: 'force', linkDistance: 90, nodeStrength: -180 }, innerLayout: { type: 'grid' } },
-    behaviors: ['zoom-canvas', 'drag-canvas', 'drag-element'],
+    // Pick the shape per node based on its data.kind. Verbs (and
+    // deferred verbs) are rect; nouns are circle.
+    node: {
+      type: (datum: any) => (datum.data?.kind === 'noun' ? 'circle' : 'rect'),
+      state: {
+        hover: { lineWidth: 3, shadowBlur: 10, shadowColor: 'rgba(43,95,255,0.35)' },
+      },
+    },
+    edge: {
+      type: 'cubic-horizontal',
+      state: { hover: { stroke: '#1d2433', opacity: 1, lineWidth: 2 } },
+    },
+    combo: { type: 'rect', padding: 24 },
+    layout: {
+      type: 'combo-combined',
+      outerLayout: { type: 'force', linkDistance: 120, nodeStrength: -260, collideStrength: 0.9 },
+      innerLayout: { type: 'grid', cols: 4 },
+    },
+    behaviors: ['zoom-canvas', 'drag-canvas', 'drag-element',
+                { type: 'hover-activate', state: 'hover' }],
     autoFit: 'view',
+    padding: 20,
   })
 
   g.on('node:click', (evt: any) => {
