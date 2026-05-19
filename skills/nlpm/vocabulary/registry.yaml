@@ -1,0 +1,235 @@
+# Machine-readable vocabulary registry for NLPM.
+#
+# Read by /nlpm:check and /nlpm:score when R51 is enabled in
+# .claude/nlpm.local.md. The human-readable counterpart is SKILL.md in
+# this directory; that is the canonical source. This file is the
+# parsable export — keep both in sync. When in doubt, SKILL.md wins.
+#
+# Regenerate (eventually) by:
+#   python3 analysis/scripts/extract-vocabulary.py
+# (Today this file is hand-maintained; the extractor only emits the
+# frequency table, not the canonical/deprecated split. Future work.)
+
+# P1 scope declarations. A homonym across scopes is a sanctioned
+# boundary, not a collision.
+scopes:
+  - id: internal
+    description: NLPM's own behavior — commands, agents, skills, hooks, CLAUDE.md scoring and consistency work.
+    paths:
+      - commands/
+      - agents/
+      - skills/
+      - hooks/
+      - bin/
+      - scripts/
+      - "CLAUDE.md"
+  - id: auditor
+    description: Self-evolution pipeline that audits external repos and feeds rules back into NLPM.
+    paths:
+      - auditor/
+      - .github/workflows/auditor-*.yml
+
+# Verbs that are sanctioned in *both* scopes with the same identity
+# criterion. Using them in either scope is fine; they are NOT
+# collisions.
+cross_scope_homonyms:
+  verbs:
+    - scan
+    - test
+    - discover
+
+# Canonical verbs by scope. Each entry lists synonyms that should be
+# replaced with the canonical term. R51 flags occurrences of deprecated
+# synonyms inside artifacts that fall within the scope.
+verbs:
+  internal:
+    - canonical: score
+      deprecated: [analyze, grade, rank, rate, evaluate]
+      output: number + penalty list
+      judgment: false
+    - canonical: check
+      deprecated: [lint, validate, verify]
+      output: violation list
+      judgment: false
+      notes: "validate is still acceptable as a sub-step name in auditor scope; this only flags it in internal scope."
+    - canonical: test
+      deprecated: []
+      output: pass/fail against named specs
+      judgment: false
+    - canonical: scan
+      deprecated: []
+      output: findings against signatures
+      judgment: false
+    - canonical: fix
+      deprecated: [repair, patch, correct]
+      output: mutated artifact
+      judgment: false
+    - canonical: ls
+      deprecated: [find, search, list, inventory]
+      output: artifact inventory
+      judgment: false
+    - canonical: trend
+      deprecated: [history, timeline]
+      output: history report
+      judgment: false
+    - canonical: init
+      deprecated: [initialize, bootstrap, setup, configure]
+      output: config file
+      judgment: false
+  auditor:
+    - canonical: discover
+      deprecated: [find, search, crawl]
+      output: candidate list
+      judgment: false
+    - canonical: audit
+      deprecated: [review, inspect, examine]
+      output: composite quality + security report
+      judgment: true
+    - canonical: contribute
+      deprecated: [submit, propose]
+      output: PR(s) to target repo
+      judgment: false
+    - canonical: track
+      deprecated: [monitor, watch]
+      output: outcome events
+      judgment: false
+    - canonical: classify
+      deprecated: [categorize, tag, label]
+      output: categorical label
+      judgment: false
+    - canonical: refine
+      deprecated: [tune, improve]
+      output: rule-edit PR
+      judgment: false
+    - canonical: cite
+      deprecated: [reference, link]
+      output: citation-edit PR
+      judgment: false
+    - canonical: diff
+      deprecated: [compare]
+      output: finding-by-finding comparison
+      judgment: false
+    - canonical: report
+      deprecated: [summarize, digest]
+      output: rolled-up summary
+      judgment: false
+    - canonical: review
+      deprecated: []
+      output: human-decision artifact
+      judgment: true
+    - canonical: propose
+      deprecated: [suggest, draft]
+      output: draft for human approval
+      judgment: false
+    - canonical: validate
+      deprecated: [verify, check]
+      output: yes/no on a structural rule
+      judgment: false
+      notes: "validate is the auditor-scope canonical for binary structural checks; in internal scope use check."
+
+# Two lists, following the refined P6 precedence
+# (analysis/vocabulary-design-principles.md):
+#   - deferred_pending_warrant — terms that satisfy P2..P5 but lack P6
+#     warrant. They enter the registry on a deferred basis and become
+#     canonical the first time a practitioner uses them in an artifact.
+#     R51 does NOT flag them as deprecated — they are not synonyms of
+#     a canonical, they are nameless gaps.
+#   - rejected_by_higher_principle — terms that fail P2, P3, P1, or P4.
+#     These are not entered regardless of P6 evidence; warrant cannot
+#     reinstate a P2..P5 failure.
+deferred_pending_warrant:
+  - verb: triage
+    proposed_for: finding disposition (P4 closure gap)
+    p2_p5_pass: "verb gates downstream contribute consideration (P3); applies to finding noun (P4); names an unnamed judgment act (P5)"
+    needed_warrant: user warrant — practitioner reaches for "triage" unprompted during real NLPM operation
+  - verb: review
+    scope: internal
+    proposed_for: human-in-the-loop reading in internal scope, as a sanctioned cross-scope homonym with auditor.review
+    p2_p5_pass: "produces a comment trail (P3); applies to artifact noun (P4); names an unnamed judgment act (P5); P1 cross-scope homonym is sanctioned with auditor scope"
+    needed_warrant: user warrant — practitioner names a review act in internal-scope artifacts
+  - verb: rationalize
+    proposed_for: vocabulary curation (P5 gap — the act of picking canonical from extracted frequencies has no name)
+    p2_p5_pass: "produces a curated registry (P3); applies to extracted-term frequencies (P4); names an unnamed judgment act (P5)"
+    needed_warrant: user warrant — practitioner names the curation act explicitly during vocab work
+
+rejected_by_higher_principle:
+  - verb: audit
+    scope: internal
+    blocker_principle: P1
+    blocker: "merge test fails — score+check already cover internal-scope evaluation with one identity criterion each. Adding audit here would put two terms (audit and score+check together) under one identity in one scope. Warrant cannot reinstate."
+  - verb: lint
+    scope: internal
+    blocker_principle: P1
+    blocker: "synonym of check; same identity criterion (structural consistency, no judgment), same scope"
+  - verb: validate
+    scope: internal
+    blocker_principle: P1
+    blocker: "in internal scope, validate collapses to check; validate remains canonical in auditor scope for binary structural checks"
+  - verb: analyze
+    scope: internal
+    blocker_principle: P1
+    blocker: "synonym of score; quantitative evaluation, same scope"
+
+# Canonical nouns. R51 flags deprecated synonyms; new domain nouns
+# enter via literary warrant (rerun extract-vocabulary.py).
+nouns:
+  artifact_class:
+    - canonical: artifact
+      deprecated: [file, unit, component]
+      definition: any NL programming file Claude Code consumes
+    - canonical: command
+      deprecated: [slash-command]
+      definition: commands/*.md, invoked via /<plugin>:<name>
+    - canonical: agent
+      deprecated: [subagent, worker]
+      definition: agents/*.md, invoked via Task with subagent_type
+    - canonical: skill
+      deprecated: []
+      definition: skills/<plugin>/<name>/SKILL.md, auto-loaded by description match
+    - canonical: rule
+      deprecated: [guideline, convention]
+      definition: a numbered item inside skills/<plugin>/rules/SKILL.md
+    - canonical: hook
+      deprecated: [trigger]
+      definition: shell script wired via hooks.json
+    - canonical: manifest
+      deprecated: [config]
+      definition: plugin.json or marketplace.json
+    - canonical: frontmatter
+      deprecated: [header, metadata-block]
+      definition: YAML block delimited by --- at top of a Markdown file
+  output_class:
+    - canonical: score
+      deprecated: [grade, rating]
+      definition: number 0-100 + penalty breakdown
+    - canonical: finding
+      deprecated: [issue, problem, defect]
+      definition: one problem detected; carries a fingerprint in auditor scope
+    - canonical: violation
+      deprecated: []
+      definition: a finding specifically from cross-reference checking
+    - canonical: penalty
+      deprecated: [deduction]
+      definition: points subtracted by a single finding
+    - canonical: snapshot
+      deprecated: []
+      definition: point-in-time record in .claude/nlpm-history.json
+    - canonical: inventory
+      deprecated: [catalog, manifest]
+      definition: list of artifacts discovered in a path
+    - canonical: spec
+      deprecated: [specification, test-case]
+      definition: a .nlpm-test/*.spec.md file defining expected behavior
+  role_nouns:
+    - canonical: scanner
+      paired_verb: ls
+    - canonical: scorer
+      paired_verb: score
+    - canonical: checker
+      paired_verb: check
+    - canonical: tester
+      paired_verb: test
+    - canonical: security-scanner
+      paired_verb: scan
+    - canonical: vague-scanner
+      paired_verb: score  # sub-step

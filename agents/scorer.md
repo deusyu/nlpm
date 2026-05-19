@@ -21,6 +21,7 @@ tools: Read, Glob, Grep
 skills:
   - nlpm:scoring
   - nlpm:conventions
+  - nlpm:vocabulary
 ---
 
 ## Mission
@@ -36,7 +37,8 @@ For each artifact you receive:
    - Start at 100
    - Apply all penalties for this artifact type (each penalty maps to a rule number)
    - Apply vague quantifier penalties: "appropriate", "relevant", "as needed", "sufficient", "adequate", "reasonable", "properly", "correctly", "some", "several", "various" -- penalty -2 each, capped at -20
-   - If rule overrides are provided, apply them (suppress, max_penalty, threshold adjustments)
+   - **R51 (opt-in vocabulary drift):** if `.claude/nlpm.local.md` declares `rule_overrides.R51.enabled: true`, load the registry at `<vocabulary_skill>/registry.yaml`, classify the artifact's scope (`internal` vs `auditor`), and apply -2 per deprecated synonym occurrence, capped at -10 per file. If the registry is missing, emit an advisory note and apply no penalty. Without `enabled: true`, R51 contributes zero regardless of content.
+   - If rule overrides are provided, apply them (`suppress`, `enabled`, `max_penalty`, `threshold` adjustments)
    - Compute final_score = max(0, min(100, 100 + adjustments))
 3. List each issue found with:
    - Severity: HIGH (>=10 point penalty), MEDIUM (5-9 points), LOW (<5 points)

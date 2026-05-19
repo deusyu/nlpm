@@ -16,6 +16,9 @@ The auditor pipeline emits structured, append-only logs so NLPM can learn from h
 | `auditor/audits/<slug>.re-audit.diff.md` | no (rewritten per re-audit) | `auditor-case-study.yml` | Per-finding verification table — source material for the case-study writer's "Re-Audit" section |
 | `auditor/feedback/log.json` | no (rebuilt) | daily report | Rolling summary, derived from the three append-only logs |
 | `auditor/registry/repos.json` | no (mutated in place) | multiple workflows | Tracking database for repos and PRs |
+| `auditor/vocab-advisories.jsonl` | yes | `auditor-vocab-drift.yml` | One record per vocabulary drift cluster. Advisory only — never reaches the contribute step. |
+| `auditor/audits/<slug>.vocab-drift.md` | no (rewritten per scan) | `auditor-vocab-drift.yml` | Human-readable drift advisory report |
+| `auditor/audits/<slug>.vocab-drift.jsonl` | no (rewritten per scan) | `auditor-vocab-drift.yml` | Per-scan advisory sidecar, source for global `vocab-advisories.jsonl` |
 
 Append-only means: new records are only added. Fixing a record means appending a superseding event (e.g., `finding_amended`), never editing the original.
 
@@ -82,10 +85,11 @@ unintentionally ship as PRs through the contribute filter.
 
 ### `rule_id` namespace conventions
 
-- `R01`–`R50`: NL rules from `skills/nlpm/rules/`
+- `R01`–`R51`: NL rules from `skills/nlpm/rules/` (R51 is opt-in; auditor never enables it on external repos)
 - `SEC-<pattern-slug>`: security patterns (e.g., `SEC-curl-pipe-sh`, `SEC-new-function-eval`, `SEC-shell-true`, `SEC-postinstall-script`)
 - `BUG-<kind>`: NL artifact bugs (e.g., `BUG-missing-frontmatter`, `BUG-broken-reference`, `BUG-undeclared-tool`, `BUG-invalid-semver`)
 - `CC-<kind>`: cross-component issues (e.g., `CC-stale-count`, `CC-broken-relative-path`, `CC-terminology-drift`, `CC-orphan-component`)
+- `VOCAB-<disposition>`: vocab-drift advisories from `auditor-vocab-drift.yml` (e.g., `VOCAB-drift`, `VOCAB-cooccurrence-drift`, `VOCAB-ambiguous`). These IDs only appear in `vocab-advisories.jsonl`, never in `findings.jsonl`.
 - `UNCLASSIFIED`: used sparingly, surfaces as a rule-gap signal in reports
 
 New IDs may be introduced without a schema change, but should be documented in the rules skill when they recur.
@@ -197,6 +201,79 @@ Emitted weekly by `auditor-suppressions.yml` (new workflow). Scans public plugin
 ```
 
 `suppression_type` ∈ `{suppress, max_penalty, threshold_adjustment, rule_override}`. `reason_given` is optional — many suppressions carry no comment.
+
+## `vocab-advisories.jsonl` — one record per vocab drift cluster
+
+Vocab advisories live in a dedicated log, not in `findings.jsonl`. They are **advisory only** — the contribute workflow never reads this file, so vocab clusters never become PRs. The judgment of whether a cluster is real drift or a legitimate semantic distinction belongs to the target's maintainers, not to the auditor.
+
+### Record schema
+
+```json
+{
+  "event": "vocab_advisory",
+  "timestamp": "2026-05-19T12:00:00Z",
+  "audit_run_id": "24564889725",
+  "repo": "owner/name",
+  "commit_sha": "abc123def456...",
+  "fingerprint": "sha256:c36de2e5...",
+  "disposition": "drift",
+  "confidence": "high",
+  "terms": ["analyzer", "scanner"],
+  "term_freq": {"scanner": 12, "analyzer": 3},
+  "term_files": {
+    "scanner": ["agents/scanner.md", "docs/intro.md"],
+    "analyzer": ["docs/intro.md", "skills/foo/SKILL.md"]
+  },
+  "files_affected": 3,
+  "suggested_canonical": "scanner",
+  "evidence": "both terms appear in role-noun position with overlapping neighbor words",
+  "rule_id": "VOCAB-drift"
+}
+```
+
+### Field reference
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `event` | string | yes | Always `"vocab_advisory"` |
+| `timestamp` | ISO 8601 UTC | yes | Set by post-step, not by Claude |
+| `audit_run_id` | string | yes | `GITHUB_RUN_ID` or `"local"` |
+| `repo` | string | yes | `owner/name` |
+| `commit_sha` | string | yes | Full SHA at scan time; `"unknown"` if clone failed |
+| `fingerprint` | string | yes | `sha256:<hex>` of `repo + "VOCAB" + sorted_terms_csv + disposition` |
+| `disposition` | enum | yes | `drift`, `likely_drift`, `co_occurrence_drift`, or `ambiguous` |
+| `confidence` | enum | yes | `high`, `medium`, or `low` — scanner's confidence in the cluster judgment |
+| `terms` | string[] | yes | Alphabetically sorted; length ≥ 2 |
+| `term_freq` | object | yes | One int count per term |
+| `term_files` | object | yes | Max 5 paths per term |
+| `files_affected` | int | yes | Distinct files in the union of `term_files` |
+| `suggested_canonical` | string | yes | Must be one of `terms` |
+| `evidence` | string | yes | One-line summary of why these cluster |
+| `rule_id` | string | yes | `VOCAB-drift` / `VOCAB-cooccurrence-drift` / `VOCAB-ambiguous` |
+
+### `fingerprint` computation
+
+```
+payload     = repo + "|VOCAB|" + sorted(terms).join(",") + "|" + disposition + "\n"
+fingerprint = "sha256:" + sha256(payload)
+```
+
+Same `\n` contract as the main fingerprint formula — `compute-vocab-fingerprint.sh` pipes `jq` output through `shasum`. Python reimplementations MUST include the trailing newline.
+
+The fingerprint is stable across re-runs as long as the cluster's term set is unchanged. Changing the cluster (adding or removing a term) changes the fingerprint, which is the correct behavior — a different cluster is a different advisory.
+
+### Why a separate log
+
+`findings.jsonl` records are *things to fix*: PR-eligible bugs, quality penalties, security risks. The contribute step filters this log for `confidence: high` records and opens PRs.
+
+`vocab-advisories.jsonl` records are *language patterns to consider*: a maintainer's call about whether two terms in their domain are synonyms or distinctions. The auditor cannot judge this — the target's vocabulary is its own. Filing PRs for vocab advisories would be presumptuous and is structurally prevented by putting them in a different log the contribute step never reads.
+
+### Lifecycle events
+
+`auditor-vocab-drift.yml` emits two lifecycle events to `events.jsonl`:
+
+- `scan_skipped_premature` — when the target has fewer than 5 NL artifacts
+- `advisories_aggregated` — at the end of each successful scan, with `{repo, advisories, invalid_lines}`
 
 ## `events.jsonl` — outcome events added to the existing log
 

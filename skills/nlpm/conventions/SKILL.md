@@ -452,11 +452,13 @@ rule_overrides:
 | Type | Effect | Example |
 |------|--------|---------|
 | `suppress: true` | Disable the rule entirely (penalty becomes 0) | `R10: { suppress: true }` |
+| `enabled: true` | Activate a rule that ships **disabled by default** (currently only R51) | `R51: { enabled: true, vocabulary_skill: skills/myplugin/vocabulary/ }` |
 | `max_penalty: N` | Cap the penalty at N (less negative = more lenient) | `R01: { max_penalty: -10 }` |
 | `threshold: N` | Adjust numeric thresholds (line limits, counts) | `R05: { threshold: 600 }` |
 | `min_examples: N` | Adjust minimum example counts | `R09: { min_examples: 1 }` |
+| `vocabulary_skill: <path>` | Path to the project's `vocabulary` skill (R51 only). Without it, R51 emits an advisory and contributes zero penalty. | `R51: { enabled: true, vocabulary_skill: skills/myplugin/vocabulary/ }` |
 
-Rules not listed in `rule_overrides` use their defaults from `nlpm:scoring`.
+Rules not listed in `rule_overrides` use their defaults from `nlpm:scoring`. Rules that ship disabled (R51) contribute zero penalty unless `enabled: true` is set explicitly.
 
 ---
 

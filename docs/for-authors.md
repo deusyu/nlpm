@@ -198,8 +198,83 @@ nlpm-check --json .
 
 NLPM rules cite primary sources (Anthropic docs, the Agent Skills spec). If a check is wrong, file an issue with the docs URL that contradicts it: <https://github.com/xiaolai/nlpm-for-claude/issues>.
 
+## Vocabulary discipline (R51, opt-in)
+
+NLPM ships a sixth rule — R51 — that flags **vocabulary drift**: the same concept named differently across artifacts ("scanner" / "analyzer" / "linter"; "score" / "grade" / "rate"). It is disabled by default. Adopt it when your project has accumulated enough drift to be worth disciplining; skip it when the project is small or still finding its terms.
+
+The six principles behind R51 live in NLPM's `analysis/vocabulary-design-principles.md`. The short version:
+
+1. One term per distinct identity, at uniform granularity, within a declared scope.
+2. Nouns are rigid artifacts; verbs are state-changing acts.
+3. A verb is top-level only if it gates or produces a named artifact.
+4. The vocabulary is closed under its own operations within scope.
+5. Comprehensive means no unnamed judgment.
+6. A term requires warrant (literary, user, structural, or domain) before it enters.
+
+### When to adopt
+
+| Signal | Adopt? |
+|--------|--------|
+| Project has 10+ NL artifacts (commands, agents, skills, rules) | Yes — drift is likely |
+| Multiple contributors with different terminology habits | Yes — controlled vocabulary pays off |
+| Same concept appears under 2+ names in your corpus | Yes — R51 will find these |
+| Project is <5 artifacts, single author, exploring | No — premature |
+| You can't yet name your domain in a sentence | No — discover your vocabulary first |
+
+### The four-step adoption flow
+
+1. **Bootstrap.** Run `/nlpm:vocab-init` from your project root. It detects your layout, extracts literary warrant from your corpus, and seeds a `skills/<plugin>/vocabulary/` skill with the top extracted terms. Nothing enforced yet — just scaffolding.
+
+2. **Prune and define.** Open `skills/<plugin>/vocabulary/SKILL.md` and `registry.yaml`. Most top-extracted terms are real; some are noise. Delete what's wrong, define `deprecated:` synonym lists for canonical terms, declare your scopes (P1).
+
+3. **(Optional) Hunt for hidden drift.** Run `/nlpm:vocab-drift` against your project. It uses judgment-based clustering to surface candidate synonym pairs the deterministic extractor missed (different surface forms, contextual co-occurrence). The output is advisory — review and decide whether each pair is genuine drift or a real distinction.
+
+4. **Opt in.** Add to `.claude/nlpm.local.md`:
+
+   ```yaml
+   rule_overrides:
+     R51:
+       enabled: true
+       vocabulary_skill: skills/<plugin>/vocabulary/
+   ```
+
+   `/nlpm:score` now penalizes deprecated-synonym occurrences (-2 each, cap -10/file). `/nlpm:check` lists drift findings alongside reference-integrity issues.
+
+### Worked example
+
+A plugin author has been writing for six months. The corpus contains:
+
+- `commands/lint.md` — body says "the linter scans your code"
+- `commands/score.md` — body says "the scorer analyzes each file"
+- `agents/analyzer.md` — agent named `analyzer`
+- `docs/intro.md` — "use the validator to check your work"
+
+Four terms (`lint`, `score`, `analyze`, `validate`) and three role-names (`linter`, `scorer`, `analyzer`, `validator`) for two underlying operations.
+
+After `/nlpm:vocab-init`:
+
+- `skills/myplugin/vocabulary/SKILL.md` lists all four verbs with `frequency` counts.
+- The author decides: `score` is canonical for quantitative work; `check` is canonical for structural work; `lint`, `analyze`, `validate` become deprecated synonyms (each declared against the matching canonical).
+- The author defines two scopes: `internal` (commands/agents/skills) and — if relevant — `external` (a CI integration directory).
+- Author opts in via `.claude/nlpm.local.md`.
+
+Subsequent `/nlpm:score` runs flag every `lint` / `analyze` / `validate` occurrence with the canonical-replacement suggestion. The corpus converges. New contributors hit the rule before they cement a new synonym into the codebase.
+
+### Registry-free option: `/nlpm:vocab-drift`
+
+If you don't want to maintain a registry but still want vocabulary feedback, run `/nlpm:vocab-drift` periodically. It scans the corpus, clusters near-synonyms, and reports candidate drift pairs without requiring a declared canonical. Output is advisory only — no penalty, no opt-in needed. Useful for early-stage projects that want a vocabulary health check without committing to enforcement.
+
+### See also (vocabulary)
+
+- NLPM's own `skills/nlpm/vocabulary/SKILL.md` — the reference implementation R51 was designed against.
+- NLPM's `analysis/vocabulary-design-principles.md` — the six principles in full, with retirement criteria.
+- The `/nlpm:vocab-init` and `/nlpm:vocab-drift` command source files for the precise workflow each runs.
+
+---
+
 ## See also
 
 - `analysis/ecosystem-gap.md` — why this validator exists and what other tools do
 - `analysis/scope-expansion-2026-05.md` — the broader plan for author-facing NLPM
+- `analysis/vocabulary-design-principles.md` — the six principles behind R51
 - The full slash-command surface — install the plugin: `claude plugin install nlpm@xiaolai --scope project`

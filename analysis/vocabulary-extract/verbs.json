@@ -1,0 +1,289 @@
+{
+  "root": "/Users/joker/github/xiaolai/myprojects/claude-plugins/nlpm",
+  "by_source": {
+    "commands:filename": {
+      "check": 1,
+      "fix": 1,
+      "init": 2,
+      "ls": 1,
+      "score": 1,
+      "security": 1,
+      "scan": 1,
+      "test": 1,
+      "trend": 1,
+      "vocab": 2,
+      "drift": 1
+    },
+    "commands:description": {
+      "check": 1,
+      "initialize": 1,
+      "discover": 1,
+      "score": 1,
+      "scan": 1,
+      "run": 1,
+      "find": 1,
+      "bootstrap": 1
+    },
+    "auditor-workflows:filename": {
+      "audit": 1,
+      "batch": 1,
+      "processor": 1,
+      "case": 1,
+      "study": 1,
+      "cite": 1,
+      "exemplars": 1,
+      "classify": 1,
+      "contribute": 1,
+      "daily": 1,
+      "report": 1,
+      "discover": 1,
+      "docs": 1,
+      "diff": 1,
+      "exemplar": 1,
+      "integration": 1,
+      "test": 1,
+      "refine": 1,
+      "rules": 1,
+      "rule": 1,
+      "review": 1,
+      "suppressions": 1,
+      "track": 1
+    },
+    "auditor-scripts:filename": {
+      "backfill": 2,
+      "build": 1,
+      "diff": 2,
+      "report": 1,
+      "review": 1,
+      "parse": 2,
+      "prepare": 1,
+      "propose": 1,
+      "repair": 1,
+      "stale": 1,
+      "scan": 1,
+      "synthesize": 1,
+      "merge": 1,
+      "validate": 1
+    },
+    "auditor-scripts-sh:filename": {
+      "write": 1,
+      "push": 1,
+      "log": 1,
+      "resolve": 1,
+      "merge": 1,
+      "validate": 1
+    }
+  },
+  "scope": {
+    "check": [
+      "internal"
+    ],
+    "fix": [
+      "internal"
+    ],
+    "init": [
+      "internal"
+    ],
+    "initialize": [
+      "internal"
+    ],
+    "ls": [
+      "internal"
+    ],
+    "discover": [
+      "auditor",
+      "internal"
+    ],
+    "score": [
+      "internal"
+    ],
+    "security": [
+      "internal"
+    ],
+    "scan": [
+      "auditor",
+      "internal"
+    ],
+    "test": [
+      "auditor",
+      "internal"
+    ],
+    "run": [
+      "internal"
+    ],
+    "trend": [
+      "internal"
+    ],
+    "vocab": [
+      "internal"
+    ],
+    "drift": [
+      "internal"
+    ],
+    "find": [
+      "internal"
+    ],
+    "bootstrap": [
+      "internal"
+    ],
+    "rules": [
+      "auditor",
+      "internal"
+    ],
+    "audit": [
+      "auditor"
+    ],
+    "batch": [
+      "auditor"
+    ],
+    "processor": [
+      "auditor"
+    ],
+    "case": [
+      "auditor"
+    ],
+    "study": [
+      "auditor"
+    ],
+    "cite": [
+      "auditor"
+    ],
+    "exemplars": [
+      "auditor"
+    ],
+    "classify": [
+      "auditor"
+    ],
+    "contribute": [
+      "auditor"
+    ],
+    "daily": [
+      "auditor"
+    ],
+    "report": [
+      "auditor"
+    ],
+    "docs": [
+      "auditor"
+    ],
+    "diff": [
+      "auditor"
+    ],
+    "exemplar": [
+      "auditor"
+    ],
+    "integration": [
+      "auditor"
+    ],
+    "refine": [
+      "auditor"
+    ],
+    "rule": [
+      "auditor"
+    ],
+    "review": [
+      "auditor"
+    ],
+    "suppressions": [
+      "auditor"
+    ],
+    "track": [
+      "auditor"
+    ],
+    "backfill": [
+      "auditor"
+    ],
+    "build": [
+      "auditor"
+    ],
+    "parse": [
+      "auditor"
+    ],
+    "prepare": [
+      "auditor"
+    ],
+    "propose": [
+      "auditor"
+    ],
+    "repair": [
+      "auditor"
+    ],
+    "stale": [
+      "auditor"
+    ],
+    "synthesize": [
+      "auditor"
+    ],
+    "merge": [
+      "auditor"
+    ],
+    "validate": [
+      "auditor"
+    ],
+    "write": [
+      "auditor"
+    ],
+    "push": [
+      "auditor"
+    ],
+    "log": [
+      "auditor"
+    ],
+    "resolve": [
+      "auditor"
+    ]
+  },
+  "totals": {
+    "scan": 3,
+    "diff": 3,
+    "check": 2,
+    "init": 2,
+    "score": 2,
+    "test": 2,
+    "vocab": 2,
+    "discover": 2,
+    "report": 2,
+    "review": 2,
+    "backfill": 2,
+    "parse": 2,
+    "merge": 2,
+    "validate": 2,
+    "fix": 1,
+    "ls": 1,
+    "security": 1,
+    "trend": 1,
+    "drift": 1,
+    "initialize": 1,
+    "run": 1,
+    "find": 1,
+    "bootstrap": 1,
+    "audit": 1,
+    "batch": 1,
+    "processor": 1,
+    "case": 1,
+    "study": 1,
+    "cite": 1,
+    "exemplars": 1,
+    "classify": 1,
+    "contribute": 1,
+    "daily": 1,
+    "docs": 1,
+    "exemplar": 1,
+    "integration": 1,
+    "refine": 1,
+    "rules": 1,
+    "rule": 1,
+    "suppressions": 1,
+    "track": 1,
+    "build": 1,
+    "prepare": 1,
+    "propose": 1,
+    "repair": 1,
+    "stale": 1,
+    "synthesize": 1,
+    "write": 1,
+    "push": 1,
+    "log": 1,
+    "resolve": 1
+  }
+}

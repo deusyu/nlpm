@@ -17,6 +17,7 @@ color: cyan
 tools: Read, Glob, Grep
 skills:
   - nlpm:conventions
+  - nlpm:vocabulary
 ---
 
 ## Mission
@@ -47,6 +48,13 @@ You will receive a list of all artifacts in a plugin or project. Read every file
 4. **Terminology drift**
    - Same concept called different names across artifacts (e.g., "linter" vs "scorer" vs "analyzer" for the same agent)
    - Inconsistent naming conventions (kebab-case mixed with camelCase across artifacts)
+
+5. **R51 — Vocabulary drift (opt-in)**
+   - Read `.claude/nlpm.local.md`. If `rule_overrides.R51.enabled: true` is **not** set, skip this step entirely — R51 is disabled by default.
+   - If enabled, read the registry at `<vocabulary_skill>/registry.yaml`. If the file is missing, emit an advisory ("R51 enabled but registry not found at <path>") and skip the per-artifact pass.
+   - For each artifact, determine its scope (`internal` vs `auditor`) from its path against `scopes:` in the registry.
+   - Flag each occurrence of a `deprecated:` synonym from the matching scope's verb/noun list. Report as a finding with file path, term, line number, and the canonical replacement.
+   - Cross-scope homonyms (`scan`, `test`, `discover` by default) are not violations.
 
 ## Output Format
 

@@ -163,4 +163,94 @@ Good: `**Use specific types instead of any.** Without specific types, TypeScript
 
 ---
 
-> **Scope**: This skill covers the quality rules for NL programming artifacts. For the penalty-based scoring rubric that enforces these rules, see `nlpm:scoring`. For patterns and anti-patterns with worked examples, see `nlpm:patterns`. For conventions and schemas, see `nlpm:conventions`.
+## Vocabulary discipline (opt-in)
+
+**R51. Use canonical terms from the project's vocabulary registry.** *Disabled by default.* When enabled, every noun and verb in an NL artifact must either come from the project's declared `vocabulary` skill or be defined in the artifact's own glossary. Synonyms of canonical terms drift the codebase. Penalty: -2 per occurrence, cap -10 per file.
+
+Bad (drift):
+> "The **scanner** runs a **lint** over the manifest and **flags** any **issues**."
+(if canonical terms are `check`/`finding`)
+
+Good:
+> "The checker produces a finding for each manifest inconsistency."
+
+**Opt in by adding to `.claude/nlpm.local.md`:**
+```yaml
+rule_overrides:
+  R51:
+    enabled: true
+    vocabulary_skill: skills/<plugin>/vocabulary/   # path to your registry
+```
+
+Without `enabled: true`, R51 contributes zero penalty regardless of artifact contents. Without `vocabulary_skill:` pointing to a registry with a `registry.yaml` sidecar, R51 cannot fire and emits an advisory note instead. This rule is the operational handle for the six principles in `analysis/vocabulary-design-principles.md`. Adopt it when the project has accumulated enough vocabulary drift to be worth disciplining; skip it when the project is small or still finding its terms.
+
+---
+
+## Warrant tags (P6)
+
+Each rule earns its place via one of the four warrant types from `analysis/vocabulary-design-principles.md` P6. Use this table when reviewing whether a rule still belongs.
+
+| Type | Retire when |
+|------|-------------|
+| `literary` | The codebase pattern the rule codifies goes away |
+| `user` | Practitioners stop reaching for the constraint unprompted |
+| `structural` | The framework no longer requires the constraint for coherence |
+| `domain` | The specific failure the rule prevents can no longer recur |
+
+| Rule | Warrant | Failure prevented or pattern codified |
+|------|---------|---------------------------------------|
+| R01 | domain | Ambiguous instructions produce inconsistent behavior |
+| R02 | domain | Context window exhaustion |
+| R03 | domain | Pink-Elephant effect |
+| R04 | structural | Description-based skill matching requires triggers |
+| R05 | structural | Context bloat is a system-level constraint |
+| R06 | domain | Pseudocode fails differently from real syntax |
+| R07 | structural | Without scope notes, Claude cannot disambiguate between related skills |
+| R08 | domain | LLMs apply concrete patterns more reliably than abstractions |
+| R09 | structural | Claude Code reads `<example>` blocks to trigger agents |
+| R10 | domain | Wrong model tier wastes money or weakens output |
+| R11 | domain | Excess tool permissions are a security smell |
+| R12 | structural | Without a defined output format, variance breaks downstream parsers |
+| R13 | literary | Codifies the pattern observed in well-written agents |
+| R14 | literary | Codifies the numbered-step pattern in well-written commands |
+| R15 | domain | Crashes on blank `$ARGUMENTS` |
+| R16 | structural | Same as R12 for commands |
+| R17 | domain | Silent error propagation |
+| R18 | structural | Claude Code uses `argument-hint` in `/help` |
+| R19 | structural | Without `user-invocable: false`, partials appear as commands |
+| R20 | structural | Without descriptions, partials cannot be picked |
+| R21 | literary | Codifies the bold-imperative-plus-rationale pattern |
+| R22 | domain | Vague rules waste tokens without changing behavior |
+| R23 | structural | Token economy of `.claude/rules/` |
+| R24 | domain | Duplicating tool output is waste |
+| R25 | domain | Path-unscoped rules cost tokens in irrelevant contexts |
+| R26 | structural | System coherence requires non-contradictory rules |
+| R27 | domain | Wrong-case event names cause silent hook failure |
+| R28 | domain | Field/type mismatch breaks hooks |
+| R29 | domain | Hooks pointing to missing scripts fail silently |
+| R30 | domain | Hardcoded absolute paths break on other machines |
+| R31 | domain | Hook crashes blocking actions is worse than letting actions through |
+| R32 | domain | PostToolUse cannot block — only PreToolUse can |
+| R33 | structural | CLAUDE.md without build command forces Claude to guess |
+| R34 | structural | CLAUDE.md without test command forces Claude to skip verification |
+| R35 | structural | Architecture overview is what CLAUDE.md is for |
+| R36 | domain | Unresolved `@` imports — manifest-vs-disk diff bug class |
+| R37 | domain | Stale references mislead Claude |
+| R38 | structural | CLAUDE.md exists to instruct, not to describe |
+| R39 | structural | Contradictions between CLAUDE.md and rules break reliability |
+| R40 | literary | Codifies the standard prompt-engineering layer order |
+| R41 | structural | Same as R12 for prompts |
+| R42 | domain | Prompt injection is trivial without it |
+| R43 | literary | Codifies the parallel-when-independent orchestration pattern |
+| R44 | domain | Unverified AI output reaches users |
+| R45 | domain | Surprise bills destroy trust |
+| R46 | literary | Codifies the state-file-for-resumability pattern |
+| R47 | domain | Infinite-loop retry on failing QC |
+| R48 | structural | Claude Code manifest schema requires only `name` |
+| R49 | structural | CLAUDE.md and README serve different audiences |
+| R50 | domain | Version-drift between manifest, marketplace, and README |
+| R51 | domain | Multi-author NL plugins drift terminology across artifacts within weeks; without an enforceable rule, the same concept accretes 2–4 names (linter/scorer/analyzer/validator) and consumers can't predict which fires |
+
+---
+
+> **Scope**: This skill covers the quality rules for NL programming artifacts. For the penalty-based scoring rubric that enforces these rules, see `nlpm:scoring`. For patterns and anti-patterns with worked examples, see `nlpm:patterns`. For conventions and schemas, see `nlpm:conventions`. For the canonical noun/verb registry that R51 enforces against, see `nlpm:vocabulary`.

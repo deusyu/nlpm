@@ -190,6 +190,20 @@ Applies to `.md` files located in `~/.claude/projects/*/memory/` directories.
 
 ---
 
+### All Artifact Types: Vocabulary Drift (R51 — opt-in, disabled by default)
+
+Applied only when `R51: { enabled: true, vocabulary_skill: <path> }` appears in `.claude/nlpm.local.md`. Without the opt-in, R51 contributes zero penalty regardless of artifact content. The configured `vocabulary_skill` must contain a `registry.yaml` listing canonical and deprecated terms; without it, R51 emits an advisory and contributes zero penalty.
+
+| Rule | Check | Condition | Penalty |
+|------|-------|-----------|---------|
+| R51 | Deprecated synonym | Each occurrence of a term marked `deprecated:` in the project's `registry.yaml`, in the scope the artifact belongs to | -2 each |
+| R51 | Drift cap | Total R51 penalty | max -10 per file |
+| R51 | Missing registry | `enabled: true` but `vocabulary_skill:` not set or points to a directory with no `registry.yaml` | 0 (advisory only) |
+
+> **Why opt-in:** vocabulary discipline is high-leverage for projects with accumulated drift but premature for projects still discovering their domain. Each project decides when it has enough literary warrant (P6) to lock terms in. See `analysis/vocabulary-design-principles.md` for the six principles R51 operationalizes.
+
+---
+
 ### Cross-Component (--plugin flag)
 
 Applied when linting an entire plugin rather than individual files.
