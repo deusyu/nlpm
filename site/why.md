@@ -123,7 +123,7 @@ ANSI-NISO Z39.19 warrant theory, and BPMN / Event Storming
 (Brandolini):
 
 ```mermaid
-flowchart LR
+flowchart TD
   P2["P2 — nouns rigid<br/>verbs state-changing"] --> P3["P3 — verb only<br/>if it gates or produces"]
   P3 --> P1["P1 — one term per<br/>identity, within scope"]
   P1 --> P4["P4 — vocabulary<br/>closed under operations"]
@@ -162,89 +162,6 @@ exemplars that cite back into the rulebook. The loop is closed, and
 only one step in it (rule refinement) is allowed to mutate the rulebook
 — and only through a human-reviewed PR.
 
-## How to use it
-
-NLPM has five entry points; pick whichever fits the moment of your
-workflow you want guarded.
-
-### Inside Claude Code — slash commands
-
-Once installed via `claude plugin install nlpm@xiaolai --scope project`,
-you get the full surface:
-
-| Command | What it does |
-|---|---|
-| [`/nlpm:ls`](/reference/) | Discover every NL artifact in the current repo |
-| [`/nlpm:score`](/reference/scoring) | 100-point quality scoring against R01–R51 |
-| [`/nlpm:check`](/install#what-nlpm-check-catches) | Cross-component checks — manifest-vs-disk, broken refs, orphans |
-| `/nlpm:fix` | Auto-fix mechanical issues (rule numbers, frontmatter, hook event case) |
-| `/nlpm:test` | Run NL-TDD specs against agents and skills |
-| `/nlpm:trend` | Track score history over time |
-| `/nlpm:report` | Self-contained HTML report (per-file scores, trend, vocab map) |
-| [`/nlpm:vocab-init`](/reference/vocabulary) | Bootstrap a vocabulary registry for any project |
-| [`/nlpm:vocab-drift`](/reference/drift) | Registry-free drift advisory — no commitment required |
-| `/nlpm:security-scan` | Executable-surface scan (hooks, scripts, MCP, dependencies) |
-
-Slash commands dispatch agents; agents load skills; skills cite rules.
-The whole stack is markdown — nothing compiles, nothing locks you in.
-
-### On the command line — `bin/nlpm-check`
-
-For environments without Claude Code (CI, pre-commit, release scripts),
-a single-file Python script (stdlib only, no `pip install`) runs the
-deterministic subset:
-
-```bash
-nlpm-check .
-# nlpm-check: 17 artifacts · 0 high · 0 medium · 0 low (.)
-```
-
-Exit code 0 (clean) / 1 (high-confidence findings) / 2 (errors). Works
-on a 50-artifact plugin in under two seconds. See [the install
-guide](/install) for the curl one-liner.
-
-### At commit time — pre-commit hook
-
-A drop-in template at
-[`templates/pre-commit-nlpm.sh`](https://github.com/xiaolai/nlpm-for-claude/blob/main/templates/pre-commit-nlpm.sh)
-that calls `nlpm-check`. Bad commits don't land — the "loud failure"
-that the rest of the ecosystem doesn't provide.
-
-### On every PR — GitHub Actions
-
-A drop-in workflow at
-[`templates/workflows/nlpm-check.yml`](https://github.com/xiaolai/nlpm-for-claude/blob/main/templates/workflows/nlpm-check.yml)
-runs the check on every push and pull request. No secrets required; no
-write scope unless you opt into auto-fix.
-
-### On your README — the "Validated by NLPM" badge
-
-The GHA workflow writes a shields.io-compatible JSON to the repo root.
-Add this line to your README:
-
-```markdown
-![Validated by NLPM](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/YOUR-USER/YOUR-REPO/main/nlpm-badge.json)
-```
-
-The badge auto-updates each push to `main`:
-
-| State | Color | Message |
-|---|---|---|
-| Clean | green | `0 issues · v0.8.x` |
-| Advisory | yellow | `0 high · N advisory` |
-| Failing | red | `N high issues` |
-
-It is a public, machine-readable claim: "this plugin currently passes
-NLPM's cross-component checks at the SHA the badge points to."
-
-### As a consumer — the auditor dashboard
-
-If you are evaluating a plugin you didn't write, the
-[cross-repo dashboard](/dashboard) shows NLPM's audit of 200+ public
-Claude Code plugins — score, security gate, vocabulary drift, and the
-per-finding evidence trail. Each repo links to a full audit report
-with the exact line numbers of every issue.
-
 ## The corpus, as of today
 
 | Metric | Count |
@@ -260,76 +177,6 @@ The corpus is what makes the rules trustable. A rule with no examples
 in the wild is a hypothesis; a rule with a dozen exemplars is a
 codified observation. The auditor pipeline is the mechanism that
 converts the first into the second.
-
-## How it evolves
-
-NLPM is 8 weeks old. The first commit landed 2026-03-25; the current
-release is v0.8.22. In between: 1,287 commits, five minor-version
-gates (v0.2 → v0.4 → v0.6 → v0.7 → v0.8), and 22 patch releases since
-v0.8.0 alone. The cadence is high because the rules keep getting
-proven wrong by contact with real repositories — and the project's
-shape is built to absorb that.
-
-### The feedback loop
-
-```mermaid
-flowchart LR
-  Audit[auditor-audit] --> Findings[findings.jsonl]
-  Findings --> Contribute[contribute PR]
-  Contribute --> Maintainer[maintainer reaction]
-  Maintainer -->|merged| Verified[finding_verified]
-  Maintainer -->|rejected| Disputed[pr_comments_snapshot]
-  Verified --> Health[rule-health.py]
-  Disputed --> Health
-  Health -->|"noisy / disputed / dormant"| Refine[refine-rules PR]
-  Refine -->|human review| Rulebook[skills/nlpm/rules]
-  Rulebook -.next audit.-> Audit
-
-  classDef auto fill:#d5e0ff,stroke:#2b5fff,color:#1d2433
-  classDef gate fill:#fffbf0,stroke:#c47c00,color:#1d2433
-  class Audit,Findings,Contribute,Maintainer,Verified,Disputed,Health auto
-  class Refine,Rulebook gate
-```
-
-Everything before *refine rules* is automated observation. Only the
-rule-refinement PR is allowed to mutate the rulebook, and only with a
-human reviewer. That single human-gated step is what stops the loop
-from amplifying its own noise.
-
-### What the commit log shows
-
-The pattern is visible in the version history. A few representative
-commits:
-
-| Commit | What changed | Why |
-|---|---|---|
-| `v0.7.15` | Tightened `BUG-missing-frontmatter` scope, pre-filtered security FPs | Auditor was flagging benign cases as critical |
-| `v0.7.22` | Cleared 3 of 4 noisy rules — `CC-stale-count`, demoted `SEC-unpinned-semver` | Rule-health classified them as noisy after maintainer pushback |
-| `v0.7.24` | Rebased scoring on the agent-skills.io open standard | Anthropic's name-on-commands optionality contradicted an in-house assumption |
-| `v0.7.30` | Cited `code.claude.com/docs` as primary source for the name-on-commands rule | Repeat regression — pinned to the canonical doc, not derived knowledge |
-| `v0.7.31` | 4-layer system to keep NLPM in sync with Claude Code docs | Stop the spec drift class entirely |
-| `v0.7.34` | Scorer marks manifest-vs-disk diffs as `confidence: high` | Memory note: these are deterministic, never speculative |
-| `v0.8.0` | Standalone `bin/nlpm-check` binary + author-side templates | Audit research showed pre-commit gates were what authors needed |
-| `v0.8.17` | Exemplar pipeline — clean high-scoring audits become teaching artifacts | Positive warrant, not just negative findings |
-
-None of these were ideas I had at the start. Each one is a response
-to evidence the auditor produced.
-
-### The artifacts that drive the loop
-
-| Artifact | Purpose |
-|---|---|
-| [`auditor/findings.jsonl`](https://github.com/xiaolai/nlpm-for-claude/blob/main/auditor/findings.jsonl) | One record per finding, joined by deterministic fingerprint |
-| [`auditor/disagreements.jsonl`](https://github.com/xiaolai/nlpm-for-claude/blob/main/auditor/disagreements.jsonl) | Maintainer pushback, classifier output, self-flagged false positives |
-| [`auditor/logs/events.jsonl`](https://github.com/xiaolai/nlpm-for-claude/blob/main/auditor/logs/events.jsonl) | Lifecycle events — `finding_outcome`, `finding_verified`, `findings_aggregated` |
-| [`auditor/scripts/rule-health.py`](https://github.com/xiaolai/nlpm-for-claude/blob/main/auditor/scripts/rule-health.py) | Classifies every rule as `healthy / noisy / disputed / dormant` |
-| `auditor-refine-rules.yml` workflow | Weekly cron opens a PR with proposed rule edits; nothing merges without human review |
-
-The rules in `skills/nlpm/rules/SKILL.md` cite specific exemplars and
-case studies; the case studies link back to the merged PRs; the
-merged PRs link back to the audits that found the issue. The chain
-goes both ways. A rule with no evidence in the chain is a candidate
-for refinement or removal.
 
 ## The wager
 

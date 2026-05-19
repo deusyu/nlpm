@@ -10,7 +10,7 @@ Two pipelines, one rulebook. The **local pipeline** is what a plugin author runs
 ## Local pipeline (run in your repo)
 
 ```mermaid
-flowchart LR
+flowchart TD
   ls[/nlpm:ls/] --> score[/nlpm:score/]
   ls --> check[/nlpm:check/]
   score --> report[/nlpm:report/]
@@ -31,7 +31,7 @@ Every step writes a JSON snapshot under `.claude/nlpm-history.json` so `/nlpm:tr
 ## Auditor pipeline (NLPM's own self-evolution loop)
 
 ```mermaid
-flowchart LR
+flowchart TD
   Discover[discover] --> Audit[audit + security scan]
   Audit --> Drift[vocab-drift advisory]
   Audit --> Contribute[contribute PRs]

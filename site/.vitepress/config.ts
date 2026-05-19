@@ -98,9 +98,9 @@ export default withMermaid(defineConfig({
           {
             items: [
               { text: 'Install', link: '/install' },
-              { text: 'How to use it', link: '/why#how-to-use-it' },
+              { text: 'How to use it', link: '/how-to-use-it' },
               { text: 'How it works', link: '/how-it-works' },
-              { text: 'How it evolves', link: '/why#how-it-evolves' },
+              { text: 'How it evolves', link: '/how-it-evolves' },
               { text: 'Reference', link: '/reference/' },
             ],
           },
