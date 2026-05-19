@@ -26,3 +26,6 @@ site/case-studies/
 # so Vue components can import the data via Vite's standard JSON import.
 # Source of truth stays in auditor/reports/ (where the renderers write them).
 site/.vitepress/theme/data/
+# site/reports/*.md is build-time-generated from the JSON sidecars by
+# bin/nlpm-build-site-report-pages. Source of truth is auditor/reports/.
+site/reports/

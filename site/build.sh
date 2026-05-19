@@ -66,6 +66,16 @@ find "$SRC_REPORTS" -maxdepth 1 -name '*.json' -not -name 'dashboard.json' \
 echo "  Dashboard JSON: $([ -f "$DATA_DST/dashboard.json" ] && echo yes || echo no)"
 echo "  Per-repo JSONs: $(ls "$DATA_DST/reports" 2>/dev/null | wc -l | tr -d ' ')"
 
+echo "==> Generating per-repo VitePress pages from JSON sidecars"
+# One site/reports/<slug>.md per JSON, each importing its sidecar +
+# mounting <RepoReport>. Source-of-truth stays in auditor/reports/*.json;
+# the markdown files are build-time-generated and gitignored.
+mkdir -p "$SITE/reports"
+find "$SITE/reports" -maxdepth 1 -name '*.md' -delete 2>/dev/null || true
+python3 "$ROOT/bin/nlpm-build-site-report-pages" \
+  --data-dir "$DATA_DST/reports" \
+  --out-dir "$SITE/reports"
+
 echo "==> Vendoring Lucide icons into site/public/icons/"
 # MUST run after the public/ wipe above. Pre-color with the brand blue
 # so the icons read in both light and dark modes (SVGs loaded via

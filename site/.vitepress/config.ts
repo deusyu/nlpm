@@ -105,7 +105,7 @@ export default withMermaid(defineConfig({
             items: [
               { text: 'Dashboard', link: '/dashboard-vue' },
               { text: 'NLPM self-audit', link: '/reports/xiaolai-nlpm-for-claude' },
-              { text: 'External sample report', link: '/SuperClaude-Org-SuperClaude_Framework.html' },
+              { text: 'Featured audits', link: '/featured-audits' },
             ],
           },
         ],
