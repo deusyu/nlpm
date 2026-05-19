@@ -83,6 +83,41 @@ def registry_score(repo: str) -> int:
         return 0
 
 
+def audit_high_conf_bug_count(repo: str) -> int:
+    """Count high-confidence PR-worthy findings in the per-audit sidecar.
+
+    The contribute workflow only ships findings with `confidence == "high"`,
+    so an audit with zero high-confidence bugs has nothing to contribute.
+    Promoting such an audit to `contribute-approved` would fire a workflow
+    that does no useful work and leaves the issue stuck at that label
+    forever (no phase transitions it forward).
+
+    Returns -1 if the sidecar is missing (signal: cannot determine, fall
+    back to old behavior of promoting). Returns 0 or more otherwise.
+    """
+    slug = repo.replace("/", "-")
+    sidecar = Path("auditor/audits") / f"{slug}.findings.jsonl"
+    if not sidecar.exists():
+        return -1
+    n = 0
+    try:
+        for line in sidecar.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if rec.get("confidence") != "high":
+                continue
+            if rec.get("category") in ("bug", "security", "cross_component"):
+                n += 1
+    except OSError:
+        return -1
+    return n
+
+
 def registry_exemplar_published(repo: str) -> bool:
     """True if this repo already has an exemplar."""
     try:
@@ -202,21 +237,38 @@ def phase1_promote(dry_run: bool) -> int:
         security = registry_security(repo)
         if security == "BLOCKED":
             print(f"  SKIP #{num} ({repo}): security BLOCKED")
-        elif security in ("CLEAR", "REVIEW"):
-            print(f"  PROMOTE #{num} ({repo}): security={security} → contribute-approved")
-            if not dry_run:
-                gh(["issue", "edit", str(num), "--add-label", "contribute-approved"])
-                rc, _ = gh([
-                    "workflow", "run", "auditor-contribute.yml",
-                    "-f", f"repo={repo}",
-                    "-f", f"issue_number={num}",
-                ])
-                if rc != 0:
-                    print(f"    WARNING: failed to dispatch contribute for {repo}")
-                time.sleep(DISPATCH_SLEEP)
-            promoted += 1
-        else:
+            continue
+        if security not in ("CLEAR", "REVIEW"):
             print(f"  SKIP #{num} ({repo}): security={security} (unknown/not audited)")
+            continue
+
+        # v0.8.21 — promote only when there's something to contribute. The
+        # contribute workflow ships only `confidence == "high"` findings, so
+        # an audit with zero of those would fire a workflow that does no
+        # useful work and leaves the issue stuck at `contribute-approved`
+        # forever. The 2026-05-19 status check found leowux/pony (#165)
+        # stuck this way: score=91, no bugs, exemplar already published,
+        # still promoted to contribute. -1 (no sidecar) keeps the old
+        # promote-anyway behavior so older entries pre-sidecar don't get
+        # silently skipped.
+        bug_count = audit_high_conf_bug_count(repo)
+        if bug_count == 0:
+            print(f"  SKIP #{num} ({repo}): security={security} but 0 high-conf bugs — nothing to contribute")
+            continue
+
+        bug_note = "?" if bug_count < 0 else str(bug_count)
+        print(f"  PROMOTE #{num} ({repo}): security={security}, high-conf bugs={bug_note} → contribute-approved")
+        if not dry_run:
+            gh(["issue", "edit", str(num), "--add-label", "contribute-approved"])
+            rc, _ = gh([
+                "workflow", "run", "auditor-contribute.yml",
+                "-f", f"repo={repo}",
+                "-f", f"issue_number={num}",
+            ])
+            if rc != 0:
+                print(f"    WARNING: failed to dispatch contribute for {repo}")
+            time.sleep(DISPATCH_SLEEP)
+        promoted += 1
     print(f"Promoted: {promoted} issues to contribute-approved\n")
     return promoted
 

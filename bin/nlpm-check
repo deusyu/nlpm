@@ -34,7 +34,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 
 
-VERSION = "0.8.20"
+VERSION = "0.8.21"
 
 
 # ----- finding model -----

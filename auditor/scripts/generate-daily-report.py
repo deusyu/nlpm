@@ -103,33 +103,44 @@ def main() -> int:
         L.append(f"| dormant | {dormant_n} | catalog rules with zero hits |")
         L.append("")
 
-    # Top rules with their health state inline
+    # Top rules with their health state inline.
+    # `Drift` is the count of findings whose rule_id was misapplied per the
+    # v0.8.16 validate-rule-ids check (wrong artifact type or no semantic
+    # overlap with the rule's title). `Validated` is hits minus drift — the
+    # honest count of real applications. The 2026-05-13 sweep found R22
+    # had 127 hits but only 30 validated (97 drift); raw hits alone would
+    # have misled "noisy rule" triage forever. Drift columns surface this.
     top = fb.get('top_rules', [])
     metrics = fb.get('rule_metrics', {}) or {}
     if top:
         L.append("## Rule Frequency\n")
-        L.append("*Rules that fire most, with their current health state.*\n")
-        L.append("| Rule | Hits | Merged | Self-FP | Rejected | Downstream | State |")
-        L.append("|------|------|--------|---------|----------|------------|-------|")
+        L.append("*Rules that fire most. `Drift` = scorer misapplied the rule_id; `Validated` = hits − drift, the count to actually trust.*\n")
+        L.append("| Rule | Hits | Drift | Validated | Merged | Self-FP | Rejected | Downstream | State |")
+        L.append("|------|------|-------|-----------|--------|---------|----------|------------|-------|")
         for rule, hits in top:
             m = metrics.get(rule, {})
+            drift = m.get('drift_hits', 0)
+            validated = m.get('validated_hits', hits)
             L.append(
-                f"| {rule} | {hits} | {m.get('merged', 0)} | {m.get('self_fp', 0)} | "
+                f"| {rule} | {hits} | {drift} | {validated} | "
+                f"{m.get('merged', 0)} | {m.get('self_fp', 0)} | "
                 f"{m.get('maintainer_rejected', 0)} | {m.get('downstream_suppressions', 0)} | "
                 f"{m.get('state', '?')} |"
             )
         L.append("")
 
-    # Noisy rules — candidates for refinement
+    # Noisy rules — candidates for refinement. Sort by validated_hits so
+    # drift-inflated raw counts don't push truly-noisy rules out of view.
     noisy = [(rid, m) for rid, m in metrics.items() if m.get('state') == 'noisy']
     if noisy:
         L.append("## Noisy Rules — candidates for refinement\n")
-        L.append("*High false-positive rate, or PRs not landing. Review what the rule missed.*\n")
-        L.append("| Rule | Hits | Self-FP | Merged/Contributed |")
-        L.append("|------|------|---------|---------------------|")
-        for rid, m in sorted(noisy, key=lambda kv: -kv[1]['hits']):
+        L.append("*High false-positive rate, or PRs not landing. Validated = hits − drift.*\n")
+        L.append("| Rule | Validated | Hits | Drift | Self-FP | Merged/Contributed |")
+        L.append("|------|-----------|------|-------|---------|---------------------|")
+        for rid, m in sorted(noisy, key=lambda kv: -kv[1].get('validated_hits', kv[1].get('hits', 0))):
             L.append(
-                f"| {rid} | {m['hits']} | {m['self_fp']} | {m['merged']}/{m['contributed']} |"
+                f"| {rid} | {m.get('validated_hits', m['hits'])} | {m['hits']} | "
+                f"{m.get('drift_hits', 0)} | {m['self_fp']} | {m['merged']}/{m['contributed']} |"
             )
         L.append("")
 
