@@ -13,6 +13,9 @@ hero:
       text: Install
       link: /install
     - theme: alt
+      text: Why NLPM is built
+      link: /why
+    - theme: alt
       text: Reference
       link: /reference/
     - theme: alt
@@ -85,6 +88,7 @@ It treats natural-language artifacts as code. A 100-point rubric, 51 rules ancho
 
 ## Quick links
 
+- **[/why](/why)** — what NLPM exists to fix, and the wager
 - **[/install](/install)** — get started in 30 seconds
 - **[/reference/](/reference/)** — full framework guide (R01–R51, P1–P6, vocabulary concepts)
 - **[/dashboard.html](/dashboard.html)** — cross-repo audit dashboard (200+ plugins)
