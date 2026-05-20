@@ -3,6 +3,9 @@
   "owner": {
     "name": "xiaolai"
   },
+  "metadata": {
+    "description": "nlpm \u2014 Natural-Language Programming Manager by xiaolai"
+  },
   "plugins": [
     {
       "name": "nlpm",
@@ -11,7 +14,7 @@
         "repo": "xiaolai/nlpm-for-claude"
       },
       "description": "Natural-Language Programming Manager \u2014 scan, lint, and write NL artifacts with Claude-native quality scoring",
-      "version": "0.8.22",
+      "version": "0.8.23",
       "author": {
         "name": "xiaolai"
       },

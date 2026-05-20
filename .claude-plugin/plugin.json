@@ -1,11 +1,14 @@
 {
   "name": "nlpm",
-  "version": "0.8.22",
-  "description": "Natural-Language Programming Manager \u2014 scan, lint, and write NL artifacts with Claude-native quality scoring",
+  "version": "0.8.23",
+  "description": "Natural-Language Programming Manager — scan, lint, and write NL artifacts with Claude-native quality scoring",
   "author": {
     "name": "xiaolai"
   },
   "license": "ISC",
+  "homepage": "https://nlpm.com",
+  "repository": "https://github.com/xiaolai/nlpm-for-claude",
+  "category": "developer-tools",
   "keywords": [
     "nlp",
     "lint",
