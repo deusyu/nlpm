@@ -174,7 +174,10 @@ export default withMermaid(defineConfig({
     },
 
     footer: {
-      message: 'MIT-licensed Claude Code plugin.',
+      // VitePress's default theme renders `message` as raw HTML, so we
+      // can wedge the Privacy link in here without a custom component.
+      // Order: license blurb · Privacy link.
+      message: 'MIT-licensed Claude Code plugin. · <a href="/privacy">Privacy</a>',
       copyright: '© xiaolai · Generated from canonical SKILL.md sources',
     },
 

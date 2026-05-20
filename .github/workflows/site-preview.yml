@@ -44,6 +44,7 @@ on:
       - 'auditor/case-studies/**'
       - 'auditor/exemplars/**'
       - 'templates/report/**'
+      - 'PRIVACY.md'
       - '.github/workflows/site-preview.yml'
 
 permissions:

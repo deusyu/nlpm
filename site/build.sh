@@ -119,6 +119,22 @@ else
   echo "::warning::missing file-terminal.svg for favicon"
 fi
 
+echo "==> Generating site/privacy.md from PRIVACY.md"
+# Single source of truth is the repo-root PRIVACY.md. The site copy is
+# build-time-generated (gitignored) with VitePress frontmatter prepended.
+# Updating PRIVACY.md is the only edit point — never edit site/privacy.md
+# directly (it gets overwritten on every build).
+PRIVACY_SRC="$ROOT/PRIVACY.md"
+if [ -f "$PRIVACY_SRC" ]; then
+  {
+    printf -- '---\ntitle: Privacy Policy\naside: false\nfooter: false\n---\n\n'
+    cat "$PRIVACY_SRC"
+  } > "$SITE/privacy.md"
+  echo "  wrote $SITE/privacy.md"
+else
+  echo "::warning::PRIVACY.md not found at $PRIVACY_SRC"
+fi
+
 echo "==> Building VitePress"
 cd "$SITE"
 pnpm build

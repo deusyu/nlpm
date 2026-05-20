@@ -34,6 +34,7 @@ on:
       - 'auditor/case-studies/**'
       - 'auditor/exemplars/**'
       - 'templates/report/**'
+      - 'PRIVACY.md'
       - '.github/workflows/site-validate.yml'
       - '.github/workflows/deploy-site.yml'
   workflow_dispatch:

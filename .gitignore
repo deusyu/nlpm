@@ -29,6 +29,10 @@ site/.vitepress/theme/data/
 # site/reports/*.md is build-time-generated from the JSON sidecars by
 # bin/nlpm-build-site-report-pages. Source of truth is auditor/reports/.
 site/reports/
+# site/privacy.md is build-time-generated from PRIVACY.md at repo root
+# by site/build.sh (a frontmatter is prepended). Source of truth stays
+# at /PRIVACY.md so the policy is editable in one place.
+site/privacy.md
 
 # >>> cc-suite >>>
 # AI assistant local state

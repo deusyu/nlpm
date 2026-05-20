@@ -40,6 +40,9 @@ on:
       - 'auditor/exemplars/**'
       # Report-page templates the local + online renderers share
       - 'templates/report/**'
+      # Privacy policy at repo root — site/build.sh copies it into the
+      # site as site/privacy.md (with VitePress frontmatter prepended).
+      - 'PRIVACY.md'
       - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
   schedule:
