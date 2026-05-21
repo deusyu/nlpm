@@ -7330,6 +7330,19 @@
           "fingerprints_backfilled": true
         },
         {
+          "number": 490,
+          "state": "MERGED",
+          "mergedAt": "2026-04-17T17:15:29Z",
+          "closedAt": "2026-04-17T17:15:29Z",
+          "title": "fix: add missing YAML frontmatter to codebase-cleanup commands",
+          "updatedAt": "2026-04-17T17:15:51Z",
+          "createdAt": "2026-04-17T12:54:10Z",
+          "outcome": "merged",
+          "fingerprints": [],
+          "rule_ids": [],
+          "stale_90d_emitted": false
+        },
+        {
           "number": 491,
           "state": "MERGED",
           "mergedAt": "2026-04-17T17:15:32Z",
