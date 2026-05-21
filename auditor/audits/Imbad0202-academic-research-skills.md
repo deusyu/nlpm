@@ -1,199 +1,207 @@
-# NLPM Audit: Imbad0202/academic-research-skills
-**Date**: 2026-04-12  |  **Artifacts**: 40  |  **Strategy**: full read
-**NL Score**: 20/100
-**Security**: CLEAR
-**Bugs**: 3  |  **Quality Issues**: 73  |  **Security Findings**: 0
+# NL Audit: Imbad0202/academic-research-skills
+
+<!-- nlpm-audit-metadata: {"repo":"Imbad0202/academic-research-skills","audited_at":"2026-05-21","auditor_version":"0.8","scope":"55 NL artifacts","security_level":"CLEAR"} -->
 
 ## NL Score Summary
 
-| File | Type | Score | Top Issue |
-|------|------|-------|-----------|
-| academic-pipeline/agents/integrity_verification_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-pipeline/agents/pipeline_orchestrator_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| deep-research/agents/synthesis_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| deep-research/agents/ethics_review_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| deep-research/agents/report_compiler_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| deep-research/agents/socratic_mentor_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-paper/agents/formatter_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-paper/agents/peer_reviewer_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-paper/agents/citation_compliance_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-paper/agents/draft_writer_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-paper/agents/socratic_mentor_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| academic-paper-reviewer/agents/editorial_synthesizer_agent.md | agent | 10 | Missing frontmatter (name, description), no examples, no model, vague cap (≥10 vague terms) |
-| deep-research/agents/editor_in_chief_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| deep-research/agents/devils_advocate_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper/agents/visualization_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper/agents/structure_architect_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper/agents/literature_strategist_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper/agents/argument_builder_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper/agents/intake_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper-reviewer/agents/devils_advocate_reviewer_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper-reviewer/agents/methodology_reviewer_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper-reviewer/agents/domain_reviewer_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| academic-paper-reviewer/agents/perspective_reviewer_agent.md | agent | 14 | Missing frontmatter (name, description), no examples, no model, 8 vague terms |
-| deep-research/agents/source_verification_agent.md | agent | 16 | Missing frontmatter (name, description), no examples, no model, 7 vague terms |
-| deep-research/agents/bibliography_agent.md | agent | 16 | Missing frontmatter (name, description), no examples, no model, 7 vague terms |
-| academic-paper-reviewer/agents/eic_agent.md | agent | 16 | Missing frontmatter (name, description), no examples, no model, 7 vague terms |
-| academic-paper-reviewer/agents/field_analyst_agent.md | agent | 16 | Missing frontmatter (name, description), no examples, no model, 7 vague terms |
-| academic-pipeline/agents/state_tracker_agent.md | agent | 18 | Missing frontmatter (name, description), no examples, no model, 6 vague terms |
-| deep-research/agents/research_architect_agent.md | agent | 18 | Missing frontmatter (name, description), no examples, no model, 6 vague terms |
-| deep-research/agents/monitoring_agent.md | agent | 18 | Missing frontmatter (name, description), no examples, no model, 6 vague terms |
-| deep-research/agents/meta_analysis_agent.md | agent | 18 | Missing frontmatter (name, description), no examples, no model, 6 vague terms |
-| academic-paper/agents/revision_coach_agent.md | agent | 18 | Missing frontmatter (name, description), no examples, no model, 6 vague terms |
-| deep-research/agents/risk_of_bias_agent.md | agent | 20 | Missing frontmatter (name, description), no examples, no model, 5 vague terms |
-| deep-research/agents/research_question_agent.md | agent | 20 | Missing frontmatter (name, description), no examples, no model, 5 vague terms |
-| academic-paper/agents/abstract_bilingual_agent.md | agent | 22 | Missing frontmatter (name, description), no examples, no model, 4 vague terms |
-| .claude/CLAUDE.md | doc | 45 | No frontmatter, no examples, no model, vague terms in routing section |
-| academic-paper-reviewer/SKILL.md | skill | 65 | Version mismatch (frontmatter 1.8 vs body 1.7), no model, no allowed-tools, vague cap |
-| academic-paper/SKILL.md | skill | 70 | No model declared, no allowed-tools, vague cap (≥10 vague terms) |
-| academic-pipeline/SKILL.md | skill | 70 | No model declared, no allowed-tools, vague cap (≥10 vague terms) |
-| deep-research/SKILL.md | skill | 70 | No model declared, no allowed-tools, vague cap (≥10 vague terms) |
+| Metric | Value |
+|--------|-------|
+| **NL Score** | **77/100** |
+| Files scored | 55 |
+| Agents | 39 |
+| Commands | 10 |
+| Skills / Config | 6 |
+| Security | CLEAR |
+| Threshold | 70 (default) |
+| Status | PASS |
+
+### Score Breakdown by Suite
+
+| Suite | Files | Avg | Key Penalties |
+|-------|-------|-----|---------------|
+| deep-research agents (14) | 14 | 77 | model missing (11/14), zero examples (14/14) |
+| academic-paper-reviewer agents (7) | 7 | 79 | model missing (7/7), zero examples (5/7) |
+| academic-pipeline agents (5) | 5 | 75 | model missing (5/5), orchestrator vague-cap −20 |
+| academic-paper agents (12) | 12 | 88 | model missing (12/12), but 10/12 have 2+ examples |
+| shared agents (1) | 1 | 86 | model missing |
+| commands (10) | 10 | 60 | no `name:`, no `allowed-tools:`, no empty-input handling |
+| SKILL.md files (4) | 4 | 88 | version mismatches (bugs) |
+| config / hooks (2) | 2 | 85 | — |
+
+### Universal Issues
+
+1. **Missing `model:` frontmatter (36 / 39 agents, −5 each)** — Only `synthesis_agent`, `research_architect_agent`, and `report_compiler_agent` declare `model: inherit`. Every other agent omits the field, leaving model routing to caller defaults.
+
+2. **Missing example blocks (23 / 39 agents, −15 each)** — The deep-research and academic-paper-reviewer suites have no dedicated example sections. The academic-paper suite is notably better: 10 of 12 agents include 2+ inline examples (scored at 0-penalty).
+
+3. **Commands missing `name:` frontmatter (10 / 10, −25 each)** — All 10 commands declare only `description:` and `model:`. The `name:` field is absent from every command file.
+
+4. **Commands missing `allowed-tools:` (10 / 10, −5 each)** — No command specifies which tools it allows.
+
+5. **Commands missing empty-input handling (10 / 10, −10 each)** — No command addresses invocation without arguments.
+
+---
 
 ## Security Scan
 
-| Severity | Count |
-|----------|-------|
-| Critical | 0 |
-| High | 0 |
-| Medium | 0 |
-| Low | 0 |
+**Risk Level: CLEAR**
 
-### Execution Surface Inventory
+Pre-scan: 0 critical pattern matches, 0 high pattern matches (1 hook file, 130+ scripts, 0 MCP configs).
 
-| Surface | Files |
-|---------|-------|
-| Hooks JSON | none found |
-| Scripts (.sh, .py, .js) | none found |
-| MCP configs (.mcp.json) | none found |
-| Package manifests (package.json, requirements.txt) | none found |
+Manual review of executable artifacts confirms pre-scan.
 
-No executable artifacts present. The repository consists entirely of Markdown documentation files. Security scan is CLEAR with no surface to assess.
+### MEDIUM Findings
+
+| # | File | Line | Issue |
+|---|------|------|-------|
+| M-1 | `scripts/run_codex_audit.sh` | 802 | `codex exec -m gpt-5.5` — makes external network call to OpenAI API. Expected workflow behavior for a Codex-based audit harness; input paths are validated (no traversal, no injection). |
+| M-2 | `scripts/bootstrap_timeline_yaml.py` | 38 | `requests.get("https://api.crossref.org/works/{doi}")` — network call to Crossref. Gracefully degrades when `requests` is absent; no credential handling. |
+
+### LOW Findings
+
+| # | File | Line | Issue |
+|---|------|------|-------|
+| L-1 | `hooks/hooks.json` | 8 | `SessionStart` hook executes `announce-ars-loaded.sh`. Script is stdout-only and has no write side-effects, but represents a shell execution surface on every session start. |
+
+### Patterns with No Findings
+
+- `curl | sh` or curl-pipe-to-interpreter: **none**
+- `eval` with variable input: **none**
+- `os.system()`: **none**
+- `subprocess(..., shell=True)`: **none** — all `subprocess.run` calls use list form
+- Reverse shell patterns: **none**
+- Credential exfiltration: **none**
+- Path traversal: **none** — `run_codex_audit.sh` validates all path inputs via `_validate_repo_relative()` (no leading `/`, no `..`, no whitespace)
+
+---
 
 ## Bugs (PR-worthy)
 
-| # | File | Issue | Impact |
-|---|------|-------|--------|
-| 1 | All 35 agent `.md` files across deep-research/agents/, academic-paper/agents/, academic-paper-reviewer/agents/, academic-pipeline/agents/ | Missing `name:` field in YAML frontmatter — no frontmatter block present at all | Agents cannot be registered by name in the plugin registry; the SKILL.md orchestrators dispatch them by filename but Claude Code agent resolution depends on the `name` field in frontmatter for proper tracking and deduplication |
-| 2 | All 35 agent `.md` files (same set as Bug #1) | Missing `description:` field in YAML frontmatter | Without a description, agents cannot be discovered, indexed, or surfaced to users through the registry; the orchestrator has no machine-readable summary to present |
-| 3 | academic-paper-reviewer/SKILL.md | Version mismatch: YAML frontmatter declares `version: "1.8"` but the Version Info table in the body reads "1.7" | Consumers relying on version negotiation (e.g., a pipeline checking compatibility) will see inconsistent values depending on which field they parse; changelog is unreliable |
+### BUG-001 · Stale agent count in `deep-research/SKILL.md`
 
-## Security Fixes (PR-worthy, Medium/Low only)
+**File**: `deep-research/SKILL.md` · **Lines**: 3 (frontmatter description), ~100 (body heading)  
+**Severity**: medium · **Category**: BUG-stale-count
 
-*No security findings. Nothing to fix.*
+`deep-research/SKILL.md` declares `"13-agent pipeline"` in both the frontmatter `description:` field and the `## Agent Team (13 Agents)` body heading. The directory `deep-research/agents/` contains 14 files. `timeline_extraction_agent.md` was introduced in v3.9.4 (documented in `.claude/CLAUDE.md` changelog) but the SKILL.md count and agent table were not updated.
 
-## Quality Issues (informational)
+**Suggested fix**: Change `"13-agent"` → `"14-agent"` in frontmatter description. Add `timeline_extraction_agent` row to the Agent Team table in the body.
 
-| # | File | Issue | Penalty |
-|---|------|-------|---------|
-| 1 | deep-research/agents/research_question_agent.md | No model declared | -5 |
-| 2 | deep-research/agents/socratic_mentor_agent.md | No model declared | -5 |
-| 3 | deep-research/agents/research_architect_agent.md | No model declared | -5 |
-| 4 | deep-research/agents/bibliography_agent.md | No model declared | -5 |
-| 5 | deep-research/agents/source_verification_agent.md | No model declared | -5 |
-| 6 | deep-research/agents/risk_of_bias_agent.md | No model declared | -5 |
-| 7 | deep-research/agents/meta_analysis_agent.md | No model declared | -5 |
-| 8 | deep-research/agents/synthesis_agent.md | No model declared | -5 |
-| 9 | deep-research/agents/devils_advocate_agent.md | No model declared | -5 |
-| 10 | deep-research/agents/ethics_review_agent.md | No model declared | -5 |
-| 11 | deep-research/agents/editor_in_chief_agent.md | No model declared | -5 |
-| 12 | deep-research/agents/report_compiler_agent.md | No model declared | -5 |
-| 13 | deep-research/agents/monitoring_agent.md | No model declared | -5 |
-| 14 | academic-paper/agents/intake_agent.md | No model declared | -5 |
-| 15 | academic-paper/agents/structure_architect_agent.md | No model declared | -5 |
-| 16 | academic-paper/agents/literature_strategist_agent.md | No model declared | -5 |
-| 17 | academic-paper/agents/argument_builder_agent.md | No model declared | -5 |
-| 18 | academic-paper/agents/visualization_agent.md | No model declared | -5 |
-| 19 | academic-paper/agents/draft_writer_agent.md | No model declared | -5 |
-| 20 | academic-paper/agents/abstract_bilingual_agent.md | No model declared | -5 |
-| 21 | academic-paper/agents/citation_compliance_agent.md | No model declared | -5 |
-| 22 | academic-paper/agents/peer_reviewer_agent.md | No model declared | -5 |
-| 23 | academic-paper/agents/revision_coach_agent.md | No model declared | -5 |
-| 24 | academic-paper/agents/socratic_mentor_agent.md | No model declared | -5 |
-| 25 | academic-paper/agents/formatter_agent.md | No model declared | -5 |
-| 26 | academic-paper-reviewer/agents/field_analyst_agent.md | No model declared | -5 |
-| 27 | academic-paper-reviewer/agents/eic_agent.md | No model declared | -5 |
-| 28 | academic-paper-reviewer/agents/domain_reviewer_agent.md | No model declared | -5 |
-| 29 | academic-paper-reviewer/agents/methodology_reviewer_agent.md | No model declared | -5 |
-| 30 | academic-paper-reviewer/agents/perspective_reviewer_agent.md | No model declared | -5 |
-| 31 | academic-paper-reviewer/agents/devils_advocate_reviewer_agent.md | No model declared | -5 |
-| 32 | academic-paper-reviewer/agents/editorial_synthesizer_agent.md | No model declared | -5 |
-| 33 | academic-pipeline/agents/pipeline_orchestrator_agent.md | No model declared | -5 |
-| 34 | academic-pipeline/agents/state_tracker_agent.md | No model declared | -5 |
-| 35 | academic-pipeline/agents/integrity_verification_agent.md | No model declared | -5 |
-| 36 | deep-research/agents/research_question_agent.md | Zero examples | -15 |
-| 37 | deep-research/agents/socratic_mentor_agent.md | Zero examples | -15 |
-| 38 | deep-research/agents/research_architect_agent.md | Zero examples | -15 |
-| 39 | deep-research/agents/bibliography_agent.md | Zero examples | -15 |
-| 40 | deep-research/agents/source_verification_agent.md | Zero examples | -15 |
-| 41 | deep-research/agents/risk_of_bias_agent.md | Zero examples | -15 |
-| 42 | deep-research/agents/meta_analysis_agent.md | Zero examples | -15 |
-| 43 | deep-research/agents/synthesis_agent.md | Zero examples | -15 |
-| 44 | deep-research/agents/devils_advocate_agent.md | Zero examples | -15 |
-| 45 | deep-research/agents/ethics_review_agent.md | Zero examples | -15 |
-| 46 | deep-research/agents/editor_in_chief_agent.md | Zero examples | -15 |
-| 47 | deep-research/agents/report_compiler_agent.md | Zero examples | -15 |
-| 48 | deep-research/agents/monitoring_agent.md | Zero examples | -15 |
-| 49 | academic-paper/agents/intake_agent.md | Zero examples | -15 |
-| 50 | academic-paper/agents/structure_architect_agent.md | Zero examples | -15 |
-| 51 | academic-paper/agents/literature_strategist_agent.md | Zero examples | -15 |
-| 52 | academic-paper/agents/argument_builder_agent.md | Zero examples | -15 |
-| 53 | academic-paper/agents/visualization_agent.md | Zero examples | -15 |
-| 54 | academic-paper/agents/draft_writer_agent.md | Zero examples | -15 |
-| 55 | academic-paper/agents/abstract_bilingual_agent.md | Zero examples | -15 |
-| 56 | academic-paper/agents/citation_compliance_agent.md | Zero examples | -15 |
-| 57 | academic-paper/agents/peer_reviewer_agent.md | Zero examples | -15 |
-| 58 | academic-paper/agents/revision_coach_agent.md | Zero examples | -15 |
-| 59 | academic-paper/agents/socratic_mentor_agent.md | Zero examples | -15 |
-| 60 | academic-paper/agents/formatter_agent.md | Zero examples | -15 |
-| 61 | academic-paper-reviewer/agents/field_analyst_agent.md | Zero examples | -15 |
-| 62 | academic-paper-reviewer/agents/eic_agent.md | Zero examples | -15 |
-| 63 | academic-paper-reviewer/agents/domain_reviewer_agent.md | Zero examples | -15 |
-| 64 | academic-paper-reviewer/agents/methodology_reviewer_agent.md | Zero examples | -15 |
-| 65 | academic-paper-reviewer/agents/perspective_reviewer_agent.md | Zero examples | -15 |
-| 66 | academic-paper-reviewer/agents/devils_advocate_reviewer_agent.md | Zero examples | -15 |
-| 67 | academic-paper-reviewer/agents/editorial_synthesizer_agent.md | Zero examples | -15 |
-| 68 | academic-pipeline/agents/pipeline_orchestrator_agent.md | Zero examples | -15 |
-| 69 | academic-pipeline/agents/state_tracker_agent.md | Zero examples | -15 |
-| 70 | academic-pipeline/agents/integrity_verification_agent.md | Zero examples | -15 |
-| 71 | deep-research/SKILL.md | No allowed-tools declared | -5 |
-| 72 | academic-paper/SKILL.md | No allowed-tools declared | -5 |
-| 73 | academic-paper-reviewer/SKILL.md | No allowed-tools declared | -5 |
+---
 
-*Vague-word penalties (-2 per occurrence, capped at -20) applied to all 35 agent files and all 4 SKILL.md files. The 12 agents scoring 10/100 hit the vague cap (≥10 vague terms each); terms include "appropriate," "comprehensive," "thorough," "relevant," "effectively," "various," "sufficient," "adequate," "timely," "robust." Agents scoring 14–22 show progressively fewer vague terms (8 down to 4 per file).*
+### BUG-002 · Stale version in `scripts/announce-ars-loaded.sh`
+
+**File**: `scripts/announce-ars-loaded.sh` · **Lines**: 57, 60  
+**Severity**: medium · **Category**: BUG-stale-version
+
+The script hardcodes `"ARS v3.7.0"` in both the compact/resume banner (line 57) and the full startup banner (line 60). The current plugin version is `3.9.4.2` per `.claude-plugin/plugin.json`. Users see a misleading version string on every Claude Code session start. Four version cycles of features (v3.7.3 three-layer citation, v3.8 claim-faithfulness gate, v3.9.x phase-boundary fencing) are not reflected in the banner.
+
+**Suggested fix**: Replace `"ARS v3.7.0"` with the current version. Consider reading version dynamically from `plugin.json` via `jq -r .version .claude-plugin/plugin.json` to prevent future drift.
+
+---
+
+### BUG-003 · Stale version in `academic-pipeline/SKILL.md` title
+
+**File**: `academic-pipeline/SKILL.md` · **Line**: 19  
+**Severity**: low · **Category**: BUG-stale-version
+
+The SKILL.md body title reads `# Academic Pipeline v3.8.2` but the frontmatter `metadata.version` field is `"3.9.4.2"` and `.claude-plugin/plugin.json` confirms 3.9.4.2. The title was not updated when the version was incremented.
+
+**Suggested fix**: Update line 19: `# Academic Pipeline v3.8.2` → `# Academic Pipeline v3.9.4.2`.
+
+---
+
+### BUG-004 · Missing `model:` on 36 agents
+
+**Affected files**: All agents except `synthesis_agent.md`, `research_architect_agent.md`, `report_compiler_agent.md`  
+**Line**: 1–4 (frontmatter block)  
+**Severity**: low · **Category**: BUG-missing-frontmatter
+
+36 of 39 agent files omit the `model:` frontmatter field. The Claude Code Agent SDK uses this field for model-tier routing. Without it, model selection falls back to the caller's default, which may produce inconsistent behavior when agents are invoked across different orchestration contexts. The three agents with `model: inherit` correctly signal that they should inherit the caller's model.
+
+Affected suites: all 14 deep-research agents minus the 2 with `model: inherit` (11 agents), all 7 academic-paper-reviewer agents, all 5 academic-pipeline agents, all 12 academic-paper agents, `compliance_agent`.
+
+**Suggested fix**: Add `model: sonnet` to agents performing research/drafting tasks; `model: opus` for high-stakes review and orchestration agents (`pipeline_orchestrator_agent`, `peer_reviewer_agent`, `devils_advocate_agent`, `integrity_verification_agent`).
+
+---
+
+## Security Fixes
+
+No security fixes required. All findings are MEDIUM or LOW and represent expected behavior for an academic research automation pipeline (external API calls to Crossref and OpenAI Codex are legitimate workflow dependencies, not vulnerabilities).
+
+---
+
+## Quality Issues
+
+### Q-001 · 23 agents with zero example blocks (−15 each)
+
+All 14 deep-research agents, 5 of 7 academic-paper-reviewer agents, and `argument_builder_agent` contain no dedicated example blocks. These agents document their output formats thoroughly but show no concrete input/output pairs, making it difficult for integrators to verify correct invocation.
+
+**Agents with zero examples** (illustrative, not exhaustive): `research_question_agent.md`, `bibliography_agent.md`, `source_verification_agent.md`, `meta_analysis_agent.md`, `risk_of_bias_agent.md`, `devils_advocate_agent.md`, `monitoring_agent.md`, `editor_in_chief_agent.md`, `ethics_review_agent.md`, `timeline_extraction_agent.md`, `socratic_mentor_agent.md` (deep-research), `domain_reviewer_agent.md`, `eic_agent.md`, `editorial_synthesizer_agent.md`, `methodology_reviewer_agent.md`, `perspective_reviewer_agent.md`, `pipeline_orchestrator_agent.md`, `integrity_verification_agent.md`, `collaboration_depth_agent.md`, `argument_builder_agent.md`.
+
+**Suggested fix**: Add a `## Examples` section with one realistic input/output pair to each agent. Even a minimal example (e.g., one `Source Verification Report` excerpt) raises the score from 76 to 86.
+
+---
+
+### Q-002 · Grammar issues in 3 agent descriptions
+
+| File | Issue |
+|------|-------|
+| `academic-paper-reviewer/agents/field_analyst_agent.md` | Description reads `"papers field"` and `"teams identities"` — missing possessive apostrophes |
+| `academic-paper-reviewer/agents/devils_advocate_reviewer_agent.md` | Description reads `"devils advocate"` — missing apostrophe |
+| `academic-paper/agents/argument_builder_agent.md` | Description reads `"papers core argument"` — missing apostrophe |
+
+---
+
+### Q-003 · All 10 commands missing `name:` frontmatter (−25 each)
+
+`ars-full.md`, `ars-plan.md`, `ars-revision.md`, `ars-revision-coach.md`, `ars-abstract.md`, `ars-lit-review.md`, `ars-format-convert.md`, `ars-citation-check.md`, `ars-disclosure.md`, `ars-outline.md` all omit the `name:` field. Commands have `description:` and `model:` but no `name:`.
+
+**Suggested fix**: Add `name: ars-full` (etc.) to each command's frontmatter, matching the filename without extension.
+
+---
+
+### Q-004 · All 10 commands missing `allowed-tools:` and empty-input handling (−15 combined)
+
+These are minimal dispatch commands; the absence of `allowed-tools:` means callers cannot know which tool permissions are needed. Empty-input handling is absent: if a user invokes `/ars-full` with no text, nothing guides the agent to prompt for the paper topic.
+
+**Suggested fix**: Add `allowed-tools: []` (these commands dispatch to skill prompts and need no direct tool access themselves) and append a one-line fallback: "If no paper topic or context is provided, ask the user what they want to research or write."
+
+---
+
+### Q-005 · `pipeline_orchestrator_agent.md` vague-quantifier cap (−20)
+
+`academic-pipeline/agents/pipeline_orchestrator_agent.md` (800+ lines) contains ≥10 vague quantifiers including "appropriate mode", "relevant agents", "sufficient context", "reasonable approach", "suitable method" throughout the Adaptive Checkpoint System and routing logic sections. This hits the −20 vague-cap.
+
+**Suggested fix**: Replace each vague term with a specific observable criterion. E.g., "appropriate mode" → "the mode matching the user's stage_hint field per MODE_REGISTRY.md"; "sufficient context" → "at least one of: RQ Brief, Annotated Bibliography, or existing draft section provided".
+
+---
 
 ## Cross-Component
 
-**Systemic frontmatter gap (all 35 agents):** Every agent `.md` file in the repository — across all four sub-packages (`deep-research`, `academic-paper`, `academic-paper-reviewer`, `academic-pipeline`) — is missing YAML frontmatter entirely. The SKILL.md orchestrators reference them by filename path, which works at runtime, but the Claude Code registry cannot surface or track agents without `name:` and `description:` fields. This is a single structural decision (likely "agents are implementation details, not registry entries") that has uniformly propagated across the entire codebase. A single PR template adding frontmatter to all 35 agent files would fix Bugs #1 and #2 simultaneously.
+### CC-001 · `deep-research/SKILL.md` agent count out of sync with `deep-research/agents/`
 
-**SKILL.md version mismatch (academic-paper-reviewer):** The `academic-paper-reviewer/SKILL.md` frontmatter declares `version: "1.8"` while the embedded Version Info table reads "1.7". The CLAUDE.md routing document (suite overview) also lists it as "v1.8". This means the body changelog is one version behind. The fix is a one-line edit to the body table.
+SKILL.md declares 13 agents; directory contains 14. `timeline_extraction_agent` added in v3.9.4 is missing from the Agent Team table. — See BUG-001.
 
-**Ironic omission (integrity_verification_agent):** The most comprehensive agent in the suite — a 479-line verification agent whose entire purpose is detecting fabricated, hallucinated, and inconsistent references — has the same score (10/100) as the shortest agents. It enforces rigorous documentation standards on research output but is itself entirely undocumented at the registration level.
+### CC-002 · `announce-ars-loaded.sh` version out of sync with `plugin.json`
 
-**Model routing ambiguity:** None of the 35 agents declare a model, and none declare `model: inherit`. The SKILL.md files specify which agents to invoke but do not propagate model selection downward. When a user invokes `deep-research` with `claude-opus-4-6` and the SKILL.md spawns subagents, those subagents will default to whatever model the runtime selects — potentially `claude-haiku-4-5` for cost reasons — rather than the heavyweight model appropriate for tasks like meta-analysis or integrity verification. Adding `model: claude-sonnet-4-6` (or `model: inherit` for agents that should inherit the orchestrator's model) would make this behavior explicit and predictable.
+Hook broadcasts "ARS v3.7.0" at session start; plugin declares 3.9.4.2. Users and external tools (e.g., auditors inspecting the session banner) see stale version. — See BUG-002.
 
-**Agent count in CLAUDE.md vs SKILL.md:** CLAUDE.md describes `deep-research` as a "13-agent research team" and `academic-paper` as a "12-agent paper writing" pipeline. Counting the agent files: `deep-research/agents/` has 13 files, `academic-paper/agents/` has 12 files — counts are accurate. No orphaned agents detected.
+### CC-003 · `academic-pipeline/SKILL.md` title version out of sync with frontmatter and `plugin.json`
+
+SKILL.md title "v3.8.2" conflicts with both `metadata.version: "3.9.4.2"` in frontmatter and the plugin.json version. — See BUG-003.
+
+---
 
 ## Recommendation
 
-**CLEAR — submit PRs for all bugs and quality issues.**
+**CONTRIBUTE** — 3 clean mechanical bugs with narrow diffs; systemic quality issues are well-understood and non-blocking.
 
-No security gate issues. The repository contains no executable surfaces. The quality problems are entirely structural and addressable through documentation additions.
+The ARS plugin demonstrates strong engineering depth: 38 agents with detailed output formats, multi-phase pipeline enforcement (v3.9.2), three-layer citation provenance (v3.7.3), claim-faithfulness audit gate (v3.8), and cross-index triangulation (v3.9.0). The academic-paper suite scores 88/100 on average because 10 of 12 agents include 2+ concrete examples.
 
-Recommended PR sequence:
+The score drag comes primarily from the deep-research and academic-paper-reviewer suites (average ~78) where example blocks are uniformly absent, and from 10 minimal command files that all score 60 due to missing `name:`, `allowed-tools:`, and empty-input handling.
 
-1. **Bug fix PR — frontmatter (all 35 agents):** Add YAML frontmatter blocks to all 35 agent files. Template per agent:
-   ```yaml
-   ---
-   name: <package>:<agent-slug>
-   description: <one-line description of the agent's role and trigger condition>
-   ---
-   ```
-   This single PR resolves Bugs #1 and #2 and is the highest-leverage change in the repository.
-
-2. **Bug fix PR — version mismatch:** In `academic-paper-reviewer/SKILL.md`, change the Version Info table body entry from "1.7" to "1.8" to match the frontmatter.
-
-3. **Quality PR — model declarations (all 35 agents):** Add `model: claude-sonnet-4-6` to compute-intensive agents (meta-analysis, integrity-verification, synthesis, pipeline-orchestrator) and `model: inherit` to utility agents (state-tracker, monitoring, formatting). This prevents silent model downgrade when subagents are spawned.
-
-4. **Quality PR — examples (all 35 agents):** Add at least two concrete examples per agent showing input → output. Given the domain (academic research), good examples would show a real research question going through each agent's processing — they exist naturally in the SKILL.md example files and can be adapted.
-
-5. **Quality PR — allowed-tools (all 4 SKILL.md files):** Declare `allowed-tools` in each SKILL.md to constrain what tools the skill may invoke, reducing blast radius and making tool usage auditable.
+**Suggested first PRs (priority order)**:
+1. **BUG-001**: Fix agent count + add `timeline_extraction_agent` row to `deep-research/SKILL.md` Agent Team table
+2. **BUG-002**: Update version string in `announce-ars-loaded.sh` from v3.7.0 → 3.9.4.2
+3. **BUG-003**: Update title line in `academic-pipeline/SKILL.md` from v3.8.2 → v3.9.4.2
+4. **Q-003**: Add `name:` frontmatter to all 10 command files (mechanical, 10-line diff)

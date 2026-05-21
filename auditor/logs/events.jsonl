@@ -2273,6 +2273,10 @@
 {"timestamp":"2026-05-20T22:30:26Z","workflow":"daily-report","event":"report_generated","run_id":"26193724906","run_number":46,"data":{"total_repos":212}}
 {"timestamp":"2026-05-20T22:55:54Z","workflow":"dashboard","event":"dashboard_rendered","run_id":"26194730654","run_number":2,"data":{}}
 {"timestamp":"2026-05-21T01:05:05Z","workflow":"track","event":"status_check","run_id":"26198994103","run_number":194,"data":{"contributed":39,"tracked":30,"case_study_ready":33,"rule_adopted":2}}
+{"timestamp":"2026-05-21T01:34:37Z","workflow":"audit","event":"scorer_drift_check","run_id":"26199469053","run_number":486,"data":{"repo":"Imbad0202/academic-research-skills","sidecar":"auditor/audits/Imbad0202-academic-research-skills.findings.jsonl","drifts":0,"exit_code":0}}
+{"timestamp":"2026-05-21T01:34:40Z","workflow":"audit","event":"findings_aggregated","run_id":"26199469053","run_number":486,"data":{"repo":"Imbad0202/academic-research-skills","findings":104,"invalid_lines":0,"self_false_positives":3}}
+{"timestamp":"2026-05-21T01:34:40Z","workflow":"audit","event":"repo_report_rendered","run_id":"26199469053","run_number":486,"data":{"repo":"Imbad0202/academic-research-skills","html":"auditor/reports/Imbad0202-academic-research-skills.html"}}
+{"timestamp":"2026-05-21T01:34:40Z","workflow":"audit","event":"audit_complete","run_id":"26199469053","run_number":486,"data":{"repo":"Imbad0202/academic-research-skills","score":77,"artifacts":56,"strategy":"batched"}}
 {"timestamp":"2026-05-21T01:26:35Z","workflow":"audit","event":"scorer_drift_check","run_id":"26199471598","run_number":487,"data":{"repo":"HKUDS/CLI-Anything","sidecar":"auditor/audits/HKUDS-CLI-Anything.findings.jsonl","drifts":0,"exit_code":0}}
 {"timestamp":"2026-05-21T01:26:37Z","workflow":"audit","event":"findings_aggregated","run_id":"26199471598","run_number":487,"data":{"repo":"HKUDS/CLI-Anything","findings":45,"invalid_lines":0,"self_false_positives":0}}
 {"timestamp":"2026-05-21T01:26:37Z","workflow":"audit","event":"repo_report_rendered","run_id":"26199471598","run_number":487,"data":{"repo":"HKUDS/CLI-Anything","html":"auditor/reports/HKUDS-CLI-Anything.html"}}

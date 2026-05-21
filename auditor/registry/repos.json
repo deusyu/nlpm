@@ -670,10 +670,11 @@
         }
       ],
       "rule_adopted": false,
-      "score": 20,
-      "security": "CLEAR",
-      "status": "tracked",
-      "strategy": "batched"
+      "score": 77,
+      "security": "UNKNOWN",
+      "status": "audited",
+      "strategy": "batched",
+      "commit_sha_at_audit": "3729ea70c2cfa910a5272eed13bb4d2c440290a9"
     },
     "IvanMurzak/Unity-MCP": {
       "case_study_candidate": true,
