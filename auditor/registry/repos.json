@@ -7330,26 +7330,6 @@
           "fingerprints_backfilled": true
         },
         {
-          "number": 490,
-          "state": "MERGED",
-          "mergedAt": "2026-04-17T17:15:29Z",
-          "closedAt": "2026-04-17T17:15:29Z",
-          "title": "fix: add missing YAML frontmatter to codebase-cleanup commands",
-          "updatedAt": "2026-04-17T17:15:51Z",
-          "createdAt": "2026-04-17T12:54:10Z",
-          "outcome": "merged",
-          "fingerprints": [
-            "sha256:63a613945859902c21139cdc23746b29acde9c76f1c6c4ac1ad6795824066f81",
-            "sha256:660990d84c42131d62e6f31931db8acef040a9e34e59d29564c7aade4d6f2e6a",
-            "sha256:bfdf5d4ce2938e305411fc5315bb9c4879bd52d7d6c319bc604f6b4cd0afae2d"
-          ],
-          "rule_ids": [
-            "BUG-missing-frontmatter"
-          ],
-          "stale_90d_emitted": false,
-          "fingerprints_backfilled": true
-        },
-        {
           "number": 491,
           "state": "MERGED",
           "mergedAt": "2026-04-17T17:15:32Z",
