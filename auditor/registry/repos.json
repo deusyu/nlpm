@@ -1644,7 +1644,9 @@
       "score": 93,
       "strategy": "single",
       "security": "REVIEW",
-      "commit_sha_at_audit": "f37ec718af793a7160b36437d6bd9d8291836a52"
+      "commit_sha_at_audit": "f37ec718af793a7160b36437d6bd9d8291836a52",
+      "exemplar_published": true,
+      "exemplar_path": "auditor/exemplars/Yuan1z0825-nature-skills.md"
     },
     "ZeframLou/call-me": {
       "artifacts": 3,
