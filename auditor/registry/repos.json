@@ -7832,6 +7832,13 @@
       "stars": 5411,
       "status": "complete",
       "strategy": "single"
+    },
+    "elementalsouls/Claude-BugHunter": {
+      "status": "audited",
+      "score": 79,
+      "strategy": "progressive",
+      "security": "CLEAR",
+      "commit_sha_at_audit": "83e573f28a7ca5ee9636854f040947d25721a95a"
     }
   }
 }
