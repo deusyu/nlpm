@@ -7558,13 +7558,14 @@
       "status": "audited",
       "strategy": "single"
     },
-    "xiaolai/nlpm-for-claude": {
+    "xiaolai/nlpm": {
       "artifacts": 36,
       "audit_issue": null,
       "commit_sha_at_audit": "f9535b41631884de027886a3dc8aa4f027a46abc",
-      "description": "Natural-Language Programming Manager — scan, lint, and write NL artifacts with Claude-native quality scoring",
+      "description": "Natural-Language Programming Manager — score, check, fix, and test NL artifacts across Claude Code, Codex CLI, and Antigravity. Tier-aware scoring with per-tool overlays.",
       "discovered": "2026-05-19T09:07:57Z",
       "discovery_strategy": "self",
+      "previous_slug": "xiaolai/nlpm-for-claude",
       "prs": [],
       "score": 100,
       "security": "CLEAR",

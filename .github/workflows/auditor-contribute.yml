@@ -604,7 +604,7 @@ jobs:
                   maintainer should be able to decide yes/no in 30 seconds:
 
                   ```
-                  > **Automated**: drive-by fix from [NLPM](https://github.com/xiaolai/nlpm-for-claude), an NL artifact linter. Reviewed and reproduced before submission.
+                  > **Automated**: drive-by fix from [NLPM](https://github.com/xiaolai/nlpm), an NL artifact linter. Reviewed and reproduced before submission.
 
                   **Bug**: <one line — what's broken>
 

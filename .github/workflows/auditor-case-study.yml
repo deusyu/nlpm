@@ -647,7 +647,7 @@ jobs:
 
           To override and generate a full case study anyway:
           \`\`\`
-          gh workflow run "Write Case Study" -R xiaolai/nlpm-for-claude \\
+          gh workflow run "Write Case Study" -R xiaolai/nlpm \\
             -f repo=$TARGET_REPO -f issue_number=$ISSUE_NUM -f force_rewrite=true
           \`\`\`
           (Force-rewrite bypasses the gate.)

@@ -110,7 +110,7 @@ jobs:
             grep -ohE 'https://github\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+' \
               case-studies/*.md 2>/dev/null \
               | sed 's|https://github.com/||;s|\.git$||' \
-              | grep -vE '^(xiaolai/nlpm-for-claude|xiaolai/claude-plugin-marketplace)$' \
+              | grep -vE '^(xiaolai/nlpm|xiaolai/nlpm-for-claude|xiaolai/claude-plugin-marketplace)$' \
               || true
           } | sort -u > /tmp/case_study_repos.txt
           echo "case-study-cited repos: $(wc -l < /tmp/case_study_repos.txt | tr -d ' ')"

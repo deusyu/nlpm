@@ -37,7 +37,7 @@ from urllib.error import URLError, HTTPError
 CITATIONS_PATH = Path("auditor/docs-citations.json")
 HASHES_PATH = Path("auditor/docs-hashes.json")
 CHANGED_FILE = Path("/tmp/changed-urls.txt")
-USER_AGENT = "nlpm-docs-diff/1.0 (+https://github.com/xiaolai/nlpm-for-claude)"
+USER_AGENT = "nlpm-docs-diff/1.0 (+https://github.com/xiaolai/nlpm)"
 FETCH_TIMEOUT = 30
 
 
