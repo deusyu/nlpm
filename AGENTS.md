@@ -31,8 +31,8 @@ Each command does one thing -- no flags (except `--changed` on score).
 ## Agents
 
 - agents/scanner.md -- haiku, mechanical file discovery
-- agents/scorer.md -- sonnet, 100-point quality scoring (skills: scoring, conventions)
-- agents/checker.md -- sonnet, cross-component consistency (skills: conventions)
+- agents/scorer.md -- sonnet, 100-point quality scoring (skills: scoring, conventions, conventions-claude, conventions-codex, conventions-antigravity, vocabulary)
+- agents/checker.md -- sonnet, cross-component consistency (skills: conventions, conventions-claude, conventions-codex, conventions-antigravity, vocabulary)
 - agents/vague-scanner.md -- haiku, mechanical vague-word counting (no skills)
 - agents/tester.md -- sonnet, evaluates artifacts against test specs (skills: testing, conventions, scoring)
 - agents/security-scanner.md -- sonnet, security risk detection in executable artifacts (skills: security)
@@ -41,7 +41,10 @@ Each command does one thing -- no flags (except `--changed` on score).
 ## Skills
 
 ### Auto-loaded by agents (declared in agent frontmatter `skills:`)
-- skills/nlpm/conventions/ -- Claude Code schemas, hook events, naming patterns -- loaded by scanner, scorer, checker, tester
+- skills/nlpm/conventions/ -- Universal NL artifact conventions: SKILL.md open spec, AGENTS.md as canonical universal memory, vague-quantifier list, prompt engineering, naming, override system. Loaded by scanner, scorer, checker, tester.
+- skills/nlpm/conventions-claude/ -- Claude Code overlay: .claude/* paths, plugin.json, hook events, hooks.json, CLAUDE.md, LSP, monitors, settings, tool catalog. Loaded by scorer, checker for Tier 2-Claude artifacts.
+- skills/nlpm/conventions-codex/ -- Codex CLI overlay: .codex/config.toml, .codex-plugin/plugin.json, .agents/skills/ layout, AGENTS.md hierarchy, agents/openai.yaml sidecar, Codex hook events, marketplace. Loaded by scorer, checker for Tier 2-Codex artifacts.
+- skills/nlpm/conventions-antigravity/ -- Antigravity + legacy Gemini CLI overlay: .gemini/* paths, .agent/ workspace skills, gemini-extension.json, GEMINI.md, TOML slash commands, Gemini-lineage hook events. Advisory-only for Antigravity-specific artifacts until spec stabilizes. Loaded by scorer, checker for Tier 2-Antigravity artifacts.
 - skills/nlpm/scoring/ -- penalty tables with rule number cross-references -- loaded by scorer, tester
 - skills/nlpm/testing/ -- NL-TDD spec format, test patterns -- loaded by tester
 - skills/nlpm/security/ -- security pattern database for executable artifact scanning -- loaded by security-scanner
