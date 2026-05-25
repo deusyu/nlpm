@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "last_discovery": "2026-05-18T07:18:21Z",
+    "last_discovery": "2026-05-25T07:29:19Z",
     "total_audited": 12,
     "total_contributed": 6,
-    "total_discovered": 203
+    "total_discovered": 204
   },
   "repos": {
     "0xfurai/claude-code-subagents": {
@@ -7843,6 +7843,16 @@
       "strategy": "progressive",
       "security": "CLEAR",
       "commit_sha_at_audit": "83e573f28a7ca5ee9636854f040947d25721a95a"
+    },
+    "viticci/shortcuts-playground-plugin": {
+      "discovered": "2026-05-25T07:29:19Z",
+      "stars": 615,
+      "artifacts": 9,
+      "description": "Shortcuts Playground: A Claude Code and Codex plugin for building, validating, signing, and remixing macOS/iOS Shortcuts with natural language.",
+      "status": "discovered",
+      "score": null,
+      "audit_issue": 275,
+      "prs": []
     }
   }
 }
