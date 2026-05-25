@@ -21,6 +21,9 @@ tools: Read, Glob, Grep
 skills:
   - nlpm:scoring
   - nlpm:conventions
+  - nlpm:conventions-claude
+  - nlpm:conventions-codex
+  - nlpm:conventions-antigravity
   - nlpm:vocabulary
 ---
 
@@ -111,7 +114,10 @@ categories. Before reporting any finding, run this 5-step check:
    - `.claude/rules/**/*.md`, `.claude/settings.json`, `.lsp.json`,
      `monitors/monitors.json`
    Apply both spec-level checks AND Claude Code conventions. Loads
-   `nlpm:conventions` and (after PR-B lands) `nlpm:conventions-claude`.
+   `nlpm:conventions` (universal floor) and `nlpm:conventions-claude`
+   (PR-B landed the Claude overlay, including new v2.1.x fields:
+   `context: fork`, `agent:`, `paths:` glob scoping, skill-scoped
+   `hooks:`, the merged commands/skills surface, LSP, monitors).
 
    **Tier 2-Codex — Codex CLI project (added 2026-05-25, PR-A).**
    Markers (presence of ANY): `.codex/config.toml`, `.codex/hooks.json`,
@@ -125,13 +131,11 @@ categories. Before reporting any finding, run this 5-step check:
    - `.agents/plugins/marketplace.json`
    - `AGENTS.md` (hierarchical, root-down)
    - `agents/openai.yaml` sidecars next to SKILL.md files
-   **PR-A staging:** Tier 2-Codex DETECTION works; the matching
-   `nlpm:conventions-codex` overlay does not yet exist. Until PR-B,
-   Codex-shaped repos score at the universal floor (open spec only)
-   for skill content, and Codex-specific artifacts (config.toml,
-   hooks.json, plugin.json, marketplace.json) are silently skipped
-   rather than scored against a missing rubric. This is correct
-   "detected but not yet rubricized" behavior — same shape as Tier 1.5.
+   Loads `nlpm:conventions` and `nlpm:conventions-codex` (PR-B landed
+   the Codex overlay). The overlay covers .codex/config.toml TOML
+   schema, .codex-plugin/plugin.json manifest, .agents/plugins/marketplace.json
+   schema, agents/openai.yaml sidecar conventions, Codex hook event
+   set, and AGENTS.md hierarchy.
 
    **Tier 2-Antigravity — Antigravity / Gemini-lineage project (added
    2026-05-25, PR-A).** Markers (presence of ANY): `.gemini/`, `.agent/`
@@ -145,13 +149,13 @@ categories. Before reporting any finding, run this 5-step check:
    - `.gemini/settings.json` (hooks + MCP servers embedded)
    - `gemini-extension.json`
    - `GEMINI.md` (hierarchical with `@file.md` imports)
-   **PR-A staging:** Same as Tier 2-Codex — detection works, overlay
-   `nlpm:conventions-antigravity` does not yet exist; universal floor
-   only until PR-B. Additional caveat: Antigravity 2.0 launched
-   2026-05-19; the directory layout is still settling (singular
-   `.agent/` vs plural `.agents/` cross-tool alias). Defer
-   Antigravity-specific scoring until the spec stabilizes (PR-B
-   trigger conditions documented in the design doc).
+   Loads `nlpm:conventions` and `nlpm:conventions-antigravity` (PR-B
+   landed the Antigravity overlay). **The overlay is advisory-only** for
+   Antigravity-specific artifacts — the spec is unsettled (Antigravity 2.0
+   launched 2026-05-19; singular `.agent/` vs plural `.agents/` is
+   unresolved). Score the universal floor with confidence; treat
+   Antigravity-specific hook/plugin findings as advisory and confidence:low
+   until the directory-layout spec stabilizes.
 
    **Multi-tool repos.** When a repo has markers for more than one
    tool (e.g., nlpm itself ships as both a Claude plugin AND a Codex

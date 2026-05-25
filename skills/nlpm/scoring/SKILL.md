@@ -1,7 +1,7 @@
 ---
 name: scoring
 description: "Use when scoring NL artifact quality, applying penalties, or calibrating lint judgment — contains the 100-point rubric with penalty tables per artifact type and 4 worked calibration examples."
-version: 0.2.1
+version: 0.3.0
 ---
 
 # NLPM Quality Scoring Rubric
@@ -114,21 +114,49 @@ Penalties stack. The floor is 0; the ceiling is 100. No bonuses — the default 
 
 ---
 
-### Hooks
+### Hooks — universal checks (apply to all tools)
 
 | Rule | Check | Condition | Penalty |
 |------|-------|-----------|---------|
-| -- | Valid JSON | hooks.json fails JSON parse | -25 |
-| R27 | Event names valid | Uses unrecognized event name | -15 |
-| R27 | Case correct | Event name has wrong case (e.g. `pretooluse`) | -10 |
+| -- | Valid syntax | Hook config file fails to parse (JSON or TOML per tool) | -25 |
 | R29 | Scripts exist | Referenced script file does not exist | -20 |
-| -- | Command safety | Hook command contains dangerous patterns (rm -rf, git push --force, DROP TABLE) | -15 |
+| -- | Command safety | Hook command contains dangerous patterns (`rm -rf`, `git push --force`, `DROP TABLE`) | -15 |
 | -- | Matcher regex valid | Matcher pattern doesn't compile as valid regex | -10 |
 | -- | Timeout reasonable | Hook specifies timeout > 30s (likely hangs) | -5 |
 
+### Hooks (Claude Code — Tier 2-Claude only)
+
+Authoritative event list: `nlpm:conventions-claude` §7. Per the multi-tool design (`analysis/multi-tool-design-2026-05.md` decision #4), Claude / Codex / Antigravity hook event vocabularies are NOT 1:1 mappable — three separate tables, no translation.
+
+| Rule | Check | Condition | Penalty |
+|------|-------|-----------|---------|
+| R27 | Event names valid (Claude) | Uses unrecognized event name — confirmed Claude events: `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PermissionRequest`, `Stop`, `StopFailure`, `FileChanged` | -15 |
+| R27 | Case correct (Claude) | Event name has wrong case (e.g. `pretooluse`) | -10 |
+| -- | Hook type valid (Claude) | Uses unrecognized `type` value — confirmed Claude types: `command`, `http`, `mcp_tool`, `prompt`, `agent` | -10 |
+| -- | MCP matcher format (Claude) | Matcher targets MCP tool but doesn't use `mcp__<server>__<tool>` pattern | -5 |
+
+### Hooks (Codex CLI — Tier 2-Codex only)
+
+Authoritative event list: `nlpm:conventions-codex` §6.
+
+| Rule | Check | Condition | Penalty |
+|------|-------|-----------|---------|
+| R27 | Event names valid (Codex) | Uses unrecognized event name — confirmed Codex events: `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PermissionRequest`, `PreCompact`, `PostCompact`, `SubagentStart`, `SubagentStop`, `Stop` | -15 |
+| R27 | Case correct (Codex) | Event name has wrong case | -10 |
+| -- | Hooks config key (Codex) | `config.toml` uses deprecated `[features].codex_hooks` instead of `[features].hooks` (renamed ~CLI 0.129+) | -5 (advisory) |
+
+### Hooks (Antigravity / Gemini lineage — Tier 2-Antigravity only) — ADVISORY
+
+Authoritative event list: `nlpm:conventions-antigravity` §5. **All Antigravity-specific hook scoring is advisory-only** (confidence:low) until the Antigravity 2.0 spec stabilizes — see `analysis/multi-tool-design-2026-05.md` decision #3.
+
+| Rule | Check | Condition | Penalty |
+|------|-------|-----------|---------|
+| R27 | Event names valid (Gemini lineage) | Uses unrecognized event name — confirmed events: `SessionStart`, `BeforeAgent`, `BeforeModel`, `BeforeToolSelection`, `BeforeTool`, `AfterTool`, `AfterModel`, `AfterAgent`, `SessionEnd`, `Notification`, `PreCompress` | -10 (advisory) |
+| R27 | Case correct (Gemini lineage) | Event name has wrong case | -5 (advisory) |
+
 ---
 
-### plugin.json
+### plugin.json (Claude Code — `.claude-plugin/plugin.json`)
 
 | Check | Condition | Penalty |
 |-------|-----------|---------|
@@ -138,12 +166,110 @@ Penalties stack. The floor is 0; the ceiling is 100. No bonuses — the default 
 
 ---
 
-### .mcp.json
+### .codex-plugin/plugin.json (Codex CLI — Tier 2-Codex only)
+
+Schema reference: `nlpm:conventions-codex` §3.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid JSON | File fails JSON parse | -25 |
+| `name` present | Missing | -25 |
+| `name` kebab-case | Mixed case or underscores | -10 |
+| `version` is semver | Present but not valid semver | -10 |
+| `description` present | Missing | -5 |
+| Component paths relative | `skills`/`mcpServers`/`apps`/`hooks` paths absolute or missing `./` prefix | -5 each |
+
+---
+
+### .agents/plugins/marketplace.json (Codex marketplace — Tier 2-Codex)
+
+Schema reference: `nlpm:conventions-codex` §4. Schema is largely compatible with Claude's `.claude-plugin/marketplace.json`.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid JSON | File fails JSON parse | -25 |
+| `name` present | Missing | -25 |
+| `plugins` array present | Missing or empty | -10 |
+| Per-plugin `source` valid | `source.source` not in `github`/`git`/`local`, or required `repo`/`path` missing | -10 each |
+| Per-plugin `category` present | Missing (informational, helps marketplace navigation) | -3 each |
+
+---
+
+### agents/openai.yaml (Codex skill sidecar — Tier 2-Codex)
+
+Schema reference: `nlpm:conventions-codex` §2.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid YAML | File fails YAML parse | -25 |
+| Sidecar is colocated | `agents/openai.yaml` not in same directory as a `SKILL.md` | -10 |
+| `interface.display_name` present | Missing | -5 (informational) |
+
+---
+
+### gemini-extension.json (Gemini/Antigravity — Tier 2-Antigravity) — ADVISORY
+
+Schema reference: `nlpm:conventions-antigravity` §3. **All Antigravity-specific manifest scoring is advisory-only** until the post-2026-06-18 Antigravity spec stabilizes.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid JSON | File fails JSON parse | -25 |
+| `name` present | Missing | -25 |
+| `version` present | Missing | -10 |
+| `contextFileName` includes `AGENTS.md` | Single-tool projects use only `GEMINI.md`; multi-tool should include `AGENTS.md` | -3 (advisory; multi-tool nudge) |
+
+---
+
+### .gemini/commands/*.toml (Gemini slash commands — legacy/transitional, Tier 2-Antigravity)
+
+Schema reference: `nlpm:conventions-antigravity` §4.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid TOML | File fails TOML parse | -25 |
+| `prompt` field present | Missing required field | -25 |
+| `description` field present | Missing (auto-generated from filename, but explicit is better) | -3 |
+
+---
+
+### .mcp.json (Claude Code — `.mcp.json` at repo root)
 
 | Check | Condition | Penalty |
 |-------|-----------|---------|
 | Valid JSON | File fails JSON parse | -25 |
 | Server `command` present | MCP server entry missing `command` field | -15 |
+
+---
+
+### .codex/config.toml (Codex configuration — Tier 2-Codex)
+
+Schema reference: `nlpm:conventions-codex` §5.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid TOML | File fails TOML parse | -25 |
+| Deprecated `[features].codex_hooks` | Should be `[features].hooks` (renamed ~CLI 0.129) | -5 (advisory) |
+| Per-MCP `command` present | `[mcp_servers.<id>]` table missing `command` field | -15 each |
+
+---
+
+### .lsp.json (Claude Code LSP — Tier 2-Claude)
+
+Schema details: `nlpm:conventions-claude` §12. Stable in 2026.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid JSON | File fails JSON parse | -25 |
+
+---
+
+### monitors/monitors.json (Claude Code monitors — Tier 2-Claude)
+
+Schema details: `nlpm:conventions-claude` §13. Stable in 2026.
+
+| Check | Condition | Penalty |
+|-------|-----------|---------|
+| Valid JSON | File fails JSON parse | -25 |
 
 ---
 
@@ -403,9 +529,14 @@ This skill covers the NLPM scoring formula, penalty tables, score bands, and cal
 - Patterns and anti-patterns catalog → see `nlpm:patterns`
 - How to run the score command → see `commands/score.md`
 
-### Multi-tool scoring (in progress, 2026-05-25)
+### Multi-tool scoring (PR-B landed 2026-05-25)
 
-nlpm is moving from Claude-Code-only to multi-tool coverage (Claude Code + Codex CLI + Antigravity). The Tier classification in `agents/scorer.md` already separates open-spec, Tier 1.5 open-spec corpora, and Tier 2 per-tool overlays (2-Claude / 2-Codex / 2-Antigravity). PR-B will split the Hooks penalty table into per-tool tables (the three tools' event vocabularies are not 1:1-mappable, by design — see the design doc) and add new rows for `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `gemini-extension.json`, `agents/openai.yaml` sidecars, LSP, Monitors, and new Claude SKILL.md fields (`context: fork`, `agent:`, `paths:` glob scoping, skill-scoped `hooks:`, etc.). Until PR-B lands, Tier 2-Codex and Tier 2-Antigravity artifacts are detected but scored at the universal floor only.
+nlpm now scores artifacts across three tool ecosystems — Claude Code, Codex CLI, and Antigravity (which absorbs Gemini CLI on 2026-06-18). The tier classification in `agents/scorer.md` separates open-spec (Tier 1), Tier 1.5 open-spec corpora, and per-tool Tier 2 overlays (2-Claude / 2-Codex / 2-Antigravity).
+
+- **Hooks** are scored per tool (Claude / Codex / Antigravity tables above). The three tools' event vocabularies are not 1:1 mappable; no universal translation layer. See `analysis/multi-tool-design-2026-05.md` decision #4.
+- **Codex-specific artifacts** scored: `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.codex/config.toml`, `agents/openai.yaml` sidecars.
+- **Antigravity-specific artifacts** scored (advisory-only until spec stabilizes): `gemini-extension.json`, `.gemini/commands/*.toml`, Antigravity hook events.
+- **Claude-specific additions** in 2026: `.lsp.json`, `monitors/monitors.json` (validate JSON-parse only until detailed schemas land). New SKILL.md fields documented in `nlpm:conventions-claude`.
 
 ### Known False Positive Patterns
 

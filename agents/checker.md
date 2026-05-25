@@ -17,6 +17,9 @@ color: cyan
 tools: Read, Glob, Grep
 skills:
   - nlpm:conventions
+  - nlpm:conventions-claude
+  - nlpm:conventions-codex
+  - nlpm:conventions-antigravity
   - nlpm:vocabulary
 ---
 
