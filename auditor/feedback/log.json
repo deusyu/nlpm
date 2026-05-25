@@ -9,7 +9,7 @@
       ]
     },
     "R01": {
-      "total_hits": 256,
+      "total_hits": 257,
       "repos": [
         "slavingia/skills",
         "deanpeters/Product-Manager-Skills",
@@ -100,7 +100,7 @@
       "state": "healthy"
     },
     "R07": {
-      "total_hits": 107,
+      "total_hits": 109,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -217,7 +217,7 @@
       "state": "healthy"
     },
     "R10": {
-      "total_hits": 78,
+      "total_hits": 82,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -360,7 +360,7 @@
       "state": "healthy"
     },
     "R05": {
-      "total_hits": 135,
+      "total_hits": 137,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -386,7 +386,7 @@
       "state": "healthy"
     },
     "CC-stale-count": {
-      "total_hits": 44,
+      "total_hits": 45,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -503,10 +503,10 @@
       "state": "healthy"
     },
     "SEC-path-traversal": {
-      "total_hits": 29,
+      "total_hits": 30,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
-      "self_false_positive": 3,
+      "self_false_positive": 4,
       "maintainer_rejected": 0,
       "downstream_suppressions": 0,
       "verified_fixed": 2,
@@ -568,10 +568,10 @@
       "state": "healthy"
     },
     "CC-terminology-drift": {
-      "total_hits": 50,
+      "total_hits": 51,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
-      "self_false_positive": 0,
+      "self_false_positive": 1,
       "maintainer_rejected": 0,
       "downstream_suppressions": 0,
       "verified_fixed": 1,
@@ -1309,7 +1309,7 @@
       "state": "healthy"
     },
     "R04": {
-      "total_hits": 51,
+      "total_hits": 53,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -2349,7 +2349,7 @@
       "state": "healthy"
     },
     "SEC-env-var-access": {
-      "total_hits": 5,
+      "total_hits": 7,
       "led_to_merged_pr": 0,
       "led_to_rejected_pr": 0,
       "self_false_positive": 0,
@@ -3907,6 +3907,19 @@
       "verify_rate": null,
       "introduced_since_audit": 0,
       "state": "healthy"
+    },
+    "SEC-subprocess-call": {
+      "total_hits": 4,
+      "led_to_merged_pr": 0,
+      "led_to_rejected_pr": 0,
+      "self_false_positive": 0,
+      "maintainer_rejected": 0,
+      "downstream_suppressions": 0,
+      "verified_fixed": 0,
+      "verified_persists": 0,
+      "verify_rate": null,
+      "introduced_since_audit": 0,
+      "state": "healthy"
     }
   },
   "metadata": {
@@ -3918,6 +3931,6 @@
     "total_prs_merged": 98,
     "total_prs_rejected": 49,
     "total_prs_applied_separately": 20,
-    "updated_at": "2026-05-24T22:19:09.564401Z"
+    "updated_at": "2026-05-25T22:22:21.007538Z"
   }
 }
