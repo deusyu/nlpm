@@ -37,9 +37,9 @@ jobs:
       - name: Fetch NLPM binaries
         run: |
           curl -fsSL -o /usr/local/bin/nlpm-check \
-            https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/bin/nlpm-check
+            https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-check
           curl -fsSL -o /usr/local/bin/nlpm-badge \
-            https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/bin/nlpm-badge
+            https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-badge
           chmod +x /usr/local/bin/nlpm-check /usr/local/bin/nlpm-badge
           nlpm-check --version
 

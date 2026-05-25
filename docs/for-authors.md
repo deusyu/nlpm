@@ -47,13 +47,13 @@ The binary is a single Python 3.11+ file with no external dependencies.
 ```bash
 # Option A — into /usr/local/bin
 curl -fsSL -o /usr/local/bin/nlpm-check \
-  https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/bin/nlpm-check
+  https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-check
 chmod +x /usr/local/bin/nlpm-check
 
 # Option B — into your repo (commits the script alongside your code)
 mkdir -p bin
 curl -fsSL -o bin/nlpm-check \
-  https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/bin/nlpm-check
+  https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-check
 chmod +x bin/nlpm-check
 ```
 
@@ -76,7 +76,7 @@ Copy the template:
 
 ```bash
 curl -fsSL -o .git/hooks/pre-commit \
-  https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/templates/pre-commit-nlpm.sh
+  https://raw.githubusercontent.com/xiaolai/nlpm/main/templates/pre-commit-nlpm.sh
 chmod +x .git/hooks/pre-commit
 ```
 
@@ -103,7 +103,7 @@ Copy the workflow template:
 ```bash
 mkdir -p .github/workflows
 curl -fsSL -o .github/workflows/nlpm-check.yml \
-  https://raw.githubusercontent.com/xiaolai/nlpm-for-claude/main/templates/workflows/nlpm-check.yml
+  https://raw.githubusercontent.com/xiaolai/nlpm/main/templates/workflows/nlpm-check.yml
 ```
 
 Commit. Every push and PR now runs `nlpm-check`. No secrets required.
@@ -196,7 +196,7 @@ nlpm-check --json .
 
 ## Reporting issues
 
-NLPM rules cite primary sources (Anthropic docs, the Agent Skills spec). If a check is wrong, file an issue with the docs URL that contradicts it: <https://github.com/xiaolai/nlpm-for-claude/issues>.
+NLPM rules cite primary sources (Anthropic docs, the Agent Skills spec). If a check is wrong, file an issue with the docs URL that contradicts it: <https://github.com/xiaolai/nlpm/issues>.
 
 ## Vocabulary discipline (R51, opt-in)
 

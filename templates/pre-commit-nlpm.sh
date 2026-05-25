@@ -51,7 +51,7 @@ fi
 
 if ! command -v "$NLPM_CHECK_BIN" >/dev/null 2>&1 && [[ ! -x "$NLPM_CHECK_BIN" ]]; then
     echo "pre-commit-nlpm: nlpm-check not found on PATH" >&2
-    echo "  install: https://github.com/xiaolai/nlpm-for-claude#install-the-binary" >&2
+    echo "  install: https://github.com/xiaolai/nlpm#install-the-binary" >&2
     echo "  or set NLPM_CHECK_BIN=/path/to/nlpm-check" >&2
     exit 1
 fi

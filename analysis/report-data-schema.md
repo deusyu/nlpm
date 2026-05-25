@@ -140,7 +140,7 @@ Used by `/nlpm:report` locally and by `auditor/reports/<slug>.html` + the upcomi
   "status": "audited",                           // enum — registry status
   "stars": 22474,                                 // int | null
   "security": "REVIEW",                            // enum — "CLEAR" | "REVIEW" | "BLOCKED" | null
-  "audit_report_path": "auditor/audits/Q00-ouroboros.md"  // string | null — relative to nlpm-for-claude root
+  "audit_report_path": "auditor/audits/Q00-ouroboros.md"  // string | null — relative to nlpm root
 }
 ```
 
