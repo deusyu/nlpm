@@ -70,7 +70,7 @@ categories. Before reporting any finding, run this 5-step check:
      is required per `nlpm:conventions` §2; primary source:
      <https://code.claude.com/docs/en/slash-commands>)
 
-3. **Path scope check** — two tiers:
+3. **Path scope check** — three tiers, evaluated in this order:
 
    **Tier 1 — Cross-tool SKILL.md (open spec at agentskills.io).** SKILL.md
    files at tool-namespaced paths are scored against the universal Agent
@@ -83,6 +83,20 @@ categories. Before reporting any finding, run this 5-step check:
    `allowed-tools` are documented optional). Do NOT penalize them for
    missing `## Output` section, missing `version`, or missing `model:`.
 
+   **Tier 1.5 — Open-spec corpora at the Tier 2 glob (added 2026-05-25,
+   audit: google/skills).** When a SKILL.md matches the Tier 2 glob
+   `skills/**/SKILL.md` BUT the repo root has none of these Claude-Code
+   markers — `.claude/` directory, `.claude-plugin/plugin.json`,
+   `CLAUDE.md`, `hooks/hooks.json`, `commands/` directory, `agents/`
+   directory — treat the file as **Tier 1** (open Agent Skills spec only).
+   This handles first-party open-spec publications such as `google/skills`,
+   `android/skills`, and `google-gemini/gemini-skills`, which live at
+   `skills/<category>/<name>/SKILL.md` with no surrounding plugin
+   scaffolding. Applying the Tier 2 Claude-Code overlay to these repos
+   would over-penalize them for missing `## Output`, `version:`, and
+   `model:` fields that the open spec does not require. Detection is
+   deterministic: a single directory-existence check on the repo root.
+
    **Tier 2 — Claude Code-specific paths.** Apply both spec-level checks
    AND Claude Code conventions:
    - `.claude/commands/**/*.md`, `commands/**/*.md`
@@ -91,7 +105,7 @@ categories. Before reporting any finding, run this 5-step check:
    - `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
    - `hooks/hooks.json`, `.mcp.json`, `CLAUDE.md`
 
-   Files outside both tiers (e.g., `.cursorrules`, `.opencode/commands/`)
+   Files outside all tiers (e.g., `.cursorrules`, `.opencode/commands/`)
    follow tool-specific non-skill schemas — drop the finding silently.
 
 4. **Intent check** — If CLAUDE.md (or a comment in the artifact) documents

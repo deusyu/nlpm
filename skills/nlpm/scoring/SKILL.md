@@ -1,7 +1,7 @@
 ---
 name: scoring
 description: "Use when scoring NL artifact quality, applying penalties, or calibrating lint judgment — contains the 100-point rubric with penalty tables per artifact type and 4 worked calibration examples."
-version: 0.1.0
+version: 0.2.0
 ---
 
 # NLPM Quality Scoring Rubric
@@ -29,6 +29,7 @@ Penalties stack. The floor is 0; the ceiling is 100. No bonuses — the default 
 | Rule | Check | Condition | Penalty |
 |------|-------|-----------|---------|
 | -- | `name` present | Missing | -25 |
+| -- | `name` matches parent directory | Frontmatter `name:` value does not equal parent directory name (per `nlpm:conventions` §5 — open spec MUST) | -15 |
 | R04 | `description` present | Missing | -25 |
 | R04 | Trigger quality | Description is generic (≤1 specific phrase) | -15 |
 | R04 | Description length | Description 500–800 chars | -5 |
@@ -47,6 +48,17 @@ Penalties stack. The floor is 0; the ceiling is 100. No bonuses — the default 
 > wrong (R07 is not example-related, and -15 is the agents penalty, not
 > the skills penalty). The validator at `auditor/scripts/validate-rule-ids.py`
 > catches this kind of drift in CI.
+
+> **`name` matches parent directory** (added 2026-05-25, audit:
+> google/skills): the open Agent Skills spec at agentskills.io makes this
+> a MUST. Mismatch is deterministic, high-confidence, and reproducible by
+> single-line diff (frontmatter `name:` vs `basename($(dirname FILE))`).
+> Mark such findings `confidence: high` per the manifest-vs-disk-diff
+> principle in `agents/scorer.md` step 6. Note: this penalty did not
+> exist before 2026-05-25 — re-scoring past audits will yield slightly
+> lower scores for any corpus containing this defect, but no contribute
+> outcomes are retroactively affected since no PRs were ever opened
+> against a name-mismatch finding under the prior rubric.
 
 ---
 
