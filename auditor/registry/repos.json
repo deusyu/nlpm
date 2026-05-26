@@ -7944,7 +7944,7 @@
       "strategy": "single"
     },
     "elementalsouls/Claude-BugHunter": {
-      "status": "contributed",
+      "status": "tracked",
       "score": 79,
       "strategy": "progressive",
       "security": "CLEAR",
@@ -7956,13 +7956,13 @@
       "prs": [
         {
           "number": 5,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
+          "state": "MERGED",
+          "mergedAt": "2026-05-26T19:43:29Z",
+          "closedAt": "2026-05-26T19:43:29Z",
           "title": "fix: add missing name: field to all 14 command frontmatter blocks",
-          "updatedAt": "2026-05-26T07:18:53Z",
+          "updatedAt": "2026-05-26T19:43:29Z",
           "createdAt": "2026-05-26T07:18:53Z",
-          "outcome": "open",
+          "outcome": "merged",
           "fingerprints": [
             "sha256:ab3d8ca94de64625c276a078fcc6f8c9495263cdeeaac829b24617d7b34f3b97",
             "sha256:984d55e146f06790e6408c528fbc6916f8eb0f064c269eba42175e505752c368",
@@ -7999,13 +7999,13 @@
         },
         {
           "number": 6,
-          "state": "OPEN",
+          "state": "CLOSED",
           "mergedAt": null,
-          "closedAt": null,
+          "closedAt": "2026-05-26T19:50:33Z",
           "title": "fix: remove duplicate skill entries in hunt-dispatch taxonomy",
-          "updatedAt": "2026-05-26T13:20:37Z",
+          "updatedAt": "2026-05-26T19:50:34Z",
           "createdAt": "2026-05-26T07:19:59Z",
-          "outcome": "open",
+          "outcome": "rejected",
           "fingerprints": [
             "sha256:4129db9678322a42c92b14901e4da91a9ccd315581968432e8d298d339706718"
           ],
@@ -8015,7 +8015,8 @@
           "stale_90d_emitted": false
         }
       ],
-      "rule_adopted": false
+      "rule_adopted": false,
+      "case_study_candidate": true
     },
     "viticci/shortcuts-playground-plugin": {
       "discovered": "2026-05-25T07:29:19Z",
