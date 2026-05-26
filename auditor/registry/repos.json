@@ -7839,11 +7839,15 @@
       "strategy": "single"
     },
     "elementalsouls/Claude-BugHunter": {
-      "status": "audited",
+      "status": "contributed",
       "score": 79,
       "strategy": "progressive",
       "security": "CLEAR",
-      "commit_sha_at_audit": "83e573f28a7ca5ee9636854f040947d25721a95a"
+      "commit_sha_at_audit": "83e573f28a7ca5ee9636854f040947d25721a95a",
+      "pipeline_prs": [
+        5,
+        6
+      ]
     },
     "viticci/shortcuts-playground-plugin": {
       "discovered": "2026-05-25T07:29:19Z",
