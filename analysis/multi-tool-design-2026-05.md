@@ -151,3 +151,35 @@ These need verification before PR-B lands:
 5. **Claude Code `.lsp.json` and `monitors/monitors.json`** — schemas not researched in this round. PR-B adds nlpm:scoring rows for both but the schemas need their own pass.
 
 These are recorded here so the next research turn knows where to dig.
+
+---
+
+## Post-merge status (2026-05-26)
+
+What actually shipped vs. what was deferred, after PR-A through the Codex layout landed.
+
+### Shipped
+
+- **PR-A / PR-B / PR-C**: foundation, conventions split, v1.0.0 + rename. All merged.
+- **Doc-staleness sweep** (PRs #279/#280/#281): top-level docs, authoring skills, rulebook labels caught up to multi-tool.
+- **Codex layout** (PR #282): `.codex-plugin/plugin.json` + `codex/` tree of **17 reference-knowledge skills**. Reference-only by design — nlpm's command→agent `Task()` orchestration has no in-skill Codex equivalent, so the 23 command/agent skills the bootstrap generated were pruned. Added to the central Codex marketplace.
+- **Gemini AGENTS.md wiring**: verified the `@`-import shim works; shipped `.gemini/settings.json` with `context.fileName: ["AGENTS.md"]` as the robust path. nlpm dogfoods it.
+- **OpenAI CLA / policy guard**: `vendor_default_filter.py` now hard-denies `openai/codex` + `openai/codex-action` (repo-specific). See research findings below.
+
+### Codex contribution policy (researched 2026-05-26)
+
+- **`openai/codex` auto-closes unsolicited external PRs** (14-day stale auto-close via `close-stale-contributor-prs.yml`). This is the dominant blocker — bigger than the CLA. nlpm's PRs are unsolicited by definition, so the vendor filter denies these repos at discovery.
+- **CLA**: `openai/codex` + `openai/codex-action` require a signed CLA. Status check is named **`cla`** (exact match `^cla$` — narrower than Google's `^cla(/|$)`). Comment-based signing (a human posts "I have read the CLA Document…"), NOT commit-author-based like Google. Allowlist: `codex, dependabot, github-actions[bot]` — `claude[bot]` is NOT allowlisted.
+- **Not org-wide**: only the Codex repos have a CLA. `openai/openai-python` etc. have none, and aren't NL-artifact repos anyway. The guard is repo-specific, not owner-wide.
+- **Third-party Codex repos**: no CLA, normal contribution. Treat like any other target.
+- **For the track workflow** (when Codex contribution eventually scales): detect CLA-block via a `statusCheckRollup` check named exactly `cla` with conclusion FAILURE — the OpenAI analog of the existing `cla/google` detection.
+
+### Deferred as premature (NOT built — would operate on an empty corpus)
+
+The remaining "PR-D" auditor-pipeline items build machinery for a multi-tool *audit corpus that does not exist yet*. Codex CLI plugins are ~2 months old (launched 2026-03-26); Antigravity is days old (2026-05-19). Building these now yields near-empty results and speculative complexity:
+
+- **`auditor-discover.yml` Codex/Antigravity queries + `repo_type` field** — `gh search` for `.codex-plugin/plugin.json` / `.agents/skills/` repos with 500+ stars returns ~nothing today. Build when the corpus reaches a threshold (e.g., ≥10 discoverable Codex-shaped repos).
+- **Per-`(rule, tool)` metrics in `rule-health.py`** — every audit to date is Claude-shaped, so per-tool precision is all-Claude. No-op until non-Claude audits land (which requires discovery first).
+- **Exemplar `tool:` frontmatter field + per-tool gallery** — all 65 exemplars are Claude. The field would be uniformly `claude` until Codex/Antigravity repos get audited and exemplar-published.
+
+Trigger to build: when discovery surfaces a non-trivial count of Codex- or Antigravity-shaped repos. Until then, the multi-tool *rubric* is ready (it scores any tool's artifacts on demand); the multi-tool *auditing pipeline* waits for its corpus.

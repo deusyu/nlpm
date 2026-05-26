@@ -55,6 +55,25 @@ DENY_OWNERS: frozenset[str] = frozenset({
     "anthropics",
 })
 
+# Repo-specific hard deny (finer than owner-wide). Use when one repo
+# under an owner blocks contribution but the owner's other repos don't.
+#
+#   - openai/codex, openai/codex-action: per docs/contributing.md +
+#     close-stale-contributor-prs.yml, OpenAI AUTO-CLOSES unsolicited
+#     external PRs (14-day stale auto-close). nlpm's PRs are unsolicited
+#     by definition, so they'd be closed unreviewed regardless of the
+#     CLA. (The repos ALSO require a signed CLA — status check named
+#     `cla`, exact match, comment-based not commit-author-based — but
+#     the auto-close is the dominant blocker.) Researched 2026-05-26;
+#     sources: openai/codex docs/CLA.md, docs/contributing.md,
+#     .github/workflows/cla.yml. Owner-wide deny is wrong here:
+#     openai/openai-python etc. have no CLA and aren't NL-artifact repos
+#     anyway, so they'd never pass the artifact probe.
+DENY_REPOS: frozenset[str] = frozenset({
+    "openai/codex",
+    "openai/codex-action",
+})
+
 # CLA-gated: PRs land but block on signed-commit verification unless
 # the contribute identity matches the CLA signer. The current GHA
 # setup uses claude-code-action's bot identity which is not CLA-
@@ -86,6 +105,8 @@ def is_vendor_default(repo: str) -> tuple[bool, str]:
     """
     if "/" not in repo:
         return False, ""
+    if repo.lower() in DENY_REPOS:
+        return True, f"deny-repo:{repo.lower()} (unsolicited external PRs auto-closed)"
     owner = repo.split("/", 1)[0].lower()
     if owner in DENY_OWNERS:
         return True, f"deny:{owner} (policy: no external PRs)"
