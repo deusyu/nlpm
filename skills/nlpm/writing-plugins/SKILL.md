@@ -1,12 +1,17 @@
 ---
 name: writing-plugins
-description: "How to design and build Claude Code plugins -- architecture decisions, component selection, file structure, manifest configuration, marketplace publishing. Use when planning, creating, or reviewing a Claude Code plugin."
-version: 0.1.0
+description: "How to design and build plugins -- architecture decisions, component selection, file structure, manifest configuration, marketplace publishing. Primarily Claude Code (.claude-plugin/plugin.json); the same architecture maps to Codex CLI (.codex-plugin/plugin.json) and Antigravity extensions. Use when planning, creating, or reviewing a plugin."
+version: 0.2.0
 ---
 
 # Writing Plugins
 
-> Scope: covers plugin design and architecture. For individual component authoring, see [[writing-skills]], [[writing-agents]], [[writing-hooks]], [[writing-rules]].
+> Scope: covers plugin design and architecture. The examples use the **Claude Code** layout (`.claude-plugin/plugin.json` + auto-discovered `commands/`, `agents/`, `skills/`, `hooks/`). The same component-selection and architecture reasoning maps to the other tools — only the manifest path and packaging differ:
+> - **Codex CLI**: `.codex-plugin/plugin.json` manifest + `.agents/plugins/marketplace.json`; skills live at `.agents/skills/`. See [[nlpm:conventions-codex]].
+> - **Antigravity**: `gemini-extension.json` (becoming "Antigravity plugins"); skills at `.agent/skills/`. See [[nlpm:conventions-antigravity]].
+> - **Cross-tool skills**: a `SKILL.md` collection with no plugin wrapper installs into any tool via `npx skills add`. See [[writing-skills]].
+>
+> For individual component authoring, see [[writing-skills]], [[writing-agents]], [[writing-hooks]], [[writing-rules]].
 
 ## 1. Plugin = Commands + Agents + Skills + Hooks
 

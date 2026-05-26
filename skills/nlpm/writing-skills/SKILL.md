@@ -1,12 +1,12 @@
 ---
 name: writing-skills
-description: "How to write SKILL.md files that trigger reliably and teach effectively. Use when creating, improving, or reviewing Claude Code skills."
-version: 0.1.0
+description: "How to write SKILL.md files that trigger reliably and teach effectively. Use when creating, improving, or reviewing skills for any tool — SKILL.md is the cross-tool open spec (agentskills.io), read identically by Claude Code, Codex CLI, and Antigravity."
+version: 0.2.0
 ---
 
 # Writing Skills
 
-> Scope: covers SKILL.md authoring. For agent writing, see [[writing-agents]]. For plugin architecture, see [[writing-plugins]].
+> Scope: covers SKILL.md authoring. SKILL.md is the **cross-tool open standard** (agentskills.io) — the same file works in Claude Code (`.claude/skills/`), Codex CLI (`.agents/skills/`), and Antigravity (`.agent/skills/`). Only `name` and `description` are required by the spec; per-tool extras (Claude's `model:`/`allowed-tools:`, Codex's `agents/openai.yaml` sidecar) live in `[[nlpm:conventions-claude]]` / `[[nlpm:conventions-codex]]` / `[[nlpm:conventions-antigravity]]`. For agent writing, see [[writing-agents]]. For plugin architecture, see [[writing-plugins]].
 
 ## 1. The Description is Everything
 

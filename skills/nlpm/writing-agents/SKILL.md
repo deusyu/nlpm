@@ -1,12 +1,12 @@
 ---
 name: writing-agents
 description: "How to write Claude Code agents that trigger reliably, use the right model, and produce consistent output. Use when creating, improving, or reviewing agent definitions."
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Writing Agents
 
-> Scope: covers agent `.md` file authoring. For multi-agent orchestration, see [[orchestration]]. For plugin architecture, see [[writing-plugins]].
+> Scope: covers Claude Code agent `.md` file authoring (Markdown + frontmatter at `.claude/agents/`). Codex CLI defines agents differently — as `[agents.<name>]` TOML tables in `.codex/config.toml`; see [[nlpm:conventions-codex]]. Antigravity subagents are under-documented at this writing; see [[nlpm:conventions-antigravity]]. For multi-agent orchestration, see [[orchestration]]. For plugin architecture, see [[writing-plugins]].
 
 ## 1. Example Blocks Make or Break Triggering
 

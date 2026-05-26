@@ -1,12 +1,12 @@
 ---
 name: writing-rules
 description: "How to write .claude/rules/ files that Claude actually follows. Use when creating, improving, or reviewing project rules."
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Writing Rules
 
-> Scope: covers `.claude/rules/` file authoring. For CLAUDE.md conventions, see [[writing-plugins]]. For system prompts generally, see [[writing-prompts]].
+> Scope: covers `.claude/rules/` file authoring — a **Claude-Code-specific** concept (path-scoped, always-loaded instruction files with `paths:` glob frontmatter). Codex CLI and Antigravity have no exact `.claude/rules/` equivalent; their always-on project instructions live in the hierarchical memory file (`AGENTS.md` for Codex, `GEMINI.md` for Antigravity — both can be pointed at the canonical `AGENTS.md`; see [[nlpm:conventions-codex]] / [[nlpm:conventions-antigravity]]). The bold-imperative-plus-rationale writing technique here applies to any tool's instruction files. For CLAUDE.md / AGENTS.md conventions, see [[writing-plugins]]. For system prompts generally, see [[writing-prompts]].
 
 ## 1. The Golden Format
 

@@ -6,7 +6,7 @@ version: 0.1.0
 
 # NL Programming Patterns
 
-Best practices and anti-patterns for writing Claude Code plugin components. Each pattern includes a rationale and a concrete example. Use this skill when authoring or reviewing skills, agents, commands, rules, or hooks.
+Best practices and anti-patterns for writing NL programming artifacts (Claude Code, Codex CLI, Antigravity). Each pattern includes a rationale and a concrete example. The patterns are tool-agnostic — they describe how to write effective natural-language instructions, not tool-specific schemas. Use this skill when authoring or reviewing skills, agents, commands, rules, or hooks.
 
 ---
 
@@ -244,7 +244,7 @@ Absolute paths in hooks, scripts, or plugin configs break when:
 
 ## Scope Note
 
-This skill covers NL programming patterns and anti-patterns for Claude Code artifacts. It does NOT cover:
+This skill covers NL programming patterns and anti-patterns for artifacts across Claude Code, Codex CLI, and Antigravity. It does NOT cover:
 - Exact schema fields and syntax → see `nlpm:conventions`
 - Scoring rubric with penalty tables → see `nlpm:scoring`
-- General software engineering patterns outside Claude Code
+- General software engineering patterns outside NL programming artifacts

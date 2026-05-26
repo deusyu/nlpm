@@ -1,12 +1,12 @@
 ---
 name: writing-hooks
 description: "How to write Claude Code hooks -- event selection, hook types, matcher patterns, blocking vs advisory, portable paths. Use when creating hooks for quality gates, automation, or policy enforcement."
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Writing Hooks
 
-> Scope: covers hooks.json authoring and hook script design. For plugin architecture, see [[writing-plugins]]. For rules (which are simpler but static), see [[writing-rules]].
+> Scope: covers Claude Code `hooks.json` authoring and hook script design. **Hook event vocabularies are per-tool and NOT 1:1 mappable** (nlpm design decision #4): Claude uses `PreToolUse`/`PostToolUse`/`Stop`/etc.; Codex overlaps with Claude plus `PostCompact`/`SubagentStart`; Antigravity/Gemini uses a different `Before*/After* Agent/Model/Tool` decomposition. The hook-script design principles here (idempotency, fail-open, exit codes, portable paths) transfer across tools; the event names and config locations do not. For the authoritative per-tool event tables see [[nlpm:conventions-claude]] §7, [[nlpm:conventions-codex]] §6, [[nlpm:conventions-antigravity]] §5. For plugin architecture, see [[writing-plugins]]. For rules (which are simpler but static), see [[writing-rules]].
 
 ## 1. Three Hook Types
 
