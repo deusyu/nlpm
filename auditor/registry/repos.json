@@ -4217,76 +4217,7 @@
         14,
         15
       ],
-      "prs": [
-        {
-          "number": 12,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
-          "title": "fix: add missing tools declaration to vibe-coding-coach agent",
-          "updatedAt": "2026-04-26T12:25:20Z",
-          "createdAt": "2026-04-26T12:25:20Z",
-          "outcome": "open",
-          "fingerprints": [
-            "sha256:bc3acd0457290846d72d2d96527966fe4025cd4d5e8b4ae5656113676090d853"
-          ],
-          "rule_ids": [
-            "BUG-missing-tools"
-          ],
-          "stale_90d_emitted": false
-        },
-        {
-          "number": 13,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
-          "title": "fix: add missing tools declaration to content-writer agent",
-          "updatedAt": "2026-04-26T12:25:47Z",
-          "createdAt": "2026-04-26T12:25:47Z",
-          "outcome": "open",
-          "fingerprints": [
-            "sha256:b37c6ab4468fd7c737f7bc738060825f49bcaebd4bd1c1328e563d4cdcd79eb2"
-          ],
-          "rule_ids": [
-            "BUG-missing-tools"
-          ],
-          "stale_90d_emitted": false
-        },
-        {
-          "number": 14,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
-          "title": "fix: add missing tools declaration to frontend-designer agent",
-          "updatedAt": "2026-04-26T12:26:12Z",
-          "createdAt": "2026-04-26T12:26:12Z",
-          "outcome": "open",
-          "fingerprints": [
-            "sha256:9475bdb8a8f5b838e74567011dc544192581e00ee7c68c4203284568f7b253ef"
-          ],
-          "rule_ids": [
-            "BUG-missing-tools"
-          ],
-          "stale_90d_emitted": false
-        },
-        {
-          "number": 15,
-          "state": "OPEN",
-          "mergedAt": null,
-          "closedAt": null,
-          "title": "fix: remove contradictory Task tool from prd-writer agent",
-          "updatedAt": "2026-04-26T12:26:39Z",
-          "createdAt": "2026-04-26T12:26:39Z",
-          "outcome": "open",
-          "fingerprints": [
-            "sha256:d1b6b2750ecdaf2926f83527bb0a3f10c0fd8a2f588d7b6c1fd97fd3d08d1417"
-          ],
-          "rule_ids": [
-            "BUG-contradictory-tool"
-          ],
-          "stale_90d_emitted": false
-        }
-      ],
+      "prs": [],
       "rule_adopted": false,
       "score": 88,
       "security": "CLEAR",
