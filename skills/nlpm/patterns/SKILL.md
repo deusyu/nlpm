@@ -158,6 +158,43 @@ Each failure mode should produce a clear, actionable error message — not a sil
 
 ---
 
+### P10: Numeric Anchoring of Subjective Principles (R22)
+
+When stating a principle that has a subjective threshold ("simpler is better", "small change", "meaningful improvement"), follow it immediately with one or more numeric examples that cover the trade-space corners (best case, worst case, neutral case). The principle becomes testable instead of aspirational.
+
+**Example** (from karpathy/autoresearch `program.md:37`, scored 90/100 — see [`auditor/exemplars/karpathy-autoresearch.md`](../../../auditor/exemplars/karpathy-autoresearch.md) for the full audit):
+
+> "All else being equal, simpler is better. … A 0.001 val_bpb improvement that adds 20 lines of hacky code? Probably not worth it. A 0.001 val_bpb improvement from deleting code? Definitely keep. An improvement of ~0 but much simpler code? Keep."
+
+The principle "simpler is better" alone fails R22 enforceability — different agents weigh "simpler" differently. The three anchored examples define the trade-space (gain × complexity-cost) by worked corner cases, so any agent following the rule reaches the same call on a borderline case.
+
+**Apply when** writing rules, agent constraints, or workflow instructions that include a subjective judgment word (small, meaningful, ugly, reasonable, simple, clean). Don't strip the subjective word — anchor it.
+
+---
+
+### P11: Paired CAN/CANNOT Contract (R03)
+
+When prohibitions are non-trivial, present capabilities and prohibitions as a paired list — "What you CAN do" / "What you CANNOT do" — rather than a stream of `do not`s. Each prohibition gains a positive complement; the agent reads both halves of the boundary in one pass.
+
+**Example** (from karpathy/autoresearch `program.md:25-31`):
+
+```
+**What you CAN do:**
+- Modify `train.py` — this is the only file you edit. Everything is fair game: model
+  architecture, optimizer, hyperparameters, training loop, batch size, model size, etc.
+
+**What you CANNOT do:**
+- Modify `prepare.py`. It is read-only…
+- Install new packages or add dependencies…
+- Modify the evaluation harness…
+```
+
+What makes this strong: prohibitions without alternatives are A2's Pink Elephant trap; the paired pattern structurally avoids it. The "CAN" half also doubles as a positive scope statement ("Everything is fair game") that prevents the agent from being overly conservative.
+
+**Apply when** an instruction set has more than two prohibitions on the same subject (file boundaries, tool boundaries, behavior boundaries). For a single prohibition, an inline "do X instead of Y" (P3) is enough.
+
+---
+
 ## Anti-Patterns (Avoid These)
 
 ### A1: Vague Quantifiers (R01)

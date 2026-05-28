@@ -98,6 +98,12 @@ This is exactly how nlpm itself is structured (`CLAUDE.md` → `@AGENTS.md`).
 
 **Tool-specific memory-file extensions** (e.g., Claude Code's `@`-import syntax, Gemini's `@{path}` injection, Codex's `project_doc_fallback_filenames`) live in the per-tool overlays.
 
+### Agent workflow programs (recognized variant, no penalty rubric yet)
+
+Some repos ship a single project-root Markdown file that drives an autonomous agent loop — imperative numbered steps with output formats and error paths, sitting between a memory file (AGENTS.md-shaped context) and a slash command (workflow with verifiable side effects). Karpathy's `program.md` in [`karpathy/autoresearch`](https://github.com/karpathy/autoresearch) is the canonical example (audited 2026-05-28 at score ~90; see [`auditor/exemplars/karpathy-autoresearch.md`](../../../auditor/exemplars/karpathy-autoresearch.md)). The README explicitly frames it as natural-language programming: "you are programming the `program.md` Markdown files that provide context to the AI agents."
+
+nlpm recognizes the pattern but does not yet have a dedicated penalty rubric — the universal floor (R01 vague quantifiers, R03 positive framing, R09 prompt layers) + the command rules (R14–R17) + the memory-file rules (R33–R39) cover it adequately as a hybrid. A standalone rubric is deferred until N≥3 examples surface, per the same "don't build for an empty corpus" discipline applied to multi-tool discovery.
+
 ---
 
 ## 3. General Prompt Engineering
