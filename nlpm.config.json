@@ -1,0 +1,8 @@
+{
+  "artifact_paths": [],
+  "enabled_rules": [],
+  "score_thresholds": {
+    "default": 70
+  },
+  "tool_profile": "auto"
+}

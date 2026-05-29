@@ -385,7 +385,7 @@ Applied when linting an entire plugin rather than individual files.
 | 60–69 | Weak | Below threshold; significant issues |
 | <60 | Rewrite | Fundamental problems; recommend rewriting from scratch |
 
-**Default pass threshold:** 70. Configurable in `.claude/nlpm.local.md`.
+**Default pass threshold:** 70. For the deterministic checker, configure the default in `nlpm.config.json`. For Claude Code scoring workflows, keep rule overrides and scoring-specific options in `.claude/nlpm.local.md`.
 
 ---
 

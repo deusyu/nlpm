@@ -6,11 +6,13 @@ outline: [2, 3]
 # How it evolves
 
 NLPM is 9 weeks old. The first commit landed on 2026-03-25; the
-current release is **v1.0.0** — the multi-tool branded release that
-expanded NLPM from Claude-Code-only to Claude Code + Codex CLI +
-Antigravity, splitting `nlpm:conventions` into a universal floor plus
-three per-tool overlays. In between: 1,300+ commits and six
-minor-version gates (v0.2 → v0.4 → v0.6 → v0.7 → v0.8 → v1.0). The
+current release is **v1.1.0** — the Codex-adapter release that made
+`bin/nlpm-check` profile-aware and added checker-backed Codex workflow
+skills. The prior v1.0.0 release expanded NLPM from Claude-Code-only to
+Claude Code + Codex CLI + Antigravity, splitting `nlpm:conventions`
+into a universal floor plus three per-tool overlays. In between: 1,300+
+commits and seven minor-version gates (v0.2 → v0.4 → v0.6 → v0.7 → v0.8
+→ v1.0 → v1.1). The
 cadence is high because the rules keep getting proven wrong — or right
 in ways the rulebook didn't yet encode — by contact with real
 repositories.
@@ -264,6 +266,7 @@ selection from the last six weeks:
 | `v0.8.17` | Exemplar pipeline — clean high-scoring audits become teaching artifacts | Path B introduced — positive warrant, not just negative findings |
 | `v0.8.18` | Exemplar gallery + rule-citation auto-PR | Path B operationalized |
 | `v0.8.22` | Skip top-level `templates/` directory during scan | Tightening discovery filter; author-facing templates kept getting scored as if they were live artifacts |
+| `v1.1.0` | Profile-aware `bin/nlpm-check` + checker-backed Codex skills | Product boundary — Codex gets native skills and the shared deterministic core, not unverified slash-command parity |
 
 None of these were ideas at the start of the project. Each is a
 response to evidence the auditor produced.

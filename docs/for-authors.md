@@ -15,7 +15,7 @@ Both surfaces share the same rule registry. The binary is the deterministic subs
 
 ## Multi-plugin monorepos (v0.8.5+)
 
-If your repo contains **multiple** `.claude-plugin/plugin.json` files (e.g., a monorepo with sub-plugins under `plugins/`), nlpm-check auto-detects and runs each sub-plugin's checks in isolation:
+If your repo contains **multiple** `.claude-plugin/plugin.json` or `.codex-plugin/plugin.json` files (e.g., a monorepo with sub-plugins under `plugins/`), nlpm-check auto-detects and runs each sub-plugin's checks in isolation:
 
 ```bash
 nlpm-check /path/to/monorepo
@@ -26,6 +26,37 @@ The badge message reflects the aggregate state: `N plugins clean` (green), `N of
 
 Nested sub-plugins are excluded from their parent's checks — each is checked exactly once.
 
+## Profiles
+
+`nlpm-check` is profile-aware:
+
+```bash
+nlpm-check . --profile auto     # default; detect Claude, Codex, or generic SKILL.md surfaces
+nlpm-check . --profile claude   # .claude-plugin/plugin.json and Claude component paths
+nlpm-check . --profile codex    # .codex-plugin/plugin.json, .agents/skills, .codex config/hooks
+nlpm-check . --profile generic  # universal SKILL.md floor, no tool manifest required
+nlpm-check . --format json      # structured output; --json remains an alias
+```
+
+Use explicit profiles in CI when a repo intentionally contains multiple tool surfaces.
+
+## Config
+
+For cross-tool checker defaults, add `nlpm.config.json` at the repo root:
+
+```json
+{
+  "artifact_paths": [],
+  "enabled_rules": [],
+  "score_thresholds": {
+    "default": 70
+  },
+  "tool_profile": "auto"
+}
+```
+
+Discovery order is `--config <path>`, then `nlpm.config.json`, then the legacy `.claude/nlpm.local.md`, then built-in defaults. Keep `.claude/nlpm.local.md` for Claude-only scoring options and rule overrides.
+
 ## What the binary catches
 
 High-confidence findings (exit code 1):
@@ -34,6 +65,7 @@ High-confidence findings (exit code 1):
 - **skill name parent**: SKILL.md `name:` field doesn't match its parent directory (silently breaks Claude Code's skill loader)
 - **skill name format**: SKILL.md `name:` violates the open spec format (`^[a-z][a-z0-9-]{0,63}$`)
 - **hook event case**: `pretooluse` instead of `PreToolUse` (the loader is case-sensitive and silently ignores wrong-case events)
+- **Codex manifest/config checks**: required `.codex-plugin/plugin.json` fields, component paths escaping the plugin root, missing declared Codex skill paths, malformed `.codex/config.toml`, and wrong-case Codex hook events
 
 Medium-confidence findings (exit code 1 only under `--strict`):
 - **hook event-name**: unknown event name not in the documented event list
@@ -61,7 +93,7 @@ Verify:
 
 ```bash
 nlpm-check --version
-# nlpm-check 0.8.0
+# nlpm-check 1.1.0
 ```
 
 ## Use it in your authoring workflow
@@ -129,7 +161,7 @@ The JSON payload includes a `manifest_disk_consistent` boolean and the SHA-stamp
 To run it manually (e.g., the first time, before CI catches up):
 
 ```bash
-nlpm-check --json . | nlpm-badge > nlpm-badge.json
+nlpm-check --format json . | nlpm-badge > nlpm-badge.json
 git add nlpm-badge.json
 git commit -m "chore: add nlpm-badge.json"
 ```
@@ -165,12 +197,14 @@ If you can only adopt one validator: pick the one that covers your most likely f
 For machine consumption:
 
 ```bash
-nlpm-check --json .
+nlpm-check --format json .
 ```
 
 ```json
 {
-  "version": "0.8.0",
+  "version": "1.1.0",
+  "mode": "single",
+  "profile": "claude",
   "plugin_root": "/path/to/plugin",
   "findings": [
     {

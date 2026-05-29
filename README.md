@@ -76,13 +76,21 @@ In Claude Code:
 /nlpm:test                  # run NL-TDD specs
 ```
 
+In Codex CLI, use the checker-backed skills rather than `/nlpm:*` slash-command parity:
+
+```text
+$nlpm-check                 # run bin/nlpm-check and explain deterministic findings
+$nlpm-score                 # checker first, then labeled rubric review
+$nlpm-fix-plan              # turn checker findings into a repair plan
+```
+
 From CI or a pre-commit hook (no Claude Code required):
 
 ```bash
 curl -fsSL -o /usr/local/bin/nlpm-check \
   https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-check
 chmod +x /usr/local/bin/nlpm-check
-nlpm-check .               # exit 1 on high-confidence findings
+nlpm-check . --profile auto # exit 1 on high-confidence findings
 ```
 
 ## For plugin/skill authors — standalone validator
@@ -96,7 +104,7 @@ curl -fsSL -o /usr/local/bin/nlpm-check \
 chmod +x /usr/local/bin/nlpm-check
 
 # Run in your plugin repo
-nlpm-check .
+nlpm-check . --profile auto
 ```
 
 Templates ship in [`templates/`](templates/):
@@ -117,7 +125,7 @@ Scores start at 100 and go down. Every issue has a fixed penalty. The score is d
 | 60-69 | Weak | Below threshold |
 | <60 | Rewrite | Fundamental problems |
 
-Default pass threshold: 70. Configure in `.claude/nlpm.local.md`.
+Default pass threshold: 70. Configure tool-neutral checker defaults in `nlpm.config.json`, or continue using `.claude/nlpm.local.md` for Claude workflows.
 
 See `skills/nlpm/scoring/SKILL.md` for the full penalty tables. See `skills/nlpm/rules/SKILL.md` for the 50 Rules of Natural Language Programming.
 
@@ -149,7 +157,20 @@ See `skills/nlpm/testing/SKILL.md` for the full spec format.
 
 ## Configuration
 
-Create `.claude/nlpm.local.md` (or run `/nlpm:init`):
+For the standalone checker, create `nlpm.config.json` when a project needs tool-neutral defaults:
+
+```json
+{
+  "artifact_paths": [],
+  "enabled_rules": [],
+  "score_thresholds": {
+    "default": 70
+  },
+  "tool_profile": "auto"
+}
+```
+
+For Claude Code scoring workflows, create `.claude/nlpm.local.md` (or run `/nlpm:init`):
 
 ```yaml
 ---
@@ -230,7 +251,7 @@ bin/                Standalone author surface (v0.8.0+)
   nlpm-check        Pure-Python validator for pre-commit / CI / pre-publish
   nlpm-badge        shields.io endpoint generator + optional attestation sidecar
 
-tests/              Python unittest suite (81 tests total)
+tests/              Python unittest suite (103 tests total)
   test_nlpm_check.py                       bin/nlpm-check
   test_nlpm_badge.py                       bin/nlpm-badge
   test_validate_rule_ids.py                auditor/scripts/validate-rule-ids.py
@@ -325,7 +346,7 @@ See [auditor/README.md](auditor/README.md) for the full pipeline documentation a
 ## Prerequisites
 
 - **Slash commands (`/nlpm:*`)**: none. Pure markdown — no Python, no Node.js.
-- **Standalone `bin/nlpm-check`**: Python 3.11+ (stdlib only; no pip install).
+- **Standalone `bin/nlpm-check`**: Python 3.11+ (stdlib only; no pip install). Supports `--profile auto|claude|codex|generic`, `--format json|md`, and legacy `--json`.
 - **Auditor workflows**: `CLAUDE_CODE_OAUTH_TOKEN`, `PAT_TOKEN`, and `OPENAI_API_KEY` GitHub repo secrets.
 
 ## License

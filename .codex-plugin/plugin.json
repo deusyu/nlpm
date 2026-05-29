@@ -1,7 +1,7 @@
 {
   "name": "nlpm",
-  "version": "1.0.0",
-  "description": "Natural-Language Programming reference knowledge — the 50 Rules, the 100-point scoring rubric, per-tool conventions (Claude Code / Codex CLI / Antigravity), anti-patterns, vocabulary discipline, and authoring guides, as loadable Codex skills. The interactive linting commands remain a Claude Code plugin; the cross-tool deterministic checker ships as a standalone Python binary (bin/nlpm-check).",
+  "version": "1.1.0",
+  "description": "Natural-Language Programming checker-backed Codex workflows plus reference knowledge — deterministic nlpm-check skills, the 50 Rules, the 100-point scoring rubric, per-tool conventions, anti-patterns, vocabulary discipline, and authoring guides. Claude Code remains the richer slash-command orchestration surface.",
   "author": {
     "name": "xiaolai"
   },
@@ -24,15 +24,15 @@
   "skills": "./codex/skills/",
   "interface": {
     "displayName": "nlpm",
-    "shortDescription": "Natural-Language Programming reference knowledge — 50 Rules, scoring rubric, per-tool conventions, authoring guides — as Codex skills.",
-    "longDescription": "nlpm's reference-knowledge skills for Codex CLI: the 50 Rules of Natural Language Programming, the 100-point scoring rubric, per-tool conventions for Claude Code / Codex CLI / Antigravity, anti-patterns, the R51 vocabulary discipline framework, and authoring guides for skills, agents, hooks, rules, plugins, and prompts. These are knowledge skills, not commands — load $nlpm-rules and $nlpm-scoring to score an artifact, $nlpm-conventions-codex for the Codex skill layout, etc. The interactive /nlpm:* linting commands orchestrate sub-agents and remain a Claude Code plugin; for tool-agnostic deterministic checks use the standalone bin/nlpm-check.",
+    "shortDescription": "Checker-backed Codex workflows plus NLPM rules, scoring rubric, per-tool conventions, and authoring guides.",
+    "longDescription": "nlpm's Codex CLI package includes checker-backed workflow skills for deterministic validation with bin/nlpm-check, plus reference skills for the 50 Rules of Natural Language Programming, the 100-point scoring rubric, per-tool conventions for Claude Code / Codex CLI / Antigravity, anti-patterns, the R51 vocabulary discipline framework, and authoring guides for skills, agents, hooks, rules, plugins, and prompts. The Codex skills call the standalone checker and interpret structured findings; the interactive /nlpm:* slash commands that orchestrate sub-agents remain the Claude Code plugin surface.",
     "developerName": "xiaolai",
     "category": "Coding",
     "capabilities": [
       "Read"
     ],
     "defaultPrompt": [
-      "Score this skill against the nlpm rules."
+      "Check this repo with nlpm-check and explain the findings."
     ],
     "websiteURL": "https://github.com/xiaolai/nlpm",
     "screenshots": []

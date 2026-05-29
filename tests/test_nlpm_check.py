@@ -46,6 +46,19 @@ def make_plugin(root: Path, manifest: dict | None, files: dict[str, str]) -> Non
         full.write_text(content, encoding="utf-8")
 
 
+def make_codex_plugin(root: Path, manifest: dict | None, files: dict[str, str]) -> None:
+    """Write a Codex manifest + file tree under root."""
+    if manifest is not None:
+        (root / ".codex-plugin").mkdir(parents=True, exist_ok=True)
+        (root / ".codex-plugin" / "plugin.json").write_text(
+            json.dumps(manifest), encoding="utf-8"
+        )
+    for rel, content in files.items():
+        full = root / rel
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(content, encoding="utf-8")
+
+
 SKILL_VALID = """---
 name: {name}
 description: a skill
@@ -247,6 +260,300 @@ class TestNlpmCheck(unittest.TestCase):
         parsed = json.loads(out)
         self.assertEqual(parsed["summary"]["high"], 1)
         self.assertEqual(parsed["version"], nlpm_check.VERSION)
+
+    def test_format_json_output_is_valid_json(self) -> None:
+        make_plugin(self.tmp, {"name": "p", "skills": "skills/"}, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, _ = self.run_check("--format", "json")
+        self.assertEqual(code, 0)
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "claude")
+        self.assertEqual(parsed["summary"]["high"], 0)
+
+    def test_format_md_output_still_human_readable(self) -> None:
+        make_plugin(self.tmp, {"name": "p", "skills": "skills/"}, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, _ = self.run_check("--format", "md")
+        self.assertEqual(code, 0)
+        self.assertIn("clean", out)
+
+    # ----- profile selection -----
+
+    def test_explicit_claude_profile_passes(self) -> None:
+        make_plugin(self.tmp, {"name": "p", "skills": "skills/"}, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, _ = self.run_check("--profile", "claude")
+        self.assertEqual(code, 0, out)
+
+    def test_codex_only_plugin_passes_without_claude_manifest(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": "codex/skills/",
+        }, {
+            "codex/skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, err = self.run_check("--profile", "codex", "--format", "json")
+        self.assertEqual(code, 0, f"out={out} err={err}")
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "codex")
+
+    def test_auto_profile_selects_codex_only_plugin(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": "codex/skills/",
+        }, {
+            "codex/skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, err = self.run_check("--format", "json")
+        self.assertEqual(code, 0, f"out={out} err={err}")
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "codex")
+
+    def test_codex_manifest_path_must_exist(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": ["codex/skills/ghost"],
+        }, {})
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 1)
+        self.assertIn("doesn't exist on disk", out)
+
+    def test_codex_unregistered_skill_is_reported(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": ["codex/skills/registered"],
+        }, {
+            "codex/skills/registered/SKILL.md": SKILL_VALID.format(name="registered"),
+            "codex/skills/missed/SKILL.md": SKILL_VALID.format(name="missed"),
+        })
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 1)
+        self.assertIn("codex/skills/missed/SKILL.md", out)
+        self.assertIn("not registered", out)
+
+    def test_codex_missing_skills_field_still_reports_shipped_skills(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+        }, {
+            "codex/skills/hidden/SKILL.md": SKILL_VALID.format(name="hidden"),
+        })
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 1)
+        self.assertIn("codex/skills/hidden/SKILL.md", out)
+        self.assertIn("not registered", out)
+
+    def test_codex_missing_skills_field_reports_standard_skills_layout(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+        }, {
+            "skills/hidden/SKILL.md": SKILL_VALID.format(name="hidden"),
+        })
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 1)
+        self.assertIn("skills/hidden/SKILL.md", out)
+        self.assertIn("not registered", out)
+
+    def test_codex_missing_skills_field_does_not_claim_mixed_claude_skills(self) -> None:
+        make_plugin(self.tmp, {
+            "name": "p",
+            "skills": "skills/",
+        }, {
+            "skills/claude-only/SKILL.md": SKILL_VALID.format(name="claude-only"),
+        })
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+        }, {})
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 0, out)
+
+    def test_codex_manifest_path_must_stay_inside_root(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": ["../escape"],
+        }, {})
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 1)
+        self.assertIn("escapes plugin root", out)
+
+    def test_codex_hooks_wrong_case(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+        }, {
+            ".codex/hooks.json": json.dumps({
+                "hooks": {"pretooluse": [{"command": "echo"}]},
+            }),
+        })
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 1)
+        self.assertIn("PreToolUse", out)
+
+    def test_codex_config_deprecated_hooks_flag_is_advisory(self) -> None:
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+        }, {
+            ".codex/config.toml": "[features]\ncodex_hooks = true\n",
+        })
+        code, out, _ = self.run_check("--profile", "codex")
+        self.assertEqual(code, 0)
+        self.assertIn("codex_hooks", out)
+        code_strict, _, _ = self.run_check("--profile", "codex", "--strict")
+        self.assertEqual(code_strict, 1)
+
+    def test_codex_project_surface_discovered_from_subdir_without_manifest(self) -> None:
+        make_codex_plugin(self.tmp, None, {
+            ".agents/skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        import io
+        saved_out, saved_err = sys.stdout, sys.stderr
+        out_buf, err_buf = io.StringIO(), io.StringIO()
+        sys.stdout, sys.stderr = out_buf, err_buf
+        try:
+            code = nlpm_check.main([
+                str(self.tmp / ".agents" / "skills" / "foo"),
+                "--profile", "codex",
+                "--format", "json",
+            ])
+        finally:
+            sys.stdout, sys.stderr = saved_out, saved_err
+        self.assertEqual(code, 0, err_buf.getvalue())
+        parsed = json.loads(out_buf.getvalue())
+        self.assertEqual(parsed["profile"], "codex")
+        self.assertEqual(Path(parsed["plugin_root"]).resolve(), self.tmp.resolve())
+
+    def test_codex_project_skills_symlinked_outside_root_do_not_crash(self) -> None:
+        external = self.tmp.parent / f"{self.tmp.name}-external-skills"
+        self.addCleanup(lambda: shutil.rmtree(external, ignore_errors=True))
+        (external / "foo").mkdir(parents=True)
+        (external / "foo" / "SKILL.md").write_text(SKILL_VALID.format(name="foo"), encoding="utf-8")
+        (self.tmp / ".agents").mkdir()
+        os.symlink(external, self.tmp / ".agents" / "skills")
+
+        code, out, err = self.run_check("--profile", "codex", "--format", "json")
+        self.assertEqual(code, 0, f"out={out} err={err}")
+        parsed = json.loads(out)
+        self.assertEqual(parsed["summary"]["high"], 0)
+
+    def test_generic_profile_checks_skill_collection_without_manifest(self) -> None:
+        make_codex_plugin(self.tmp, None, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, _ = self.run_check("--profile", "generic", "--format", "json")
+        self.assertEqual(code, 0, out)
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "generic")
+
+    def test_auto_profile_selects_generic_skill_collection(self) -> None:
+        make_codex_plugin(self.tmp, None, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        code, out, _ = self.run_check("--format", "json")
+        self.assertEqual(code, 0, out)
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "generic")
+
+    def test_auto_mixed_profile_does_not_cross_flag_codex_skills_as_claude(self) -> None:
+        make_plugin(self.tmp, {"name": "p", "skills": "skills/"}, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": "codex/skills/",
+        }, {
+            "codex/skills/bar/SKILL.md": SKILL_VALID.format(name="bar"),
+        })
+        code, out, err = self.run_check("--profile", "auto", "--format", "json")
+        self.assertEqual(code, 0, f"out={out} err={err}")
+        parsed = json.loads(out)
+        self.assertEqual(parsed["mode"], "multi")
+        self.assertEqual(parsed["summary"]["high"], 0)
+
+    def test_auto_mixed_profile_from_subdir_reports_plugin_root(self) -> None:
+        make_plugin(self.tmp, {"name": "p", "skills": "skills/"}, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        make_codex_plugin(self.tmp, {
+            "name": "p",
+            "version": "1.0.0",
+            "description": "ok",
+            "skills": "codex/skills/",
+        }, {
+            "codex/skills/bar/SKILL.md": SKILL_VALID.format(name="bar"),
+        })
+
+        import io
+        saved_out, saved_err = sys.stdout, sys.stderr
+        out_buf, err_buf = io.StringIO(), io.StringIO()
+        sys.stdout, sys.stderr = out_buf, err_buf
+        try:
+            code = nlpm_check.main([
+                str(self.tmp / "codex" / "skills" / "bar"),
+                "--profile", "auto",
+                "--format", "json",
+            ])
+        finally:
+            sys.stdout, sys.stderr = saved_out, saved_err
+        self.assertEqual(code, 0, err_buf.getvalue())
+        parsed = json.loads(out_buf.getvalue())
+        self.assertEqual(Path(parsed["repo_root"]).resolve(), self.tmp.resolve())
+
+    def test_config_profile_default_and_cli_precedence(self) -> None:
+        make_codex_plugin(self.tmp, None, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+            "nlpm.config.json": json.dumps({"tool_profile": "generic"}),
+        })
+        code, _out, _ = self.run_check()
+        self.assertEqual(code, 0)
+        code_override, _out, err = self.run_check("--profile", "claude")
+        self.assertEqual(code_override, 2)
+        self.assertIn("no .claude-plugin", err)
+
+    def test_explicit_config_path_overrides_builtin_defaults(self) -> None:
+        make_codex_plugin(self.tmp, None, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+        })
+        custom = self.tmp / "custom-nlpm-config.json"
+        custom.write_text(json.dumps({"tool_profile": "generic"}), encoding="utf-8")
+        code, out, _ = self.run_check("--config", str(custom), "--format", "json")
+        self.assertEqual(code, 0)
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "generic")
+        self.assertEqual(Path(parsed["config"]).resolve(), custom.resolve())
+
+    def test_legacy_claude_local_config_still_sets_default_profile(self) -> None:
+        make_codex_plugin(self.tmp, None, {
+            "skills/foo/SKILL.md": SKILL_VALID.format(name="foo"),
+            ".claude/nlpm.local.md": "---\ntool_profile: generic\nscore_threshold: 80\n---\n",
+        })
+        code, out, _ = self.run_check("--format", "json")
+        self.assertEqual(code, 0)
+        parsed = json.loads(out)
+        self.assertEqual(parsed["profile"], "generic")
+        self.assertTrue(parsed["config"].endswith(".claude/nlpm.local.md"))
 
     # ----- plugin root discovery -----
 

@@ -5,9 +5,11 @@ outline: [2, 3]
 
 # How to install
 
-NLPM has two install surfaces — pick whichever fits your environment.
+NLPM has three install surfaces — pick whichever fits your environment.
 
 The **slash-command plugin** ships through Claude Code. Inside Claude Code you get eleven `/nlpm:*` commands backed by six specialist agents and the reference skill catalog. The scoring rubric this plugin runs covers all three tools NLPM supports — **Claude Code, Codex CLI, and Antigravity** — via tier-aware overlays in `nlpm:conventions-claude` / `nlpm:conventions-codex` / `nlpm:conventions-antigravity`. See [the multi-tool design doc](https://github.com/xiaolai/nlpm/blob/main/analysis/multi-tool-design-2026-05.md).
+
+The **Codex plugin** ships checker-backed workflow skills plus the reference skill catalog. It does not promise `/nlpm:*` slash-command parity; use `$nlpm-check`, `$nlpm-score`, and `$nlpm-fix-plan` to call `bin/nlpm-check` and interpret findings.
 
 The **standalone binary** (`bin/nlpm-check`) has no Claude Code dependency. Use it in Codex / Antigravity projects, in any project's pre-commit hook, or in CI.
 
@@ -52,11 +54,11 @@ Then in your project:
 
 ## Standalone binary (Codex CLI, Antigravity, any CI, no Claude Code required)
 
-`bin/nlpm-check` is a single-file Python 3.11+ script (stdlib only) that runs the deterministic subset of `/nlpm:check`. It validates the universal floor (the agentskills.io open spec, AGENTS.md conventions, manifest-vs-disk consistency, vague-quantifier checks) regardless of which tool authored the artifacts. Drop into pre-commit hooks or CI.
+`bin/nlpm-check` is a single-file Python 3.11+ script (stdlib only) that runs the deterministic subset of `/nlpm:check`. It validates Claude, Codex, and generic SKILL.md surfaces via `--profile auto|claude|codex|generic`. Drop it into pre-commit hooks or CI.
 
 ```bash
 git clone https://github.com/xiaolai/nlpm
-./nlpm/bin/nlpm-check /path/to/your/plugin
+./nlpm/bin/nlpm-check /path/to/your/plugin --profile auto
 ```
 
 Or copy `bin/nlpm-check` into your repo:
@@ -66,6 +68,8 @@ curl -fsSL https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-check -o
 chmod +x nlpm-check
 ./nlpm-check .
 ```
+
+Use `--format json` for CI/badges. The legacy `--json` alias remains supported.
 
 Pre-commit hook and GitHub Actions workflow templates live at:
 

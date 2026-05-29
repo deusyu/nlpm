@@ -63,6 +63,11 @@ Each command does one thing -- no flags (except `--changed` on score).
 - skills/nlpm/writing-plugins/ -- how to design and build plugins
 - skills/nlpm/orchestration/ -- multi-agent workflow patterns
 
+### Codex Adapter Skills
+- codex/skills/nlpm-check/ -- checker-backed Codex workflow; runs `bin/nlpm-check --profile auto --format json` and explains deterministic findings.
+- codex/skills/nlpm-score/ -- Codex scoring workflow; runs the checker first, then clearly labels rubric review as judgment-only rather than Claude `/nlpm:score`.
+- codex/skills/nlpm-fix-plan/ -- Codex repair-planning workflow; turns checker JSON findings into ordered mechanical fixes.
+
 ## Hooks
 
 - hooks/hooks.json -- PostToolUse command hook on Write|Edit|MultiEdit
@@ -71,8 +76,9 @@ Each command does one thing -- no flags (except `--changed` on score).
 ## Standalone Author Surface (v0.8.0+)
 
 - bin/nlpm-check -- pure-Python (stdlib only) deterministic validator; the
-  subset of /nlpm:check that runs without Claude Code installed. Used in
-  pre-commit hooks, CI, and pre-publish scripts.
+  subset of /nlpm:check that runs without Claude Code installed. Supports
+  `--profile auto|claude|codex|generic`, `--config`, `--format json|md`,
+  and legacy `--json`. Used in pre-commit hooks, CI, and pre-publish scripts.
 - tests/test_nlpm_check.py -- unittest suite for the binary (run via
   `python3 -m unittest tests.test_nlpm_check`)
 - templates/pre-commit-nlpm.sh -- drop-in git pre-commit hook template
@@ -116,7 +122,7 @@ When modifying this plugin:
 
 100-point scale. Start at 100, apply deterministic penalties.
 Floor: 0. Ceiling: 100.
-Threshold configurable via .claude/nlpm.local.md (default: 70).
+Threshold configurable via `nlpm.config.json` for deterministic checker defaults and `.claude/nlpm.local.md` for Claude scoring workflows (default: 70).
 Rule overrides supported (suppress, max_penalty, threshold adjustments).
 
 ## Auditor (Self-Evolution Pipeline)
@@ -142,7 +148,7 @@ The `auditor/` subdirectory contains a GitHub Actions pipeline that discovers, a
 | auditor-render-dashboard | Daily cron / manual | Renders `auditor/reports/dashboard.html` — cross-repo HTML aggregate showing repo table, rule distribution, cross-repo vocab-drift network (AntV G6), and activity timeline. Self-contained, file://-openable. Driven by `auditor/scripts/render-dashboard.py`. |
 | auditor-repo-report | Manual dispatch only | Backfill renderer for per-repo HTML reports. Takes a `--repo` input (`owner/name` or `all`) and writes `auditor/reports/<slug>.html` using `render-repo-report.py`. The same render runs automatically at the tail of `auditor-audit` and `auditor-vocab-drift`; this workflow re-renders without re-auditing. |
 | auditor-refine-rules | Weekly cron / manual | **Human-gated**: open PR with proposed rule edits (reviewer: xiaolai) |
-| pre-release-quality-gate | PR with `.claude-plugin/plugin.json` or `.codex-plugin/plugin.json` change / manual | **Release gate**: runs `bin/nlpm-check` (deterministic floor) + the LLM-judged scorer on all 38 NL artifacts + the vocab-drift scanner. Asserts every artifact scores 100/100 against nlpm's own rubric AND zero vocabulary drift clusters. Blocks the release PR from merging if either fails. Outputs per-file scores to a workflow artifact (`pre-release-gate-<pr#>`) for inspection. Add to branch protection's required checks to make the gate truly blocking. |
+| pre-release-quality-gate | PR with `.claude-plugin/plugin.json` or `.codex-plugin/plugin.json` change / manual | **Release gate**: runs `bin/nlpm-check` (deterministic floor) + the LLM-judged scorer on all NL artifacts + the vocab-drift scanner. Asserts every artifact scores 100/100 against nlpm's own rubric AND zero vocabulary drift clusters. Blocks the release PR from merging if either fails. Outputs per-file scores to a workflow artifact (`pre-release-gate-<pr#>`) for inspection. Add to branch protection's required checks to make the gate truly blocking. |
 
 ### Data (auditor/)
 
@@ -337,7 +343,7 @@ This keeps Claude Code, Codex CLI, and Gemini CLI on the same context.
 
 - `.claude/` — Claude Code skills, agents, rules, hooks, commands
 - `.agents/skills/` — symlink to `.claude/skills/` (Codex skill scan path)
-- `.codex/prompts/` — Codex slash-command prompts
+- `.codex/prompts/` — legacy local prompt placeholder only; not a promised public Codex plugin entrypoint
 - `.codex/hooks.json` / `.codex/config.toml` — Codex hooks/config (optional)
 - `.gemini/skills/`, `.gemini/commands/` — Gemini skills and TOML commands
 - `.mcp.json` — MCP server registrations (shared by all three tools)

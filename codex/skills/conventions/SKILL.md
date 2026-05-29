@@ -151,17 +151,35 @@ Tool-specific naming details (e.g., the exact `CLAUDE_PLUGIN_ROOT` semantics) li
 
 ---
 
-## 6. Rule Overrides (`.claude/nlpm.local.md` or equivalent)
+## 6. Configuration and Rule Overrides
 
-The override system is universal. The configuration file path is per-tool:
+The deterministic checker uses tool-neutral `nlpm.config.json` when a
+project needs cross-tool defaults:
+
+```json
+{
+  "artifact_paths": [],
+  "enabled_rules": [],
+  "score_thresholds": {
+    "default": 70
+  },
+  "tool_profile": "auto"
+}
+```
+
+Discovery order is `--config <path>`, then `nlpm.config.json`, then the
+legacy Claude config, then built-in defaults.
+
+Rule overrides for LLM-judged scoring/checking remain in the Claude
+workflow config:
 
 | Tool | Config path |
 |---|---|
 | Claude Code | `.claude/nlpm.local.md` |
-| Codex CLI | `.codex/nlpm.local.md` |
-| Antigravity | `.gemini/nlpm.local.md` (or `.agent/nlpm.local.md` — TBD post-2026-06-18) |
+| Codex CLI | `nlpm.config.json` for deterministic checker defaults; no Codex-specific rule-override file is promised |
+| Antigravity | `nlpm.config.json` for deterministic checker defaults; no Antigravity-specific rule-override file is promised |
 
-Frontmatter format (identical across tools):
+Claude frontmatter format:
 
 ```yaml
 ---

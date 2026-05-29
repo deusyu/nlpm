@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""nlpm-check — standalone manifest-vs-disk + frontmatter validator.
+"""nlpm-check — standalone NL artifact validator.
 
 Implements the deterministic subset of /nlpm:check as a pure-Python
 script. Stdlib only. No external dependencies.
@@ -14,27 +14,38 @@ Exit codes:
   2  error reading the manifest or other I/O failure
 
 Usage:
-  nlpm-check [path]            default: current directory
-  nlpm-check --json            machine-readable JSON output
+  nlpm-check [path]                         default: current directory
+  nlpm-check --profile auto|claude|codex|generic
+  nlpm-check --format json|md
+  nlpm-check --json                         alias for --format json
   nlpm-check --strict          fail on findings of any confidence
   nlpm-check --quiet           suppress passing output
 
 Reference:
   https://code.claude.com/docs/en/plugins-reference
   https://agentskills.io/specification
+  https://developers.openai.com/codex/plugins
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.11+ is required.
+    tomllib = None
 
-VERSION = "0.8.22"
+
+VERSION = "1.1.0"
+
+PROFILES = {"auto", "claude", "codex", "generic"}
 
 
 # ----- finding model -----
@@ -127,6 +138,15 @@ def find_plugin_root(start: Path) -> Path | None:
     return None
 
 
+def find_codex_plugin_root(start: Path) -> Path | None:
+    """Walk up from start looking for .codex-plugin/plugin.json."""
+    cur = start.resolve()
+    for candidate in [cur, *cur.parents]:
+        if (candidate / ".codex-plugin" / "plugin.json").is_file():
+            return candidate
+    return None
+
+
 def find_subplugin_roots(start: Path) -> list[Path]:
     """Walk DOWN from start, returning every directory that owns a
     `.claude-plugin/plugin.json`.
@@ -136,6 +156,18 @@ def find_subplugin_roots(start: Path) -> list[Path]:
     """
     roots: list[Path] = []
     for manifest in start.rglob(".claude-plugin/plugin.json"):
+        if any(part in WALK_SKIP for part in manifest.parts):
+            continue
+        roots.append(manifest.parent.parent.resolve())
+    return sorted(set(roots), key=lambda p: len(p.parts))
+
+
+def find_codex_subplugin_roots(start: Path) -> list[Path]:
+    """Walk DOWN from start, returning every directory that owns a
+    `.codex-plugin/plugin.json`.
+    """
+    roots: list[Path] = []
+    for manifest in start.rglob(".codex-plugin/plugin.json"):
         if any(part in WALK_SKIP for part in manifest.parts):
             continue
         roots.append(manifest.parent.parent.resolve())
@@ -155,6 +187,91 @@ def nested_subplugins(plugin_root: Path, all_roots: list[Path]) -> set[Path]:
         if r != pr and _is_under(r, pr):
             nested.add(r)
     return nested
+
+
+@dataclass
+class RuntimeConfig:
+    tool_profile: str = "auto"
+    source: str | None = None
+    score_thresholds: dict | None = None
+
+
+def _start_dir(path: Path) -> Path:
+    return path if path.is_dir() else path.parent
+
+
+def _find_up(start: Path, rel: str) -> Path | None:
+    cur = _start_dir(start.resolve())
+    for candidate in [cur, *cur.parents]:
+        target = candidate / rel
+        if target.is_file():
+            return target
+    return None
+
+
+def _parse_claude_local(path: Path) -> RuntimeConfig:
+    """Read the legacy `.claude/nlpm.local.md` frontmatter enough to
+    preserve discovery compatibility. The deterministic checker currently
+    only needs thresholds/profile defaults; rule overrides remain owned by
+    the LLM scorer/checker surface.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return RuntimeConfig(source=str(path))
+    fm = read_frontmatter(text) or {}
+    thresholds: dict[str, int] = {}
+    if "score_threshold" in fm:
+        raw = fm["score_threshold"].strip().strip('"').strip("'")
+        if raw.isdigit():
+            thresholds["default"] = int(raw)
+    return RuntimeConfig(
+        tool_profile=fm.get("tool_profile", "auto").strip().strip('"').strip("'"),
+        source=str(path),
+        score_thresholds=thresholds or None,
+    )
+
+
+def load_runtime_config(start: Path, explicit_config: str | None) -> tuple[RuntimeConfig | None, str | None]:
+    """Load config according to the documented precedence.
+
+    Returns (config, error). Errors are caller-rendered so main() can keep
+    exit-code 2 behavior scriptable.
+    """
+    if explicit_config:
+        config_path = Path(explicit_config)
+        if not config_path.is_absolute():
+            config_path = (Path.cwd() / config_path).resolve()
+        if not config_path.is_file():
+            return None, f"config path does not exist: {config_path}"
+    else:
+        config_path = _find_up(start, "nlpm.config.json")
+        if config_path is None:
+            legacy = _find_up(start, ".claude/nlpm.local.md")
+            if legacy is not None:
+                config = _parse_claude_local(legacy)
+                if config.tool_profile not in PROFILES:
+                    return None, f"invalid tool_profile in {legacy}: {config.tool_profile}"
+                return config, None
+            return RuntimeConfig(), None
+
+    try:
+        data = json.loads(config_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
+        return None, f"failed to parse config {config_path}: {e}"
+    if not isinstance(data, dict):
+        return None, f"config must be a JSON object: {config_path}"
+    profile = str(data.get("tool_profile", "auto"))
+    if profile not in PROFILES:
+        return None, f"invalid tool_profile in {config_path}: {profile}"
+    thresholds = data.get("score_thresholds")
+    if thresholds is not None and not isinstance(thresholds, dict):
+        return None, f"score_thresholds must be an object in {config_path}"
+    return RuntimeConfig(
+        tool_profile=profile,
+        source=str(config_path),
+        score_thresholds=thresholds,
+    ), None
 
 
 # ----- manifest parsing -----
@@ -330,6 +447,25 @@ def manifest_paths_with_existence(plugin_root: Path, declared: list[str]) -> tup
     return existing, missing
 
 
+def manifest_paths_status(plugin_root: Path, declared: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """Split declared paths into (existing, missing, escaping).
+
+    `escaping` means the entry is absolute or resolves outside plugin_root.
+    Keeping this separate gives Codex plugin checks a precise error for the
+    plugin-boundary invariant.
+    """
+    existing, missing, escaping = [], [], []
+    for entry in declared:
+        target = _resolve_within_plugin(plugin_root, entry)
+        if target is None:
+            escaping.append(entry)
+        elif target.exists():
+            existing.append(entry)
+        else:
+            missing.append(entry)
+    return existing, missing, escaping
+
+
 # ----- checks -----
 
 def check_manifest_required(plugin_root: Path, manifest: dict, findings: list[Finding]) -> None:
@@ -431,18 +567,20 @@ def check_unregistered_markdown(
             ))
 
 
-def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_skip: set[Path] | None = None) -> None:
+SKILL_NAME_RE = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
+
+
+def check_skill_frontmatter_files(plugin_root: Path, skill_files: list[Path], findings: list[Finding]) -> None:
     """Every SKILL.md must have `name` and `description` per the spec."""
-    SKILL_NAME_RE = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
-    for skill in walk_skill_files(plugin_root, nested_skip=nested_skip):
-        rel = skill.relative_to(plugin_root)
+    for skill in sorted({p.resolve() for p in skill_files}):
+        rel = _display_path(skill, plugin_root)
         try:
             text = skill.read_text(encoding="utf-8")
         except OSError as e:
             findings.append(Finding(
                 confidence="high",
                 rule="skill/io",
-                path=str(rel),
+                path=rel,
                 line=0,
                 message=f"could not read SKILL.md: {e}",
             ))
@@ -452,7 +590,7 @@ def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_s
             findings.append(Finding(
                 confidence="high",
                 rule="skill/frontmatter",
-                path=str(rel),
+                path=rel,
                 line=1,
                 message="SKILL.md missing YAML frontmatter (--- delimited block)",
                 fix="Add `---\\nname: <skill-name>\\ndescription: <one-liner>\\n---` at the top",
@@ -462,7 +600,7 @@ def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_s
             findings.append(Finding(
                 confidence="high",
                 rule="skill/frontmatter",
-                path=str(rel),
+                path=rel,
                 line=1,
                 message="SKILL.md frontmatter missing required `name`",
                 fix="Add `name: <parent-dir-name>` to frontmatter",
@@ -474,7 +612,7 @@ def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_s
                 findings.append(Finding(
                     confidence="high",
                     rule="skill/name-parent",
-                    path=str(rel),
+                    path=rel,
                     line=frontmatter_line(text, "name"),
                     message=f"SKILL.md `name: {name}` does not match parent directory `{parent_name}`",
                     fix=f"Change `name:` to `{parent_name}` or rename the directory",
@@ -483,7 +621,7 @@ def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_s
                 findings.append(Finding(
                     confidence="high",
                     rule="skill/name-format",
-                    path=str(rel),
+                    path=rel,
                     line=frontmatter_line(text, "name"),
                     message=f"SKILL.md `name: {name}` violates spec: must be lowercase letters/digits/hyphens, 1-64 chars, starting with a letter",
                     fix="Rename to match `^[a-z][a-z0-9-]{0,63}$`",
@@ -492,11 +630,16 @@ def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_s
             findings.append(Finding(
                 confidence="high",
                 rule="skill/frontmatter",
-                path=str(rel),
+                path=rel,
                 line=1,
                 message="SKILL.md frontmatter missing required `description`",
                 fix="Add `description: <what it does and when to use it>`",
             ))
+
+
+def check_skill_frontmatter(plugin_root: Path, findings: list[Finding], nested_skip: set[Path] | None = None) -> None:
+    """Every SKILL.md must have `name` and `description` per the spec."""
+    check_skill_frontmatter_files(plugin_root, walk_skill_files(plugin_root, nested_skip=nested_skip), findings)
 
 
 def check_agent_frontmatter(plugin_root: Path, findings: list[Finding], nested_skip: set[Path] | None = None) -> None:
@@ -637,6 +780,229 @@ def check_hook_event_names(plugin_root: Path, findings: list[Finding]) -> None:
                 ))
 
 
+CODEX_VALID_EVENTS = {
+    "SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse",
+    "PermissionRequest", "PreCompact", "PostCompact", "SubagentStart",
+    "SubagentStop", "Stop",
+}
+
+
+def check_codex_manifest_required(plugin_root: Path, manifest: dict, findings: list[Finding]) -> None:
+    for field in ("name", "version", "description"):
+        if not manifest.get(field):
+            findings.append(Finding(
+                confidence="high",
+                rule="codex-plugin/required",
+                path=".codex-plugin/plugin.json",
+                line=0,
+                message=f".codex-plugin/plugin.json missing required `{field}` field",
+                fix=f'Add `"{field}": "<value>"` to .codex-plugin/plugin.json',
+            ))
+
+
+def check_codex_manifest_paths_exist(plugin_root: Path, manifest: dict, findings: list[Finding]) -> None:
+    for key in ("skills", "hooks", "mcpServers", "apps"):
+        declared = manifest_paths(manifest, key)
+        _, missing, escaping = manifest_paths_status(plugin_root, declared)
+        for entry in escaping:
+            findings.append(Finding(
+                confidence="high",
+                rule="codex-plugin/path-boundary",
+                path=".codex-plugin/plugin.json",
+                line=0,
+                message=f".codex-plugin/plugin.json `{key}` path escapes plugin root: {entry}",
+                fix="Use a relative path inside the plugin root",
+            ))
+        for entry in missing:
+            findings.append(Finding(
+                confidence="high",
+                rule="manifest-disk-diff",
+                path=".codex-plugin/plugin.json",
+                line=0,
+                message=f".codex-plugin/plugin.json `{key}` declares path that doesn't exist on disk: {entry}",
+                fix=f"Either create {entry} or remove it from the manifest",
+            ))
+
+
+def codex_manifest_skill_files(plugin_root: Path, manifest: dict) -> list[Path]:
+    declared = manifest_paths(manifest, "skills")
+    files: set[Path] = set()
+    for entry in declared:
+        target = _resolve_within_plugin(plugin_root, entry)
+        if target is None:
+            continue
+        if target.is_dir():
+            files.update(p.resolve() for p in target.rglob("SKILL.md") if not any(part in WALK_SKIP for part in p.parts))
+        elif target.is_file() and target.name == "SKILL.md":
+            files.add(target.resolve())
+    return sorted(files)
+
+
+def codex_skill_scan_roots(plugin_root: Path, manifest: dict) -> list[Path]:
+    """Infer Codex plugin skill collection roots from manifest paths.
+
+    A manifest may declare either a whole skill collection directory
+    (`codex/skills/`) or individual skill directories/files. For individual
+    declarations, scan the sibling collection root so missed skills on disk
+    are reported as unregistered.
+    """
+    roots: set[Path] = set()
+    for entry in manifest_paths(manifest, "skills"):
+        target = _resolve_within_plugin(plugin_root, entry)
+        if target is None or not target.exists():
+            continue
+        if target.is_file() and target.name == "SKILL.md":
+            roots.add(target.parent.parent.resolve())
+        elif target.is_dir() and (target / "SKILL.md").is_file():
+            roots.add(target.parent.resolve())
+        elif target.is_dir():
+            roots.add(target.resolve())
+    return sorted(roots)
+
+
+def codex_undeclared_skill_roots(plugin_root: Path) -> list[Path]:
+    """Conservative fallback roots for a Codex plugin with no `skills` field."""
+    roots = []
+    fallback_rels = ["codex/skills"]
+    if not (plugin_root / ".claude-plugin" / "plugin.json").is_file():
+        fallback_rels.append("skills")
+    for rel in fallback_rels:
+        root = plugin_root / rel
+        if root.is_dir():
+            roots.append(root.resolve())
+    return roots
+
+
+def check_unregistered_codex_skills(plugin_root: Path, manifest: dict, findings: list[Finding]) -> None:
+    """Every Codex plugin SKILL.md under inferred collection roots should
+    be reachable from `.codex-plugin/plugin.json`.
+    """
+    declared = manifest_paths(manifest, "skills")
+    registered = set(codex_manifest_skill_files(plugin_root, manifest))
+    on_disk: set[Path] = set()
+    scan_roots = codex_skill_scan_roots(plugin_root, manifest) if declared else codex_undeclared_skill_roots(plugin_root)
+    for root in scan_roots:
+        for skill in root.rglob("SKILL.md"):
+            if any(part in WALK_SKIP for part in skill.parts):
+                continue
+            on_disk.add(skill.resolve())
+
+    for skill in sorted(on_disk):
+        if skill in registered:
+            continue
+        display = _display_path(skill, plugin_root)
+        parent = _display_path(skill.parent, plugin_root)
+        findings.append(Finding(
+            confidence="high",
+            rule="manifest-disk-diff",
+            path=display,
+            line=0,
+            message="Codex SKILL.md exists on disk but is not registered by .codex-plugin/plugin.json `skills`",
+            fix=f"Add `{parent}/` to .codex-plugin/plugin.json `skills` array",
+        ))
+
+
+def codex_project_skill_files(plugin_root: Path) -> list[Path]:
+    """Project-scope Codex skills live under `.agents/skills` when present."""
+    root = plugin_root / ".agents" / "skills"
+    if not root.is_dir():
+        return []
+    search_root = root.resolve() if root.is_symlink() else root
+    if not search_root.is_dir():
+        return []
+    return sorted(
+        p.resolve()
+        for p in search_root.rglob("SKILL.md")
+        if not any(part in WALK_SKIP for part in p.parts)
+    )
+
+
+def check_codex_hooks_json(plugin_root: Path, findings: list[Finding]) -> None:
+    hook_path = ".codex/hooks.json"
+    full = plugin_root / hook_path
+    if not full.is_file():
+        return
+    try:
+        data = json.loads(full.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
+        findings.append(Finding(
+            confidence="high",
+            rule="codex-hook/parse",
+            path=hook_path,
+            line=0,
+            message=f".codex/hooks.json failed to parse as JSON: {e}",
+        ))
+        return
+    if not isinstance(data, dict):
+        return
+    events = data.get("hooks", {})
+    if not isinstance(events, dict):
+        return
+    check_codex_event_map(events.keys(), hook_path, findings)
+
+
+def check_codex_event_map(event_names, path: str, findings: list[Finding]) -> None:
+    valid_lower = {e.lower(): e for e in CODEX_VALID_EVENTS}
+    for event_name in event_names:
+        if event_name in CODEX_VALID_EVENTS:
+            continue
+        if str(event_name).lower() in valid_lower:
+            correct = valid_lower[str(event_name).lower()]
+            findings.append(Finding(
+                confidence="high",
+                rule="codex-hook/event-case",
+                path=path,
+                line=0,
+                message=f"Codex hook event `{event_name}` has wrong case",
+                fix=f"Rename to `{correct}` (case-sensitive)",
+            ))
+        else:
+            findings.append(Finding(
+                confidence="medium",
+                rule="codex-hook/event-name",
+                path=path,
+                line=0,
+                message=f"Codex hook event `{event_name}` not in documented event list",
+                fix=f"Use one of: {', '.join(sorted(CODEX_VALID_EVENTS))}",
+            ))
+
+
+def check_codex_config(plugin_root: Path, findings: list[Finding]) -> None:
+    config_path = plugin_root / ".codex" / "config.toml"
+    if not config_path.is_file():
+        return
+    rel = ".codex/config.toml"
+    if tomllib is None:
+        return
+    try:
+        with config_path.open("rb") as f:
+            data = tomllib.load(f)
+    except (OSError, tomllib.TOMLDecodeError) as e:
+        findings.append(Finding(
+            confidence="high",
+            rule="codex-config/parse",
+            path=rel,
+            line=0,
+            message=f".codex/config.toml failed to parse as TOML: {e}",
+        ))
+        return
+    if not isinstance(data, dict):
+        return
+    features = data.get("features")
+    if isinstance(features, dict) and "codex_hooks" in features:
+        findings.append(Finding(
+            confidence="medium",
+            rule="codex-config/deprecated",
+            path=rel,
+            line=0,
+            message=".codex/config.toml uses deprecated `[features].codex_hooks`",
+            fix="Rename `[features].codex_hooks` to `[features].hooks`",
+        ))
+    hooks = data.get("hooks")
+    if isinstance(hooks, dict):
+        check_codex_event_map(hooks.keys(), rel, findings)
+
+
 # ----- helpers -----
 
 def _is_under(child: Path, parent: Path) -> bool:
@@ -645,6 +1011,17 @@ def _is_under(child: Path, parent: Path) -> bool:
         return True
     except ValueError:
         return False
+
+
+def _display_path(path: Path, root: Path) -> str:
+    """Return a stable report path without assuming symlink targets stay under root."""
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        try:
+            return str(path.resolve().relative_to(root.resolve()))
+        except ValueError:
+            return str(path)
 
 
 # ----- output -----
@@ -686,6 +1063,11 @@ def check_plugin(plugin_root: Path, nested_skip: set[Path] | None = None) -> lis
         codex_root = (plugin_root / "codex").resolve()
         if codex_root.is_dir():
             nested_skip.add(codex_root)
+    # Repository fixtures are checked explicitly in tests and should not be
+    # treated as runtime Claude plugin content for the parent plugin.
+    fixtures_root = (plugin_root / "fixtures").resolve()
+    if fixtures_root.is_dir():
+        nested_skip.add(fixtures_root)
 
     check_manifest_required(plugin_root, manifest, findings)
     check_manifest_paths_exist(plugin_root, manifest, findings)
@@ -699,9 +1081,125 @@ def check_plugin(plugin_root: Path, nested_skip: set[Path] | None = None) -> lis
     return findings
 
 
+def check_codex_plugin(plugin_root: Path) -> list[Finding]:
+    """Run deterministic checks for one Codex plugin/project tree."""
+    manifest_file = plugin_root / ".codex-plugin" / "plugin.json"
+    findings: list[Finding] = []
+    manifest: dict = {}
+    if manifest_file.is_file():
+        try:
+            manifest = parse_manifest(manifest_file)
+        except (OSError, json.JSONDecodeError) as e:
+            findings.append(Finding(
+                confidence="high",
+                rule="codex-plugin/parse",
+                path=".codex-plugin/plugin.json",
+                line=0,
+                message=f"failed to parse .codex-plugin/plugin.json: {e}",
+            ))
+            return findings
+        check_codex_manifest_required(plugin_root, manifest, findings)
+        check_codex_manifest_paths_exist(plugin_root, manifest, findings)
+        check_unregistered_codex_skills(plugin_root, manifest, findings)
+        check_skill_frontmatter_files(plugin_root, codex_manifest_skill_files(plugin_root, manifest), findings)
+
+    # Project-scope Codex skills are independent of the plugin manifest.
+    check_skill_frontmatter_files(plugin_root, codex_project_skill_files(plugin_root), findings)
+    check_codex_config(plugin_root, findings)
+    check_codex_hooks_json(plugin_root, findings)
+    return findings
+
+
+def generic_skill_files(root: Path) -> list[Path]:
+    search_root = _start_dir(root.resolve())
+    return sorted(
+        p.resolve()
+        for p in search_root.rglob("SKILL.md")
+        if not any(part in WALK_SKIP for part in p.parts)
+    )
+
+
+def check_generic_profile(root: Path) -> list[Finding]:
+    """Validate the universal SKILL.md floor without requiring a tool manifest."""
+    search_root = _start_dir(root.resolve())
+    findings: list[Finding] = []
+    check_skill_frontmatter_files(search_root, generic_skill_files(search_root), findings)
+    return findings
+
+
+def has_generic_surface(root: Path) -> bool:
+    return bool(generic_skill_files(root))
+
+
+def find_codex_project_root(start: Path) -> Path | None:
+    """Find a manifestless Codex project surface by walking upward.
+
+    This lets `nlpm-check path/to/.agents/skills/foo --profile codex`
+    resolve the project root even when there is no `.codex-plugin`.
+    """
+    cur = _start_dir(start.resolve())
+    for candidate in [cur, *cur.parents]:
+        if any(
+            (candidate / rel).exists()
+            for rel in (".agents/skills", ".codex/config.toml", ".codex/hooks.json")
+        ):
+            return candidate
+    return None
+
+
+def has_codex_project_surface(root: Path) -> bool:
+    return find_codex_project_root(root) is not None
+
+
+def collect_claude_results(start: Path) -> tuple[str, Path, list[tuple[Path, list[Finding], str]]] | None:
+    """Collect Claude plugin results while preserving existing single/multi behavior."""
+    walk_up = find_plugin_root(start)
+    if walk_up is not None:
+        all_roots = find_subplugin_roots(walk_up)
+    else:
+        all_roots = find_subplugin_roots(start)
+    if not all_roots:
+        return None
+    if len(all_roots) == 1:
+        plugin_root = all_roots[0]
+        return ("single", plugin_root, [(plugin_root, check_plugin(plugin_root), "claude")])
+
+    repo_root = (walk_up or start).resolve()
+    results: list[tuple[Path, list[Finding], str]] = []
+    for sub_root in all_roots:
+        nested = nested_subplugins(sub_root, all_roots)
+        results.append((sub_root, check_plugin(sub_root, nested_skip=nested), "claude"))
+    return ("multi", repo_root, results)
+
+
+def collect_codex_results(start: Path) -> tuple[str, Path, list[tuple[Path, list[Finding], str]]] | None:
+    walk_up = find_codex_plugin_root(start)
+    if walk_up is not None:
+        all_roots = find_codex_subplugin_roots(walk_up)
+    else:
+        all_roots = find_codex_subplugin_roots(start)
+    if not all_roots:
+        root = find_codex_project_root(start)
+        if root is not None:
+            return ("single", root, [(root, check_codex_plugin(root), "codex")])
+        return None
+    if len(all_roots) == 1:
+        plugin_root = all_roots[0]
+        return ("single", plugin_root, [(plugin_root, check_codex_plugin(plugin_root), "codex")])
+
+    repo_root = (walk_up or start).resolve()
+    results = [(sub_root, check_codex_plugin(sub_root), "codex") for sub_root in all_roots]
+    return ("multi", repo_root, results)
+
+
+def common_results_root(results: list[tuple[Path, list[Finding], str]]) -> Path:
+    roots = [str(root.resolve()) for root, _findings, _profile in results]
+    return Path(os.path.commonpath(roots))
+
+
 # ----- output -----
 
-def render_human(findings: list[Finding], plugin_root: Path, strict: bool, quiet: bool) -> None:
+def render_human(findings: list[Finding], plugin_root: Path, strict: bool, quiet: bool, profile: str = "claude") -> None:
     """Print a human-readable single-plugin report. Grouped HIGH/MEDIUM/LOW."""
     high = [f for f in findings if f.confidence == "high"]
     medium = [f for f in findings if f.confidence == "medium"]
@@ -729,11 +1227,12 @@ def render_human(findings: list[Finding], plugin_root: Path, strict: bool, quiet
         print()
 
 
-def render_json(findings: list[Finding], plugin_root: Path) -> None:
+def render_json(findings: list[Finding], plugin_root: Path, profile: str = "claude", config: RuntimeConfig | None = None) -> None:
     """Print machine-readable single-plugin JSON. Schema: `mode: 'single'`."""
     payload = {
         "version": VERSION,
         "mode": "single",
+        "profile": profile,
         "plugin_root": str(plugin_root),
         "findings": [asdict(f) for f in findings],
         "summary": {
@@ -742,11 +1241,13 @@ def render_json(findings: list[Finding], plugin_root: Path) -> None:
             "low": sum(1 for f in findings if f.confidence == "low"),
         },
     }
+    if config and config.source:
+        payload["config"] = config.source
     print(json.dumps(payload, indent=2))
 
 
 def render_human_multi(
-    results: list[tuple[Path, list[Finding]]],
+    results: list[tuple[Path, list[Finding], str]],
     repo_root: Path,
     strict: bool,
     quiet: bool,
@@ -754,7 +1255,7 @@ def render_human_multi(
     """Print a human-readable multi-plugin report. Aggregate header + per-sub-plugin sections for non-clean plugins."""
     total_high = total_med = total_low = 0
     clean_count = 0
-    for _, findings in results:
+    for _, findings, _profile in results:
         high = sum(1 for f in findings if f.confidence == "high")
         med = sum(1 for f in findings if f.confidence == "medium")
         low = sum(1 for f in findings if f.confidence == "low")
@@ -777,14 +1278,14 @@ def render_human_multi(
         return
     print()
 
-    for plugin_root, findings in results:
+    for plugin_root, findings, profile in results:
         if not findings:
             continue
         rel = plugin_root.relative_to(repo_root.resolve()) if _is_under(plugin_root, repo_root.resolve()) else plugin_root
         high = [f for f in findings if f.confidence == "high"]
         med = [f for f in findings if f.confidence == "medium"]
         low = [f for f in findings if f.confidence == "low"]
-        print(f"--- {rel} · {len(high)} high · {len(med)} medium · {len(low)} low ---")
+        print(f"--- {rel} · {profile} · {len(high)} high · {len(med)} medium · {len(low)} low ---")
         for group_name, group in (("HIGH", high), ("MEDIUM", med), ("LOW", low)):
             if not group:
                 continue
@@ -799,14 +1300,16 @@ def render_human_multi(
 
 
 def render_json_multi(
-    results: list[tuple[Path, list[Finding]]],
+    results: list[tuple[Path, list[Finding], str]],
     repo_root: Path,
+    profile: str = "auto",
+    config: RuntimeConfig | None = None,
 ) -> None:
     """Print machine-readable multi-plugin JSON. Schema: `mode: 'multi'` with `plugins[]` array + aggregate `summary`."""
     plugins = []
     total_high = total_med = total_low = 0
     clean_count = 0
-    for plugin_root, findings in results:
+    for plugin_root, findings, result_profile in results:
         high = sum(1 for f in findings if f.confidence == "high")
         med = sum(1 for f in findings if f.confidence == "medium")
         low = sum(1 for f in findings if f.confidence == "low")
@@ -817,12 +1320,14 @@ def render_json_multi(
             clean_count += 1
         plugins.append({
             "plugin_root": str(plugin_root),
+            "profile": result_profile,
             "findings": [asdict(f) for f in findings],
             "summary": {"high": high, "medium": med, "low": low},
         })
     payload = {
         "version": VERSION,
         "mode": "multi",
+        "profile": profile,
         "repo_root": str(repo_root),
         "plugins": plugins,
         "summary": {
@@ -833,6 +1338,8 @@ def render_json_multi(
             "low": total_low,
         },
     }
+    if config and config.source:
+        payload["config"] = config.source
     print(json.dumps(payload, indent=2))
 
 
@@ -843,66 +1350,111 @@ def main(argv: list[str] | None = None) -> int:
         prog="nlpm-check",
         description=(
             "Standalone manifest-vs-disk + frontmatter validator for "
-            "Claude Code plugins. For full quality scoring, run /nlpm:score."
+            "Claude, Codex, and generic NL artifacts. For full quality "
+            "scoring, run /nlpm:score."
         ),
     )
     parser.add_argument("path", nargs="?", default=".", help="path to plugin root or any subdirectory")
-    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    parser.add_argument("--profile", choices=sorted(PROFILES), default=None, help="validation profile")
+    parser.add_argument("--config", help="path to nlpm.config.json")
+    parser.add_argument("--format", choices=("json", "md"), default="md", help="output format")
+    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON (alias for --format json)")
     parser.add_argument("--strict", action="store_true", help="exit 1 on findings of any confidence")
     parser.add_argument("--quiet", action="store_true", help="suppress output when clean")
     parser.add_argument("--version", action="version", version=f"nlpm-check {VERSION}")
     args = parser.parse_args(argv)
+
+    if args.json:
+        if args.format != "md" and args.format != "json":
+            parser.error("--json cannot be combined with --format md")
+        args.format = "json"
 
     start = Path(args.path)
     if not start.exists():
         print(f"nlpm-check: path does not exist: {start}", file=sys.stderr)
         return 2
 
-    # Discover all manifests reachable from start.
-    walk_up = find_plugin_root(start)
-    if walk_up is not None:
-        # Inside a plugin tree — scan from walk_up downward to find any
-        # nested sub-plugins under it. Includes walk_up itself.
-        all_roots = find_subplugin_roots(walk_up)
-    else:
-        all_roots = find_subplugin_roots(start)
+    config, config_error = load_runtime_config(start, args.config)
+    if config_error:
+        print(f"nlpm-check: {config_error}", file=sys.stderr)
+        return 2
+    assert config is not None
 
-    if not all_roots:
-        print(
-            f"nlpm-check: no .claude-plugin/plugin.json found at, above, or "
-            f"within {start}",
-            file=sys.stderr,
-        )
+    profile = args.profile or config.tool_profile or "auto"
+    if profile not in PROFILES:
+        print(f"nlpm-check: invalid profile: {profile}", file=sys.stderr)
         return 2
 
-    if len(all_roots) == 1:
-        # Single-plugin layout — keep the original single-plugin output shape
-        # so existing CI / badge / consumers don't see a schema change.
-        plugin_root = all_roots[0]
-        findings = check_plugin(plugin_root)
-        if args.json:
-            render_json(findings, plugin_root)
+    collection: tuple[str, Path, list[tuple[Path, list[Finding], str]]] | None
+
+    if profile == "claude":
+        collection = collect_claude_results(start)
+        if collection is None:
+            print(
+                f"nlpm-check: no .claude-plugin/plugin.json found at, above, or "
+                f"within {start}",
+                file=sys.stderr,
+            )
+            return 2
+    elif profile == "codex":
+        collection = collect_codex_results(start)
+        if collection is None:
+            print(
+                f"nlpm-check: no .codex-plugin/plugin.json or Codex project surface "
+                f"found at, above, or within {start}",
+                file=sys.stderr,
+            )
+            return 2
+    elif profile == "generic":
+        if not has_generic_surface(start):
+            print(f"nlpm-check: no SKILL.md files found within {start}", file=sys.stderr)
+            return 2
+        root = _start_dir(start.resolve())
+        collection = ("single", root, [(root, check_generic_profile(root), "generic")])
+    else:
+        claude_collection = collect_claude_results(start)
+        codex_collection = collect_codex_results(start)
+
+        if claude_collection and codex_collection:
+            mode = "multi"
+            results = [*claude_collection[2], *codex_collection[2]]
+            repo_root = common_results_root(results)
+            collection = (mode, repo_root, results)
+        elif claude_collection:
+            collection = claude_collection
+        elif codex_collection:
+            collection = codex_collection
+        elif has_generic_surface(start):
+            root = _start_dir(start.resolve())
+            collection = ("single", root, [(root, check_generic_profile(root), "generic")])
         else:
-            render_human(findings, plugin_root, strict=args.strict, quiet=args.quiet)
+            # Preserve the historic error wording for empty/non-plugin dirs.
+            print(
+                f"nlpm-check: no .claude-plugin/plugin.json found at, above, or "
+                f"within {start}; no .codex-plugin/plugin.json or SKILL.md fallback found",
+                file=sys.stderr,
+            )
+            return 2
+
+    mode, root, results = collection
+
+    if len(results) == 1 and mode == "single":
+        plugin_root, findings, result_profile = results[0]
+        if args.format == "json":
+            render_json(findings, plugin_root, profile=result_profile if profile == "auto" else profile, config=config)
+        else:
+            render_human(findings, plugin_root, strict=args.strict, quiet=args.quiet, profile=result_profile)
         if args.strict:
             return 1 if findings else 0
         return 1 if any(f.confidence == "high" for f in findings) else 0
 
-    # Multi-plugin monorepo — N manifests in the tree.
-    repo_root = (walk_up or start).resolve()
-    results: list[tuple[Path, list[Finding]]] = []
-    for sub_root in all_roots:
-        nested = nested_subplugins(sub_root, all_roots)
-        findings = check_plugin(sub_root, nested_skip=nested)
-        results.append((sub_root, findings))
-
-    if args.json:
-        render_json_multi(results, repo_root)
+    if args.format == "json":
+        render_json_multi(results, root, profile=profile, config=config)
     else:
-        render_human_multi(results, repo_root, strict=args.strict, quiet=args.quiet)
+        render_human_multi(results, root, strict=args.strict, quiet=args.quiet)
 
-    any_high = any(f.confidence == "high" for _, fs in results for f in fs)
-    any_finding = any(fs for _, fs in results)
+    any_high = any(f.confidence == "high" for _, fs, _profile in results for f in fs)
+    any_finding = any(fs for _, fs, _profile in results)
     if args.strict:
         return 1 if any_finding else 0
     return 1 if any_high else 0

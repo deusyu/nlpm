@@ -1,27 +1,31 @@
-# nlpm — reference knowledge for Codex CLI
+# nlpm — checker-backed workflows for Codex CLI
 
-This Codex plugin ships nlpm's **reference-knowledge skills**: the 50 Rules of Natural Language Programming, the 100-point scoring rubric, per-tool conventions (Claude Code / Codex CLI / Antigravity), anti-patterns, the vocabulary discipline framework, and authoring guides for skills, agents, hooks, rules, plugins, and prompts.
+This Codex plugin ships two surfaces:
 
-These skills are knowledge, not commands. Load one when you need it — e.g. ask Codex to "score this skill against the nlpm rules" and it pulls in `$nlpm-rules` and `$nlpm-scoring`; ask "what's the Codex skill layout" and it pulls `$nlpm-conventions-codex`.
+- **Checker-backed workflow skills** that run `bin/nlpm-check`, read JSON findings, and produce repair plans.
+- **Reference skills** for the 50 Rules of Natural Language Programming, the 100-point scoring rubric, per-tool conventions (Claude Code / Codex CLI / Antigravity), anti-patterns, vocabulary discipline, and authoring guides.
 
-## What this plugin does NOT include
+The Codex package does not claim `/nlpm:*` slash-command parity. Codex users should use the workflow skills and the standalone checker. Claude Code remains the richer slash-command orchestration surface because its `/nlpm:*` commands dispatch specialist agents.
 
-nlpm's interactive linting commands (`/nlpm:score`, `/nlpm:check`, `/nlpm:fix`, etc.) are **not** ported to Codex. Those commands orchestrate sub-agents via Claude Code's `Task()` dispatch, which has no in-skill equivalent in Codex. They remain a Claude Code plugin.
+## Deterministic Checks
 
-For deterministic checks without Claude Code (manifest-vs-disk consistency, frontmatter validity, hook event-name case) on **any** tool's artifacts, use the standalone Python validator:
+Use these skills when the user wants executable NLPM feedback in Codex:
 
-```bash
-curl -fsSL -o /usr/local/bin/nlpm-check \
-  https://raw.githubusercontent.com/xiaolai/nlpm/main/bin/nlpm-check
-chmod +x /usr/local/bin/nlpm-check
-nlpm-check .
-```
+| Skill | What it does |
+|-------|--------------|
+| `$nlpm-check` | Runs `bin/nlpm-check <path> --profile auto --format json` and explains deterministic findings |
+| `$nlpm-score` | Runs the checker first, then clearly labels any rubric-based Codex review as judgment-only |
+| `$nlpm-fix-plan` | Turns checker JSON findings into an ordered mechanical repair plan |
 
-## Skills in this collection
+If `bin/nlpm-check` is not present in the target repo, use an installed `nlpm-check` on `PATH` with the same arguments.
+
+## Reference Skills
+
+Load these when the user needs NLPM's rulebook, conventions, or writing guidance:
 
 | Skill | What it teaches |
 |-------|-----------------|
-| `$nlpm-rules` | The 50 Rules of Natural Language Programming (R01–R51) |
+| `$nlpm-rules` | The 50 Rules of Natural Language Programming (R01-R51) |
 | `$nlpm-scoring` | 100-point penalty rubric per artifact type |
 | `$nlpm-conventions` | Universal floor: SKILL.md open spec, AGENTS.md, naming |
 | `$nlpm-conventions-claude` | Claude Code overlay: `.claude/` paths, plugin.json, hook events |
@@ -32,6 +36,12 @@ nlpm-check .
 | `$nlpm-testing` | NL-TDD spec format |
 | `$nlpm-security` | Security pattern database for executable artifacts |
 | `$nlpm-orchestration` | Multi-agent workflow patterns (Claude-lineage; informational on Codex) |
-| `$nlpm-writing-skills` … `$nlpm-writing-prompts` | Authoring guides per artifact type |
+| `$nlpm-writing-skills` ... `$nlpm-writing-prompts` | Authoring guides per artifact type |
+
+## Boundaries
+
+- Do not reimplement deterministic checks in prose; run `bin/nlpm-check`.
+- Do not claim Codex can run `/nlpm:score`, `/nlpm:check`, or `/nlpm:fix`.
+- Keep binary findings separate from LLM-judged quality review.
 
 Source and full Claude Code plugin: <https://github.com/xiaolai/nlpm>

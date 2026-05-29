@@ -285,7 +285,9 @@ catch terms that aren't yet in the registry but probably should be).
 ## The standalone binaries
 
 For non-interactive environments (CI, pre-commit, release scripts),
-the same checks run without Claude Code.
+the deterministic checks run without Claude Code. Codex users can call
+the same binary through `$nlpm-check`, `$nlpm-score`, and `$nlpm-fix-plan`
+skills; those skills do not claim `/nlpm:*` slash-command parity.
 
 ### `bin/nlpm-check`
 
@@ -295,7 +297,10 @@ stdlib only, no `pip install`.
 ```bash
 nlpm-check                  # check current directory
 nlpm-check path/            # check a specific path
-nlpm-check --json           # machine-readable JSON output
+nlpm-check --profile auto   # detect Claude, Codex, or generic surfaces
+nlpm-check --profile codex  # validate .codex-plugin, .agents/skills, .codex config/hooks
+nlpm-check --format json    # machine-readable JSON output
+nlpm-check --json           # backward-compatible alias for --format json
 nlpm-check --strict         # fail on findings of any confidence
 nlpm-check --quiet          # suppress passing output
 nlpm-check --version
@@ -319,10 +324,15 @@ What it catches at confidence-high (exit 1):
 - **skill-name-format** — `name:` violates `^[a-z][a-z0-9-]{0,63}$`
 - **hook-event-case** — `pretooluse` instead of `PreToolUse`
   (case-sensitive loader silently ignores wrong-case)
+- **Codex profile checks** — `.codex-plugin/plugin.json` required
+  fields, component path existence/root-boundary, Codex skill
+  frontmatter, `.codex/config.toml` parseability, and wrong-case Codex
+  hook events. Unknown Codex hook names and deprecated
+  `[features].codex_hooks` are advisory by default.
 
 Multi-plugin monorepos are auto-detected — if your repo has multiple
-`.claude-plugin/plugin.json` files, each is checked in isolation and
-the aggregate state is reported.
+`.claude-plugin/plugin.json` or `.codex-plugin/plugin.json` files,
+each is checked in isolation and the aggregate state is reported.
 
 ### `bin/nlpm-badge`
 
@@ -488,6 +498,26 @@ exemplars that warrant it. The exemplars cite the merged PRs that
 proved the rule survives contact with reality.
 
 ## Configuration reference
+
+### `nlpm.config.json` — checker config
+
+Used by `bin/nlpm-check` in any tool environment. Keep this file small;
+it is for deterministic checker defaults, not the full Claude scoring
+override surface.
+
+```json
+{
+  "artifact_paths": [],
+  "enabled_rules": [],
+  "score_thresholds": {
+    "default": 70
+  },
+  "tool_profile": "auto"
+}
+```
+
+Discovery order is `--config <path>`, then `nlpm.config.json`, then
+legacy `.claude/nlpm.local.md`, then built-in defaults.
 
 ### `.claude/nlpm.local.md` — project config
 
